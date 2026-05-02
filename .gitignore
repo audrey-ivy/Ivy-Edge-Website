@@ -1,0 +1,8 @@
+# Binary documents — tracked externally
+*.pdf
+*.docx
+*.pptx
+*.xlsx
+
+# macOS
+.DS_Store

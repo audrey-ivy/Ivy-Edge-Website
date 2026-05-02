@@ -1,0 +1,15 @@
+# Secrets
+.env
+
+# Generated drafts (often want these tracked, sometimes not — adjust to taste)
+output/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
