@@ -710,6 +710,88 @@ Format:
         result.finished_at = datetime.utcnow().isoformat() + "Z"
         return result
 
+    # -- Intro post (one-time founding statement) --------------------------
+
+    def generate_intro_post(self, on_phase: Optional[callable] = None) -> GenerationResult:
+        """Generate the IvyEdge founding/introduction post.
+
+        This is a one-time brand story piece — shorter than a standard post,
+        no keyword optimization, written as a direct letter to the reader.
+        """
+        brief = ArticleBrief(
+            topic="Introducing IvyEdge",
+            persona="All",
+            pillar="Brand Story",
+            primary_keyword="IvyEdge",
+            content_format="brand_introduction",
+            target_word_count=(700, 900),
+            notes="Founding statement. Not keyword-optimized. Warm, personal, direct. Waitlist CTA.",
+        )
+
+        result = GenerationResult(
+            brief=brief,
+            model=self.model,
+            started_at=datetime.utcnow().isoformat() + "Z",
+        )
+
+        def step(name: str, fn):
+            logger.info("---- Phase: %s ----", name)
+            out = fn()
+            if on_phase:
+                on_phase(name, out)
+            return out
+
+        prompt = f"""You are writing the founding/introduction post for IvyEdge — the very first thing
+the world reads from us. This is not a blog post. It is a letter.
+
+WHO WE ARE WRITING TO
+All four of our personas at once: Priya (the career returner), Maya (the freelancer),
+Carmen (the established entrepreneur), Dominique (the corporate climber). Each of them
+has been doing everything right and still can't get a fair shot from traditional finance.
+
+WHAT THIS POST MUST DO
+1. Open with the problem — not our solution. The reader should feel seen before we say a word about ourselves.
+2. Explain why the financial system fails these women (income type, career path, the metrics it uses).
+3. Introduce IvyEdge — what we're building and why. One sentence on the mission.
+4. Tell the reader what's coming: a blog that gives them the real information they've been denied,
+   and products (launching soon) that evaluate their whole story.
+5. End with a warm, direct CTA to join the waitlist (https://substack.com/@joinivyedge).
+
+WHAT TO AVOID
+- No corporate language. No "we're excited to announce." No "we're on a mission to."
+- No product names — we haven't launched yet.
+- Do not over-promise on the products. Say they're coming. Don't describe features.
+- Do not write a listicle. This is prose.
+
+TONE
+The brilliant friend who happens to work in finance — the one you actually call.
+She's been watching the system fail people she cares about and she's done being polite about it.
+Warm. Direct. A little frustrated. Deeply hopeful.
+
+TARGET LENGTH
+700–900 words. No filler. Every sentence earns its place.
+
+FORMAT
+Return clean markdown only:
+- H1 title (direct, human — not a tagline)
+- 4–6 prose paragraphs
+- A short, warm sign-off before the CTA
+- CTA paragraph
+
+{self._voice_block()}
+
+# === Brand context ===
+{self._full_brand_context()}
+"""
+        result.final_draft = step("intro", lambda: self._call_claude(
+            prompt, 2000, "intro"
+        ))
+
+        # Social for the intro post
+        result.social = step("social", lambda: self.social_phase(brief, result.final_draft))
+        result.finished_at = datetime.utcnow().isoformat() + "Z"
+        return result
+
 
 # ---------------------------------------------------------------------------
 # Helpers

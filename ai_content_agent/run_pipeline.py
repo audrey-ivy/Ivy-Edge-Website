@@ -1,30 +1,24 @@
 """
 IvyEdge Content Agent — CLI runner
 
-Two modes:
+Modes:
+
+    # Founding introduction post (run once)
+    python run_pipeline.py intro [--publish]
 
     # Generate a single post from CLI args
     python run_pipeline.py single \\
         --topic "How freelancers can prove income stability" \\
         --persona Maya \\
         --pillar "Pillar 1: Financial Education for Non-Traditional Paths" \\
-        --keywords "freelance income proof,1099 loan approval,freelancer credit"
+        --keywords "freelance income proof,1099 loan approval,freelancer credit" \\
+        [--publish]
 
     # Generate every row in editorial_calendar.csv where status == 'queued'
-    python run_pipeline.py batch --calendar editorial_calendar.csv
+    python run_pipeline.py batch --calendar editorial_calendar.csv [--publish]
 
-Outputs:
-    output/<YYYY-MM-DD>_<slug>/
-        00_brief.json
-        01_research.md
-        02_outline.md
-        03_first_draft.md
-        04_edited_draft.md
-        05_final_draft.md         <-- the one to send to the editor
-        meta.json                 <-- meta description, links, alt text, tokens
-
-The batch mode also rewrites the CSV in place — flipping `status` from
-`queued` to `drafted` and stamping the output folder so editors can find it.
+Add --publish to any mode to push directly to Substack after generation.
+Requires SUBSTACK_SID in .env.
 """
 
 from __future__ import annotations
@@ -39,6 +33,7 @@ from datetime import datetime
 from pathlib import Path
 
 from ivyedge_content_agent import IvyEdgeContentAgent, GenerationResult
+from substack_publisher import SubstackPublisher
 
 
 logging.basicConfig(
@@ -97,6 +92,50 @@ def _save_result(result: GenerationResult, out_root: Path) -> Path:
 
 
 # ---------------------------------------------------------------------------
+# Substack publish helper
+# ---------------------------------------------------------------------------
+
+def _maybe_publish(result: GenerationResult, folder: Path, publish: bool) -> None:
+    if not publish:
+        return
+    try:
+        publisher = SubstackPublisher()
+    except ValueError as e:
+        logger.error("Cannot publish: %s", e)
+        return
+
+    title = result.brief.topic
+    subtitle = result.meta_description or ""
+    url_info = publisher.publish(
+        title=title,
+        body_markdown=result.final_draft,
+        subtitle=subtitle,
+    )
+    post_url = url_info.get("canonical_url") or url_info.get("url", "")
+    print(f"  Published to Substack: {post_url}")
+    (folder / "substack_url.txt").write_text(post_url, encoding="utf-8")
+
+
+# ---------------------------------------------------------------------------
+# Intro post mode
+# ---------------------------------------------------------------------------
+
+def cmd_intro(args: argparse.Namespace) -> int:
+    agent = IvyEdgeContentAgent(model=args.model, context_dir=args.context_dir)
+    print("\nGenerating IvyEdge introduction post...\n")
+
+    result = agent.generate_intro_post(
+        on_phase=lambda name, _: print(f"  [done] {name}"),
+    )
+
+    folder = _save_result(result, Path(args.output))
+    print(f"\nDone. Intro post: {folder / '05_final_draft.md'}")
+    print(f"      Social copy: {folder / '06_social.md'}")
+    _maybe_publish(result, folder, args.publish)
+    return 0
+
+
+# ---------------------------------------------------------------------------
 # Single-post mode
 # ---------------------------------------------------------------------------
 
@@ -122,6 +161,7 @@ def cmd_single(args: argparse.Namespace) -> int:
     print(f"      Social copy:  {folder / '06_social.md'}")
     print(f"Tokens: in={result.token_usage.get('input_tokens', 0)} "
           f"out={result.token_usage.get('output_tokens', 0)}")
+    _maybe_publish(result, folder, args.publish)
     return 0
 
 
@@ -181,6 +221,7 @@ def cmd_batch(args: argparse.Namespace) -> int:
         row["status"] = "drafted"
         row["draft_folder"] = str(folder)
         row["drafted_at"] = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+        _maybe_publish(result, folder, args.publish)
 
     # Rewrite calendar with updated statuses (preserves all original columns
     # plus draft_folder / drafted_at / error if we added them).
@@ -203,8 +244,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--model", default=None, help="Override default model (e.g. claude-sonnet-4-6)")
     parser.add_argument("--context-dir", default="context", help="Context library folder")
     parser.add_argument("--output", default="output", help="Where to write drafts")
+    parser.add_argument("--publish", action="store_true",
+                        help="Publish to Substack immediately after generation (requires SUBSTACK_SID in .env)")
 
     sub = parser.add_subparsers(dest="cmd", required=True)
+
+    p_intro = sub.add_parser("intro", help="Generate the one-time IvyEdge introduction post")
+    p_intro.set_defaults(func=cmd_intro)
 
     p_single = sub.add_parser("single", help="Generate one post from flags")
     p_single.add_argument("--topic", required=True)
