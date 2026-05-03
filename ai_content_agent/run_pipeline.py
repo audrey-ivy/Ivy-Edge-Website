@@ -75,6 +75,8 @@ def _save_result(result: GenerationResult, out_root: Path) -> Path:
     (folder / "03_first_draft.md").write_text(result.first_draft, encoding="utf-8")
     (folder / "04_edited_draft.md").write_text(result.edited_draft, encoding="utf-8")
     (folder / "05_final_draft.md").write_text(result.final_draft, encoding="utf-8")
+    if result.social:
+        (folder / "06_social.md").write_text(result.social, encoding="utf-8")
 
     meta = {
         "topic": result.brief.topic,
@@ -117,6 +119,7 @@ def cmd_single(args: argparse.Namespace) -> int:
 
     folder = _save_result(result, Path(args.output))
     print(f"\nDone. Final draft: {folder / '05_final_draft.md'}")
+    print(f"      Social copy:  {folder / '06_social.md'}")
     print(f"Tokens: in={result.token_usage.get('input_tokens', 0)} "
           f"out={result.token_usage.get('output_tokens', 0)}")
     return 0

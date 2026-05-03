@@ -54,6 +54,7 @@ PHASE_TOKEN_BUDGETS = {
     "draft": 5000,
     "voice_edit": 5000,
     "seo": 5000,
+    "social": 3000,
 }
 
 # Files in /context loaded on startup. Missing files are skipped with a warning
@@ -101,6 +102,7 @@ class GenerationResult:
     first_draft: str = ""
     edited_draft: str = ""
     final_draft: str = ""
+    social: str = ""
     meta_description: str = ""
     started_at: str = ""
     finished_at: str = ""
@@ -513,6 +515,126 @@ SECTION 2 — metadata as a single valid JSON object, between these exact delimi
         raw = self._call_claude(prompt, PHASE_TOKEN_BUDGETS["seo"], "seo")
         return _parse_json_response(raw)
 
+    # -- Phase 6: Social media --------------------------------------------
+
+    def social_phase(self, brief: ArticleBrief, final_draft: str) -> str:
+        prompt = f"""You are writing social media content to distribute an IvyEdge blog post.
+
+PRE-LAUNCH CONTEXT
+IvyEdge has not launched any products. Every CTA must be audience-building:
+waitlist signup, newsletter, share, survey, or tell-us-your-story.
+Never mention Ivy Smart Loan, Ivy Credit Builder, Ivy Credit Monitor, or Ivy Checking.
+
+BLOG POST
+Topic: {brief.topic}
+Persona: {brief.persona}
+Primary keyword: {brief.primary_keyword}
+
+FULL FINAL DRAFT
+{final_draft}
+
+{self._voice_block()}
+
+---
+
+Produce all three assets below. Follow each format exactly.
+
+---
+
+## X / Threads
+
+Write 3 post options (pick the strongest for posting, keep the others as alternates).
+Rules:
+- ≤ 280 characters each (including spaces and any hashtags)
+- Lead with a punchy, opinionated first line — no throat-clearing
+- One concrete insight or stat from the post
+- End with a CTA or question that drives replies or clicks
+- 1–3 hashtags max; no more
+- No em-dashes (—); use a dash (-) or a line break instead
+
+Format:
+### Option 1
+<post text>
+
+### Option 2
+<post text>
+
+### Option 3
+<post text>
+
+---
+
+## Instagram
+
+Write one caption + a suggested visual description.
+Rules:
+- Caption: 150–300 words; warm, direct IvyEdge voice; line breaks every 1–2 sentences
+- Hook in the first line (no "Hey!" or emojis to open)
+- 3–5 paragraphs; end with a question or CTA to drive comments
+- Hashtags: 10–15 highly relevant tags on a separate line at the bottom
+- Visual: 1–2 sentences describing what the static image or carousel should show
+  (colour palette, text overlay idea, lifestyle image direction)
+
+Format:
+### Caption
+<caption text>
+
+### Visual direction
+<visual description>
+
+---
+
+## TikTok / Reels script
+
+Write a complete, production-ready video script.
+Rules:
+- Length: 45–60 seconds of spoken content (roughly 120–160 words of dialogue)
+- Hook: first 3 seconds must stop the scroll — a bold claim, surprising stat, or
+  direct challenge to a common belief
+- Structure: Hook → Problem (5 s) → 3 insights (25 s) → Payoff / CTA (10 s)
+- Spoken dialogue only — no filler ("um", "so basically", "right?")
+- On-screen text: include [TEXT: ...] cues for words to flash on screen
+- B-roll / visual: include [VISUAL: ...] cues for what to show on camera
+- CTA: end with one clear audience-building action (waitlist, newsletter, share)
+- Tone: confident, knowledgeable friend — not a lecture, not a sales pitch
+
+Format:
+### Script
+
+[HOOK - 0:00-0:03]
+[TEXT: ...]
+[VISUAL: ...]
+<spoken line>
+
+[PROBLEM - 0:03-0:08]
+[VISUAL: ...]
+<spoken lines>
+
+[INSIGHT 1 - 0:08-0:18]
+[TEXT: ...]
+[VISUAL: ...]
+<spoken lines>
+
+[INSIGHT 2 - 0:18-0:28]
+[TEXT: ...]
+[VISUAL: ...]
+<spoken lines>
+
+[INSIGHT 3 - 0:28-0:38]
+[TEXT: ...]
+[VISUAL: ...]
+<spoken lines>
+
+[CTA - 0:38-0:48]
+[TEXT: ...]
+[VISUAL: ...]
+<spoken lines>
+
+### Production notes
+<2–3 sentences on tone, setting, presenter energy, any props or graphics>
+"""
+        return self._call_claude(prompt, PHASE_TOKEN_BUDGETS["social"], "social")
+
     # -- Full pipeline ----------------------------------------------------
 
     def generate_blog_post(
@@ -567,8 +689,9 @@ SECTION 2 — metadata as a single valid JSON object, between these exact delimi
         seo_out = step("seo", lambda: self.seo_phase(brief, result.edited_draft))
         result.final_draft = seo_out.get("final_draft", result.edited_draft)
         result.meta_description = seo_out.get("meta_description", "")
-        # Stash the rest of the SEO suggestions in token_usage's neighbor —
-        # easier than adding more dataclass fields, and the CLI surfaces it.
+
+        result.social = step("social", lambda: self.social_phase(brief, result.final_draft))
+
         result.token_usage = {
             **self._cumulative_usage,
             "internal_link_suggestions": seo_out.get("internal_link_suggestions", []),
