@@ -141,7 +141,7 @@ class IvyEdgeContentAgent:
             )
 
         self.client = anthropic.Anthropic(api_key=api_key)
-        self.model = model
+        self.model = model or DEFAULT_MODEL
         self.context_dir = Path(context_dir)
         self.context = self._load_context()
         self._cumulative_usage = {"input_tokens": 0, "output_tokens": 0}
@@ -222,7 +222,7 @@ class IvyEdgeContentAgent:
                 return msg.content[0].text
             except (anthropic.RateLimitError, anthropic.APIStatusError) as e:
                 wait = 2 ** attempt
-                logger.warning("[%s] %s — retrying in %ss", phase, type(e).__name__, wait)
+                logger.warning("[%s] %s — retrying in %ss: %s", phase, type(e).__name__, wait, e)
                 time.sleep(wait)
         raise RuntimeError(f"[{phase}] Claude call failed after 3 retries")
 
@@ -482,9 +482,16 @@ SEO CHECKLIST
 DO NOT sacrifice IvyEdge voice for keyword density. If the keyword doesn't
 fit naturally, use a semantic variation.
 
-OUTPUT FORMAT — return ONE valid JSON object, no prose around it:
+OUTPUT FORMAT — two clearly separated sections, nothing else:
+
+SECTION 1 — the full SEO-optimized post in markdown, between these exact delimiters:
+===DRAFT_START===
+<your markdown here>
+===DRAFT_END===
+
+SECTION 2 — metadata as a single valid JSON object, between these exact delimiters:
+===META_START===
 {{
-  "final_draft": "<full markdown post with SEO edits applied>",
   "meta_description": "<= 155 chars",
   "internal_link_suggestions": [
     {{"anchor_text": "...", "url": "/...", "where_in_post": "section name"}}
@@ -496,6 +503,7 @@ OUTPUT FORMAT — return ONE valid JSON object, no prose around it:
     {{"image_topic": "...", "alt_text": "..."}}
   ]
 }}
+===META_END===
 
 {self._voice_block()}
 
@@ -576,30 +584,34 @@ OUTPUT FORMAT — return ONE valid JSON object, no prose around it:
 # ---------------------------------------------------------------------------
 
 def _parse_json_response(raw: str) -> dict:
-    """The SEO phase asks Claude for JSON. Models occasionally wrap the JSON
-    in a ```json fence or add a sentence of preamble — strip those out."""
-    txt = raw.strip()
-    if txt.startswith("```"):
-        # Drop opening fence
-        txt = txt.split("\n", 1)[1] if "\n" in txt else txt
-        # Drop closing fence
-        if txt.rstrip().endswith("```"):
-            txt = txt.rstrip()[:-3]
-    # Some responses say "Here is the JSON:" before the object — find first {
-    first_brace = txt.find("{")
-    last_brace = txt.rfind("}")
-    if first_brace != -1 and last_brace != -1:
-        txt = txt[first_brace : last_brace + 1]
-    try:
-        return json.loads(txt)
-    except json.JSONDecodeError as e:
-        logger.warning("SEO phase did not return valid JSON: %s", e)
-        # Fall back to a minimal structure so the pipeline still completes
-        return {
-            "final_draft": raw,
-            "meta_description": "",
-            "internal_link_suggestions": [],
-            "external_link_suggestions": [],
-            "alt_text_suggestions": [],
-            "_raw": raw,
-        }
+    """Parse the SEO phase response, which uses delimited sections to keep
+    the markdown draft separate from the JSON metadata."""
+    draft = ""
+    meta: dict = {}
+
+    if "===DRAFT_START===" in raw and "===DRAFT_END===" in raw:
+        draft = raw.split("===DRAFT_START===", 1)[1].split("===DRAFT_END===", 1)[0].strip()
+
+    if "===META_START===" in raw and "===META_END===" in raw:
+        meta_txt = raw.split("===META_START===", 1)[1].split("===META_END===", 1)[0].strip()
+        # Strip any ```json fence the model might add
+        if meta_txt.startswith("```"):
+            meta_txt = meta_txt.split("\n", 1)[1] if "\n" in meta_txt else meta_txt
+            if meta_txt.rstrip().endswith("```"):
+                meta_txt = meta_txt.rstrip()[:-3]
+        try:
+            meta = json.loads(meta_txt)
+        except json.JSONDecodeError as e:
+            logger.warning("SEO metadata JSON invalid: %s", e)
+
+    if not draft and not meta:
+        logger.warning("SEO phase returned unexpected format — using raw output as draft")
+        draft = raw
+
+    return {
+        "final_draft": draft or raw,
+        "meta_description": meta.get("meta_description", ""),
+        "internal_link_suggestions": meta.get("internal_link_suggestions", []),
+        "external_link_suggestions": meta.get("external_link_suggestions", []),
+        "alt_text_suggestions": meta.get("alt_text_suggestions", []),
+    }
