@@ -160,26 +160,35 @@ def process_folder(
 
     # ── 3. Post to Instagram + Threads ──────────────────────────────────
     if not cards_only and not video_only and not skip_post:
-        card_path_obj = Path(result["image_card"]) if result["image_card"] else None
+        card_path_obj  = Path(result["image_card"]) if result["image_card"] else None
+        video_path_obj = Path(result["video"])      if result["video"]      else None
+        ig_caption     = _parse_instagram_caption(social_text)
+        threads_text   = _parse_threads_post(social_text)
 
-        # Instagram
+        # Instagram — post Reel if video exists, otherwise image card
         try:
-            from meta_poster import post_to_instagram
-            ig_caption  = _parse_instagram_caption(social_text)
-            if card_path_obj and card_path_obj.exists():
+            if video_path_obj and video_path_obj.exists():
+                from meta_poster import post_reel_to_instagram
+                ig_url = post_reel_to_instagram(ig_caption, video_path_obj)
+            elif card_path_obj and card_path_obj.exists():
+                from meta_poster import post_to_instagram
                 ig_url = post_to_instagram(ig_caption, card_path_obj)
-                result["instagram"] = ig_url
             else:
-                logger.warning("No image card — skipping Instagram post")
+                logger.warning("No video or image card — skipping Instagram")
+                ig_url = None
+            result["instagram"] = ig_url
         except Exception as e:
             logger.error("Instagram post failed for %s: %s", folder.name, e)
 
-        # Threads
+        # Threads — post video if exists, otherwise image card
         try:
-            from meta_poster import post_to_threads
-            threads_text = _parse_threads_post(social_text)
             if threads_text:
-                threads_url = post_to_threads(threads_text, card_path_obj)
+                from meta_poster import post_to_threads
+                threads_url = post_to_threads(
+                    threads_text,
+                    image_path=card_path_obj,
+                    video_path=video_path_obj,
+                )
                 result["threads"] = threads_url
             else:
                 logger.warning("No Threads text found — skipping")

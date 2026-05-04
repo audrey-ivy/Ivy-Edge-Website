@@ -1,14 +1,17 @@
 """
 IvyEdge Meta Poster — Threads + Instagram
 
-Posts branded image cards and captions to Threads and Instagram
-via the Meta Graph API.
+Posts branded content to Threads and Instagram via the Meta Graph API.
+
+Each post gets two assets:
+  - Image card (1080x1080 PNG) → Instagram feed post + Threads image post
+  - Video (1080x1920 MP4)      → Instagram Reel + Threads video post
 
 Required in .env:
   META_ACCESS_TOKEN=...     Long-lived page/user access token
   IG_USER_ID=...            Instagram Business account user ID
   THREADS_USER_ID=...       Threads user ID (same as IG user ID usually)
-  CLOUDINARY_CLOUD_NAME=... For hosting images (Meta API needs a public URL)
+  CLOUDINARY_CLOUD_NAME=... For hosting media (Meta API needs a public URL)
   CLOUDINARY_API_KEY=...
   CLOUDINARY_API_SECRET=...
 
@@ -65,8 +68,8 @@ def _check_credentials(platform: str) -> bool:
 # Cloudinary image upload
 # ---------------------------------------------------------------------------
 
-def _upload_image(image_path: Path) -> str:
-    """Upload image to Cloudinary and return the public HTTPS URL."""
+def _upload_media(media_path: Path, resource_type: str = "image") -> str:
+    """Upload image or video to Cloudinary and return the public HTTPS URL."""
     _configure_cloudinary()
     if not os.getenv("CLOUDINARY_CLOUD_NAME"):
         raise ValueError(
@@ -74,13 +77,13 @@ def _upload_image(image_path: Path) -> str:
             "Sign up free at cloudinary.com and add your credentials."
         )
     result = cloudinary.uploader.upload(
-        str(image_path),
+        str(media_path),
         folder="ivyedge/social",
         overwrite=False,
-        resource_type="image",
+        resource_type=resource_type,
     )
     url = result.get("secure_url", "")
-    logger.info("Uploaded to Cloudinary: %s", url)
+    logger.info("Uploaded to Cloudinary (%s): %s", resource_type, url)
     return url
 
 
@@ -88,56 +91,105 @@ def _upload_image(image_path: Path) -> str:
 # Instagram poster
 # ---------------------------------------------------------------------------
 
+def _ig_publish(container_id: str) -> Optional[str]:
+    """Publish a prepared Instagram container. Returns post URL or None."""
+    publish_url = f"{GRAPH_BASE}/{IG_USER_ID}/media_publish"
+    resp = requests.post(publish_url, data={
+        "creation_id":  container_id,
+        "access_token": META_ACCESS_TOKEN,
+    }, timeout=30)
+    if not resp.ok:
+        logger.error("Instagram publish failed: %s", resp.text)
+        return None
+    post_id = resp.json().get("id", "")
+    return f"https://www.instagram.com/p/{post_id}/"
+
+
+def _wait_for_ig_container(container_id: str, max_wait: int = 120) -> bool:
+    """Poll until the Instagram media container is ready to publish."""
+    status_url = f"{GRAPH_BASE}/{container_id}"
+    for _ in range(max_wait // 5):
+        time.sleep(5)
+        resp = requests.get(status_url, params={
+            "fields": "status_code",
+            "access_token": META_ACCESS_TOKEN,
+        }, timeout=15)
+        if resp.ok:
+            status = resp.json().get("status_code", "")
+            if status == "FINISHED":
+                return True
+            if status == "ERROR":
+                logger.error("Instagram container processing error")
+                return False
+    logger.error("Instagram container timed out after %ss", max_wait)
+    return False
+
+
 def post_to_instagram(
     caption: str,
     image_path: Path,
 ) -> Optional[str]:
-    """
-    Post a static image to Instagram via Meta Graph API.
-
-    Returns the Instagram post URL, or None on failure.
-    """
+    """Post a static image (feed post) to Instagram."""
     if not _check_credentials("instagram"):
         return None
-
     try:
-        image_url = _upload_image(image_path)
+        image_url = _upload_media(image_path, resource_type="image")
     except Exception as e:
         logger.error("Cloudinary upload failed: %s", e)
         return None
 
-    # Step 1 — create media container
     create_url = f"{GRAPH_BASE}/{IG_USER_ID}/media"
     resp = requests.post(create_url, data={
         "image_url":    image_url,
         "caption":      caption,
         "access_token": META_ACCESS_TOKEN,
     }, timeout=30)
-
     if not resp.ok:
-        logger.error("Instagram container creation failed: %s", resp.text)
+        logger.error("Instagram image container failed: %s", resp.text)
         return None
 
     container_id = resp.json().get("id")
-    logger.info("Instagram container created: %s", container_id)
-
-    # Wait for container to process
     time.sleep(4)
+    post_url = _ig_publish(container_id)
+    if post_url:
+        logger.info("Posted image to Instagram: %s", post_url)
+    return post_url
 
-    # Step 2 — publish
-    publish_url = f"{GRAPH_BASE}/{IG_USER_ID}/media_publish"
-    resp = requests.post(publish_url, data={
-        "creation_id":  container_id,
-        "access_token": META_ACCESS_TOKEN,
-    }, timeout=30)
 
-    if not resp.ok:
-        logger.error("Instagram publish failed: %s", resp.text)
+def post_reel_to_instagram(
+    caption: str,
+    video_path: Path,
+) -> Optional[str]:
+    """Post a Reel (vertical video) to Instagram."""
+    if not _check_credentials("instagram"):
+        return None
+    try:
+        video_url = _upload_media(video_path, resource_type="video")
+    except Exception as e:
+        logger.error("Cloudinary video upload failed: %s", e)
         return None
 
-    post_id  = resp.json().get("id", "")
-    post_url = f"https://www.instagram.com/p/{post_id}/"
-    logger.info("Posted to Instagram: %s", post_url)
+    create_url = f"{GRAPH_BASE}/{IG_USER_ID}/media"
+    resp = requests.post(create_url, data={
+        "media_type":   "REELS",
+        "video_url":    video_url,
+        "caption":      caption,
+        "share_to_feed": "true",
+        "access_token": META_ACCESS_TOKEN,
+    }, timeout=30)
+    if not resp.ok:
+        logger.error("Instagram Reel container failed: %s", resp.text)
+        return None
+
+    container_id = resp.json().get("id")
+    logger.info("Instagram Reel container created: %s — waiting for processing...", container_id)
+
+    if not _wait_for_ig_container(container_id):
+        return None
+
+    post_url = _ig_publish(container_id)
+    if post_url:
+        logger.info("Posted Reel to Instagram: %s", post_url)
     return post_url
 
 
@@ -145,35 +197,53 @@ def post_to_instagram(
 # Threads poster
 # ---------------------------------------------------------------------------
 
+def _threads_publish(container_id: str) -> Optional[str]:
+    """Publish a prepared Threads container. Returns post URL or None."""
+    publish_url = f"{THREADS_BASE}/{THREADS_USER_ID}/threads_publish"
+    resp = requests.post(publish_url, data={
+        "creation_id":  container_id,
+        "access_token": META_ACCESS_TOKEN,
+    }, timeout=30)
+    if not resp.ok:
+        logger.error("Threads publish failed: %s", resp.text)
+        return None
+    post_id = resp.json().get("id", "")
+    return f"https://www.threads.net/t/{post_id}"
+
+
 def post_to_threads(
     text: str,
     image_path: Optional[Path] = None,
+    video_path: Optional[Path] = None,
 ) -> Optional[str]:
     """
-    Post to Threads via the Threads Graph API.
-
-    Returns the Threads post URL, or None on failure.
+    Post to Threads. Prefers video over image if both are provided.
+    Falls back to text-only if neither upload succeeds.
     """
     if not _check_credentials("threads"):
         return None
 
-    image_url = None
-    if image_path:
+    create_url = f"{THREADS_BASE}/{THREADS_USER_ID}/threads"
+    payload: dict = {"text": text, "access_token": META_ACCESS_TOKEN}
+
+    # Video takes priority
+    if video_path and video_path.exists():
         try:
-            image_url = _upload_image(image_path)
+            video_url = _upload_media(video_path, resource_type="video")
+            payload["media_type"] = "VIDEO"
+            payload["video_url"]  = video_url
+        except Exception as e:
+            logger.warning("Video upload failed for Threads, trying image: %s", e)
+
+    if not payload.get("media_type") and image_path and image_path.exists():
+        try:
+            image_url = _upload_media(image_path, resource_type="image")
+            payload["media_type"] = "IMAGE"
+            payload["image_url"]  = image_url
         except Exception as e:
             logger.warning("Image upload failed, posting text-only to Threads: %s", e)
 
-    # Step 1 — create container
-    create_url = f"{THREADS_BASE}/{THREADS_USER_ID}/threads"
-    payload: dict = {
-        "text":         text,
-        "access_token": META_ACCESS_TOKEN,
-    }
-    if image_url:
-        payload["media_type"] = "IMAGE"
-        payload["image_url"]  = image_url
-    else:
+    if "media_type" not in payload:
         payload["media_type"] = "TEXT"
 
     resp = requests.post(create_url, data=payload, timeout=30)
@@ -183,21 +253,9 @@ def post_to_threads(
 
     container_id = resp.json().get("id")
     logger.info("Threads container created: %s", container_id)
-
     time.sleep(4)
 
-    # Step 2 — publish
-    publish_url = f"{THREADS_BASE}/{THREADS_USER_ID}/threads_publish"
-    resp = requests.post(publish_url, data={
-        "creation_id":  container_id,
-        "access_token": META_ACCESS_TOKEN,
-    }, timeout=30)
-
-    if not resp.ok:
-        logger.error("Threads publish failed: %s", resp.text)
-        return None
-
-    post_id  = resp.json().get("id", "")
-    post_url = f"https://www.threads.net/t/{post_id}"
-    logger.info("Posted to Threads: %s", post_url)
+    post_url = _threads_publish(container_id)
+    if post_url:
+        logger.info("Posted to Threads: %s", post_url)
     return post_url
