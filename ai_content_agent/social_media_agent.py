@@ -165,25 +165,22 @@ def process_folder(
         ig_caption     = _parse_instagram_caption(social_text)
         threads_text   = _parse_threads_post(social_text)
 
-        # Instagram — post Reel if video exists, otherwise image card
+        # Instagram — post via Buffer (video preferred, falls back to image card)
         try:
-            if video_path_obj and video_path_obj.exists():
-                from meta_poster import post_reel_to_instagram
-                ig_url = post_reel_to_instagram(ig_caption, video_path_obj)
-            elif card_path_obj and card_path_obj.exists():
-                from meta_poster import post_to_instagram
-                ig_url = post_to_instagram(ig_caption, card_path_obj)
-            else:
-                logger.warning("No video or image card — skipping Instagram")
-                ig_url = None
+            from buffer_poster import post_to_instagram
+            ig_url = post_to_instagram(
+                ig_caption,
+                image_path=card_path_obj,
+                video_path=video_path_obj,
+            )
             result["instagram"] = ig_url
         except Exception as e:
             logger.error("Instagram post failed for %s: %s", folder.name, e)
 
-        # Threads — post video if exists, otherwise image card
+        # Threads — post via Buffer (video preferred, falls back to image card)
         try:
             if threads_text:
-                from meta_poster import post_to_threads
+                from buffer_poster import post_to_threads
                 threads_url = post_to_threads(
                     threads_text,
                     image_path=card_path_obj,
