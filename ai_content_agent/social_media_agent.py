@@ -192,6 +192,18 @@ def process_folder(
         except Exception as e:
             logger.error("Threads post failed for %s: %s", folder.name, e)
 
+        # TikTok — post via Buffer (video required)
+        try:
+            if video_path_obj and video_path_obj.exists():
+                from buffer_poster import post_to_tiktok
+                tiktok_text  = _parse_threads_post(social_text)  # use Option 1 as caption
+                tiktok_url   = post_to_tiktok(tiktok_text, video_path_obj)
+                result["tiktok"] = tiktok_url
+            else:
+                logger.info("No video yet — TikTok will post once ElevenLabs key is added")
+        except Exception as e:
+            logger.error("TikTok post failed for %s: %s", folder.name, e)
+
     result["finished_at"] = datetime.now(timezone.utc).isoformat()
     result["status"]      = "done"
 

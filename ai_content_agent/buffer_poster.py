@@ -1,16 +1,17 @@
 """
-IvyEdge Buffer Poster — Instagram + Threads via Buffer API
+IvyEdge Buffer Poster — Instagram, Threads, TikTok
 
-Posts image cards and captions to Instagram and Threads through Buffer,
-which handles the Meta authentication so no Facebook account is needed.
+Posts branded content via the Buffer GraphQL API.
+No Facebook account required — Buffer handles platform auth.
 
 Required in .env:
-  BUFFER_ACCESS_TOKEN=...         From buffer.com/developers/apps
-  BUFFER_IG_PROFILE_ID=...        Instagram profile ID from Buffer
-  BUFFER_THREADS_PROFILE_ID=...   Threads profile ID from Buffer
+  BUFFER_API_KEY=...              From buffer.com/account/access-token
+  BUFFER_IG_CHANNEL_ID=...        Run --list-channels to find these
+  BUFFER_THREADS_CHANNEL_ID=...
+  BUFFER_TIKTOK_CHANNEL_ID=...
 
-Run `python buffer_poster.py --list-profiles` after adding your token
-to find your profile IDs automatically.
+Usage:
+  python buffer_poster.py --list-channels
 """
 
 from __future__ import annotations
@@ -29,11 +30,13 @@ load_dotenv()
 
 logger = logging.getLogger("ivyedge.buffer")
 
-BUFFER_ACCESS_TOKEN       = os.getenv("BUFFER_ACCESS_TOKEN", "")
-BUFFER_IG_PROFILE_ID      = os.getenv("BUFFER_IG_PROFILE_ID", "")
-BUFFER_THREADS_PROFILE_ID = os.getenv("BUFFER_THREADS_PROFILE_ID", "")
+BUFFER_API_KEY            = os.getenv("BUFFER_API_KEY", "")
+BUFFER_ORG_ID             = os.getenv("BUFFER_ORG_ID", "")
+BUFFER_IG_CHANNEL_ID      = os.getenv("BUFFER_IG_CHANNEL_ID", "")
+BUFFER_THREADS_CHANNEL_ID = os.getenv("BUFFER_THREADS_CHANNEL_ID", "")
+BUFFER_TIKTOK_CHANNEL_ID  = os.getenv("BUFFER_TIKTOK_CHANNEL_ID", "")
 
-BUFFER_API = "https://api.bufferapp.com/1"
+BUFFER_ENDPOINT = "https://api.buffer.com"
 
 
 # ---------------------------------------------------------------------------
@@ -62,58 +65,108 @@ def _upload_media(media_path: Path, resource_type: str = "image") -> str:
 
 
 # ---------------------------------------------------------------------------
-# Profile discovery
+# Buffer GraphQL helper
 # ---------------------------------------------------------------------------
 
-def list_profiles() -> list[dict]:
-    """Return all Buffer profiles connected to the account."""
-    if not BUFFER_ACCESS_TOKEN:
-        raise ValueError("BUFFER_ACCESS_TOKEN not set in .env")
-    resp = requests.get(
-        f"{BUFFER_API}/profiles.json",
-        params={"access_token": BUFFER_ACCESS_TOKEN},
-        timeout=15,
+def _gql(query: str, variables: Optional[dict] = None) -> dict:
+    if not BUFFER_API_KEY:
+        raise ValueError("BUFFER_API_KEY not set in .env")
+    resp = requests.post(
+        BUFFER_ENDPOINT,
+        json={"query": query, "variables": variables or {}},
+        headers={
+            "Authorization": f"Bearer {BUFFER_API_KEY}",
+            "Content-Type":  "application/json",
+        },
+        timeout=60,
     )
     resp.raise_for_status()
-    return resp.json()
+    data = resp.json()
+    if "errors" in data:
+        logger.error("Buffer GraphQL errors: %s", data["errors"])
+    return data
 
 
 # ---------------------------------------------------------------------------
-# Post helper
+# Channel discovery
 # ---------------------------------------------------------------------------
 
-def _post(profile_id: str, text: str, media_url: Optional[str] = None,
-          media_type: str = "image") -> Optional[str]:
-    """Create and immediately publish a Buffer post."""
-    if not BUFFER_ACCESS_TOKEN:
-        logger.error("BUFFER_ACCESS_TOKEN not set")
+def list_channels() -> list[dict]:
+    """Return all Buffer channels connected to the account."""
+    org_id = BUFFER_ORG_ID
+    if not org_id:
+        # Fall back to fetching org ID dynamically
+        r = _gql("{ account { organizations { id } } }")
+        orgs = r.get("data", {}).get("account", {}).get("organizations", [])
+        org_id = orgs[0]["id"] if orgs else ""
+    result = _gql(
+        'query($org: OrganizationId!) { channels(input: {organizationId: $org}) { id name service } }',
+        {"org": org_id},
+    )
+    return result.get("data", {}).get("channels", [])
+
+
+# ---------------------------------------------------------------------------
+# Post creation
+# ---------------------------------------------------------------------------
+
+def _create_post(channel_id: str, text: str, media_url: Optional[str] = None) -> Optional[str]:
+    """Create and immediately queue a Buffer post. Returns post ID or None."""
+    media_part = f'mediaUrls: ["{media_url}"]' if media_url else ""
+    mutation = f"""
+        mutation {{
+          createPost(input: {{
+            text: {_gql_string(text)}
+            channelId: "{channel_id}"
+            schedulingType: immediate
+            {media_part}
+          }}) {{
+            ... on PostActionSuccess {{
+              post {{ id }}
+            }}
+            ... on MutationError {{
+              message
+            }}
+          }}
+        }}
+    """
+    result  = _gql(mutation)
+    payload = result.get("data", {}).get("createPost", {})
+
+    if "message" in payload:
+        logger.error("Buffer post error: %s", payload["message"])
         return None
 
-    data: dict = {
-        "access_token":   BUFFER_ACCESS_TOKEN,
-        "profile_ids[]":  profile_id,
-        "text":           text,
-        "now":            "true",
-    }
-    if media_url and media_type == "image":
-        data["media[photo]"] = media_url
-    elif media_url and media_type == "video":
-        data["media[video]"] = media_url
-
-    resp = requests.post(f"{BUFFER_API}/updates/create.json", data=data, timeout=30)
-    if not resp.ok:
-        logger.error("Buffer post failed: %s", resp.text)
-        return None
-
-    result  = resp.json()
-    updates = result.get("updates", [{}])
-    post_id = updates[0].get("id", "") if updates else ""
-    logger.info("Buffer post created: %s", post_id)
+    post_id = payload.get("post", {}).get("id")
+    logger.info("Buffer post created: %s (channel %s)", post_id, channel_id)
     return post_id
 
 
+def _gql_string(text: str) -> str:
+    """Escape a string for inline GraphQL."""
+    escaped = text.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+    return f'"{escaped}"'
+
+
+def _get_media_url(
+    video_path: Optional[Path],
+    image_path: Optional[Path],
+) -> Optional[str]:
+    if video_path and video_path.exists():
+        try:
+            return _upload_media(video_path, "video")
+        except Exception as e:
+            logger.warning("Video upload failed, trying image: %s", e)
+    if image_path and image_path.exists():
+        try:
+            return _upload_media(image_path, "image")
+        except Exception as e:
+            logger.warning("Image upload failed: %s", e)
+    return None
+
+
 # ---------------------------------------------------------------------------
-# Public API
+# Platform-specific posts
 # ---------------------------------------------------------------------------
 
 def post_to_instagram(
@@ -121,30 +174,11 @@ def post_to_instagram(
     image_path: Optional[Path] = None,
     video_path: Optional[Path] = None,
 ) -> Optional[str]:
-    """Post to Instagram via Buffer. Prefers video (Reel) over image."""
-    if not BUFFER_IG_PROFILE_ID:
-        logger.error("BUFFER_IG_PROFILE_ID not set in .env")
+    if not BUFFER_IG_CHANNEL_ID:
+        logger.error("BUFFER_IG_CHANNEL_ID not set — run --list-channels")
         return None
-
-    media_url  = None
-    media_type = "image"
-
-    if video_path and video_path.exists():
-        try:
-            media_url  = _upload_media(video_path, resource_type="video")
-            media_type = "video"
-        except Exception as e:
-            logger.warning("Video upload failed, trying image: %s", e)
-
-    if not media_url and image_path and image_path.exists():
-        try:
-            media_url  = _upload_media(image_path, resource_type="image")
-            media_type = "image"
-        except Exception as e:
-            logger.warning("Image upload failed, posting text-only: %s", e)
-
-    post_id = _post(BUFFER_IG_PROFILE_ID, caption, media_url, media_type)
-    return f"https://www.instagram.com/ (Buffer post id: {post_id})" if post_id else None
+    media_url = _get_media_url(video_path, image_path)
+    return _create_post(BUFFER_IG_CHANNEL_ID, caption, media_url)
 
 
 def post_to_threads(
@@ -152,46 +186,48 @@ def post_to_threads(
     image_path: Optional[Path] = None,
     video_path: Optional[Path] = None,
 ) -> Optional[str]:
-    """Post to Threads via Buffer. Prefers video over image."""
-    if not BUFFER_THREADS_PROFILE_ID:
-        logger.error("BUFFER_THREADS_PROFILE_ID not set in .env")
+    if not BUFFER_THREADS_CHANNEL_ID:
+        logger.error("BUFFER_THREADS_CHANNEL_ID not set — run --list-channels")
         return None
+    media_url = _get_media_url(video_path, image_path)
+    return _create_post(BUFFER_THREADS_CHANNEL_ID, text, media_url)
 
-    media_url  = None
-    media_type = "image"
 
-    if video_path and video_path.exists():
-        try:
-            media_url  = _upload_media(video_path, resource_type="video")
-            media_type = "video"
-        except Exception as e:
-            logger.warning("Video upload failed, trying image: %s", e)
-
-    if not media_url and image_path and image_path.exists():
-        try:
-            media_url  = _upload_media(image_path, resource_type="image")
-            media_type = "image"
-        except Exception as e:
-            logger.warning("Image upload failed, posting text-only: %s", e)
-
-    post_id = _post(BUFFER_THREADS_PROFILE_ID, text, media_url, media_type)
-    return f"https://www.threads.net/ (Buffer post id: {post_id})" if post_id else None
+def post_to_tiktok(
+    text: str,
+    video_path: Path,
+) -> Optional[str]:
+    if not BUFFER_TIKTOK_CHANNEL_ID:
+        logger.error("BUFFER_TIKTOK_CHANNEL_ID not set — run --list-channels")
+        return None
+    if not video_path.exists():
+        logger.error("TikTok video not found: %s", video_path)
+        return None
+    try:
+        video_url = _upload_media(video_path, "video")
+    except Exception as e:
+        logger.error("TikTok video upload failed: %s", e)
+        return None
+    return _create_post(BUFFER_TIKTOK_CHANNEL_ID, text, video_url)
 
 
 # ---------------------------------------------------------------------------
-# CLI — list profiles to find IDs
+# CLI
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
     import sys
-    if "--list-profiles" in sys.argv:
-        profiles = list_profiles()
-        print(f"\nFound {len(profiles)} Buffer profile(s):\n")
-        for p in profiles:
-            print(f"  Service:    {p.get('service')}")
-            print(f"  Username:   {p.get('formatted_username') or p.get('username')}")
-            print(f"  Profile ID: {p.get('id')}")
+    if "--list-channels" in sys.argv:
+        channels = list_channels()
+        print(f"\nFound {len(channels)} Buffer channel(s):\n")
+        for c in channels:
+            print(f"  Service:    {c.get('service')}")
+            print(f"  Username:   {c.get('username') or c.get('name')}")
+            print(f"  Channel ID: {c.get('id')}")
             print()
-        print("Add the IDs above to your .env as BUFFER_IG_PROFILE_ID and BUFFER_THREADS_PROFILE_ID")
+        print("Add these to your .env:")
+        print("  BUFFER_IG_CHANNEL_ID=...")
+        print("  BUFFER_THREADS_CHANNEL_ID=...")
+        print("  BUFFER_TIKTOK_CHANNEL_ID=...")
     else:
-        print("Usage: python buffer_poster.py --list-profiles")
+        print("Usage: python buffer_poster.py --list-channels")
