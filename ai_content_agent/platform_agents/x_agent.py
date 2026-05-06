@@ -4,31 +4,29 @@ IvyEdge — X (Twitter) Engagement Agent
 Discovers posts on X about topics IvyEdge addresses, scores them with Claude,
 and queues suggested replies for manual posting.
 
-Uses twikit — an unofficial X client that works via cookie authentication.
+Uses Playwright (headless browser) with your X session cookies.
 No developer account or API token required. Replying still happens manually.
 
 X API reality:
   - The free tier of the official API allows only 500 posts READ per month.
-  - twikit uses your browser session cookies to access X as you would in a browser.
-  - This is against X's ToS but is how most X scrapers work post-2023.
-  - All engagement (liking, replying) happens manually in the X app.
+  - X's internal API now requires a dynamic JavaScript-generated transaction ID
+    on every request, so direct httpx calls are blocked (403).
+  - Playwright runs a real browser, so X's anti-bot JS executes normally.
+  - All engagement (liking, replying) still happens manually in the X app.
 
 Setup:
-    pip install twikit
+    pip install playwright
+    python -m playwright install chromium
 
 First-time cookie setup (do this once):
     1. Log in to x.com in your browser
-    2. Open DevTools → Application → Cookies → https://x.com
-    3. Copy the values for: auth_token, ct0, guest_id
+    2. Open DevTools (F12) → Application → Cookies → https://x.com
+    3. Copy the values for: auth_token, ct0
     4. Add to your .env:
          X_AUTH_TOKEN=...
          X_CT0=...
-         X_GUEST_ID=...   (optional but helps)
     5. Run: python -m platform_agents.x_agent --setup
        This saves cookies to engagement_log/x_cookies.json for reuse.
-
-Alternatively, set X_USERNAME and X_PASSWORD in .env and the agent will
-log in automatically (less reliable — may trigger a captcha).
 """
 
 from __future__ import annotations
@@ -131,84 +129,229 @@ def _save_cookies(cookies: dict) -> None:
 
 
 # ---------------------------------------------------------------------------
-# X / twikit fetch
+# X fetch via Playwright (handles X's JS-based anti-bot transaction IDs)
 # ---------------------------------------------------------------------------
 
 async def _fetch_posts_async(seen: set[str]) -> list[dict]:
     try:
-        from twikit import Client as TwikitClient
+        from playwright.async_api import async_playwright
     except ImportError:
-        logger.error("twikit not installed — run: pip install twikit")
+        logger.error("playwright not installed — run: pip install playwright && python -m playwright install chromium")
         return []
 
-    client = TwikitClient(language="en-US")
-
     cookies = _load_cookies()
-    if cookies:
-        client.set_cookies(cookies)
-        logger.info("X: using saved cookies")
-    else:
-        username = os.getenv("X_USERNAME", "")
-        password = os.getenv("X_PASSWORD", "")
-        if not username or not password:
-            logger.error(
-                "X agent: no cookies and no X_USERNAME/X_PASSWORD set. "
-                "See module docstring for setup instructions."
-            )
-            return []
-        try:
-            logger.info("X: logging in as %s", username)
-            await client.login(auth_info_1=username, password=password)
-            _save_cookies(client.get_cookies())
-        except Exception as e:
-            logger.error("X login failed: %s", e)
-            return []
+    if not cookies:
+        logger.error(
+            "X agent: no cookies found. "
+            "Add X_AUTH_TOKEN and X_CT0 to .env, then run: "
+            "python -m platform_agents.x_agent --setup"
+        )
+        return []
 
     posts: list[dict] = []
     seen_ids: set[str] = set()
+    collected_tweets: list[dict] = []
 
-    for query in SEARCH_QUERIES:
-        if len(posts) >= MAX_POSTS_PER_RUN:
-            break
-        try:
-            results = await client.search_tweet(
-                query=f"({query}) lang:en -is:retweet",
-                product="Latest",
-                count=8,
-            )
-            for tweet in results:
-                tid  = str(tweet.id)
-                text = tweet.text or ""
+    async with async_playwright() as pw:
+        browser = await pw.chromium.launch(headless=True)
+        context = await browser.new_context(
+            user_agent=(
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/124.0.0.0 Safari/537.36"
+            ),
+        )
 
-                if tid in seen or tid in seen_ids:
-                    continue
+        # Inject auth cookies
+        await context.add_cookies([
+            {"name": "auth_token", "value": cookies["auth_token"], "domain": ".x.com", "path": "/"},
+            {"name": "ct0",        "value": cookies["ct0"],        "domain": ".x.com", "path": "/"},
+        ])
+        if cookies.get("guest_id"):
+            await context.add_cookies([
+                {"name": "guest_id", "value": cookies["guest_id"], "domain": ".x.com", "path": "/"},
+            ])
+
+        page = await context.new_page()
+
+        # Intercept search API responses to extract tweet data directly
+        tweet_responses: list[dict] = []
+
+        async def handle_response(response):
+            if "search/adaptive" in response.url or "SearchTimeline" in response.url:
+                try:
+                    body = await response.json()
+                    tweet_responses.append(body)
+                except Exception:
+                    pass
+
+        page.on("response", handle_response)
+
+        for query in SEARCH_QUERIES:
+            if len(posts) >= MAX_POSTS_PER_RUN:
+                break
+
+            tweet_responses.clear()
+            search_url = f"https://x.com/search?q={query}+lang%3Aen+-filter%3Aretweets&src=typed_query&f=live"
+
+            try:
+                await page.goto(search_url, wait_until="domcontentloaded", timeout=30000)
+                await asyncio.sleep(5)  # let React render and fire search API calls
+
+                # Parse tweets from intercepted API responses
+                for resp_data in tweet_responses:
+                    _extract_tweets_from_response(resp_data, posts, seen, seen_ids, query)
+                    if len(posts) >= MAX_POSTS_PER_RUN:
+                        break
+
+                # Fallback: also parse from DOM if API intercept yielded nothing
+                if not tweet_responses:
+                    dom_posts = await _extract_tweets_from_dom(page, query, seen, seen_ids)
+                    posts.extend(dom_posts)
+
+                logger.info("X query %r: %d total posts so far", query, len(posts))
+                await asyncio.sleep(2)
+
+            except Exception as e:
+                logger.warning("X search page failed for query %r: %s", query, e)
+                await asyncio.sleep(5)
+
+        await browser.close()
+
+    logger.info("X: fetched %d candidate posts", len(posts))
+    return posts[:MAX_POSTS_PER_RUN]
+
+
+def _extract_tweets_from_response(
+    data: dict,
+    posts: list[dict],
+    seen: set[str],
+    seen_ids: set[str],
+    query: str,
+) -> None:
+    """Parse tweets from X's adaptive.json or GraphQL SearchTimeline response."""
+    # adaptive.json format
+    tweet_map = data.get("globalObjects", {}).get("tweets", {})
+    user_map  = data.get("globalObjects", {}).get("users", {})
+    for tid, tw in tweet_map.items():
+        if tid in seen or tid in seen_ids:
+            continue
+        text = tw.get("full_text") or tw.get("text") or ""
+        if not _has_signal(text) and not _has_signal(query):
+            continue
+        uid    = str(tw.get("user_id_str", ""))
+        user   = user_map.get(uid, {})
+        screen = user.get("screen_name", uid)
+        posts.append({
+            "id":      tid,
+            "url":     f"https://x.com/{screen}/status/{tid}",
+            "author":  screen,
+            "name":    user.get("name", screen),
+            "text":    text[:600],
+            "query":   query,
+            "likes":   tw.get("favorite_count", 0),
+            "reposts": tw.get("retweet_count", 0),
+            "replies": tw.get("reply_count", 0),
+        })
+        seen_ids.add(tid)
+
+    # GraphQL SearchTimeline format (nested instructions)
+    try:
+        instructions = (
+            data.get("data", {})
+                .get("search_by_raw_query", {})
+                .get("search_timeline", {})
+                .get("timeline", {})
+                .get("instructions", [])
+        )
+        for instr in instructions:
+            for entry in instr.get("entries", []):
+                content = entry.get("content", {})
+                item_content = content.get("itemContent", {})
+                tweet_result = item_content.get("tweet_results", {}).get("result", {})
+                _parse_graphql_tweet(tweet_result, posts, seen, seen_ids, query)
+    except Exception:
+        pass
+
+
+def _parse_graphql_tweet(
+    result: dict,
+    posts: list[dict],
+    seen: set[str],
+    seen_ids: set[str],
+    query: str,
+) -> None:
+    try:
+        legacy   = result.get("legacy", {})
+        tid      = legacy.get("id_str", "")
+        if not tid or tid in seen or tid in seen_ids:
+            return
+        text = legacy.get("full_text", "")
+        if not _has_signal(text) and not _has_signal(query):
+            return
+        core       = result.get("core", {})
+        user_res   = core.get("user_results", {}).get("result", {})
+        user_legacy = user_res.get("legacy", {})
+        screen     = user_legacy.get("screen_name", "")
+        posts.append({
+            "id":      tid,
+            "url":     f"https://x.com/{screen}/status/{tid}",
+            "author":  screen,
+            "name":    user_legacy.get("name", screen),
+            "text":    text[:600],
+            "query":   query,
+            "likes":   legacy.get("favorite_count", 0),
+            "reposts": legacy.get("retweet_count", 0),
+            "replies": legacy.get("reply_count", 0),
+        })
+        seen_ids.add(tid)
+    except Exception:
+        pass
+
+
+async def _extract_tweets_from_dom(
+    page,
+    query: str,
+    seen: set[str],
+    seen_ids: set[str],
+) -> list[dict]:
+    """Fallback: scrape tweet text from the rendered DOM."""
+    posts: list[dict] = []
+    try:
+        articles = await page.query_selector_all('article[data-testid="tweet"]')
+        for article in articles[:10]:
+            try:
+                text_el = await article.query_selector('[data-testid="tweetText"]')
+                text    = await text_el.inner_text() if text_el else ""
                 if not _has_signal(text) and not _has_signal(query):
                     continue
 
-                user = tweet.user
+                link_el = await article.query_selector('a[href*="/status/"]')
+                href    = await link_el.get_attribute("href") if link_el else ""
+                # href like /username/status/1234567890
+                parts = href.strip("/").split("/")
+                tid    = parts[-1] if parts else ""
+                screen = parts[0]  if parts else ""
+
+                if not tid or tid in seen or tid in seen_ids:
+                    continue
+
                 posts.append({
-                    "id":       tid,
-                    "url":      f"https://x.com/{user.screen_name}/status/{tid}",
-                    "author":   user.screen_name,
-                    "name":     user.name,
-                    "text":     text[:600],
-                    "query":    query,
-                    "likes":    tweet.favorite_count or 0,
-                    "reposts":  tweet.retweet_count  or 0,
-                    "replies":  tweet.reply_count    or 0,
+                    "id":      tid,
+                    "url":     f"https://x.com/{href.lstrip('/')}",
+                    "author":  screen,
+                    "name":    screen,
+                    "text":    text[:600],
+                    "query":   query,
+                    "likes":   0,
+                    "reposts": 0,
+                    "replies": 0,
                 })
                 seen_ids.add(tid)
-
-                if len(posts) >= MAX_POSTS_PER_RUN:
-                    break
-
-            await asyncio.sleep(2)  # be polite
-
-        except Exception as e:
-            logger.warning("X search failed for query %r: %s", query, e)
-            await asyncio.sleep(5)
-
-    logger.info("X: fetched %d candidate posts", len(posts))
+            except Exception:
+                continue
+    except Exception as e:
+        logger.debug("DOM scrape failed: %s", e)
     return posts
 
 
