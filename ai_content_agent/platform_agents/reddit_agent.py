@@ -2,21 +2,14 @@
 IvyEdge — Reddit Engagement Agent
 
 Searches relevant subreddits for posts about the problems IvyEdge addresses,
-scores them for relevance using Claude, drafts helpful on-brand replies, and
-either queues them for review or posts them directly (--auto).
+scores them for relevance using Claude, and writes a daily report with direct
+links and copy-paste comments for manual engagement.
 
-Reddit is the highest-signal channel for IvyEdge's pre-launch goal: the target
-audience (freelancers, career returners, women entrepreneurs) openly describes
-their exact pain points in these communities.
+Discovery uses Reddit's public JSON API — no credentials required.
+Auto-posting (--auto) requires PRAW credentials in .env; if not set, the
+agent runs in discovery-only mode and outputs links for manual action.
 
-Rules we follow:
-  - Every comment identifies the account as AI-assisted (per Reddit norms)
-  - No product pitches, no links to IvyEdge (pre-launch — nothing to link to)
-  - Genuine helpfulness only — bad comments hurt more than silence
-  - Rate limited: max 10 comments per run, 60s between posts (Reddit API)
-  - We never comment twice on the same post (tracked in engagement_log/)
-
-Required in .env:
+Required for auto-posting (optional — discovery works without these):
   REDDIT_CLIENT_ID=...
   REDDIT_CLIENT_SECRET=...
   REDDIT_USERNAME=JoinIvyEdge
@@ -34,7 +27,7 @@ from pathlib import Path
 from typing import Optional
 
 import anthropic
-import praw
+import requests
 from dotenv import load_dotenv
 
 from platform_agents import EngagementOpportunity
@@ -47,9 +40,10 @@ REDDIT_CLIENT_ID     = os.getenv("REDDIT_CLIENT_ID", "")
 REDDIT_CLIENT_SECRET = os.getenv("REDDIT_CLIENT_SECRET", "")
 REDDIT_USERNAME      = os.getenv("REDDIT_USERNAME", "JoinIvyEdge")
 REDDIT_PASSWORD      = os.getenv("REDDIT_PASSWORD", "")
-REDDIT_USER_AGENT    = f"IvyEdgeBot/1.0 by u/{REDDIT_USERNAME} — engagement agent for IvyEdge.com"
 
-# Subreddits to monitor, in priority order
+USER_AGENT   = f"IvyEdgeBot/1.0 by u/{REDDIT_USERNAME}"
+REDDIT_BASE  = "https://www.reddit.com"
+
 SUBREDDITS = [
     "freelance",
     "personalfinance",
@@ -61,13 +55,9 @@ SUBREDDITS = [
     "selfemployed",
     "careerguidance",
     "workingmoms",
-    "Entrepreneur",
-    "loanoriginators",
     "CreditCards",
-    "povertyfinance",
 ]
 
-# Keywords that signal a post is worth engaging with
 SEARCH_QUERIES = [
     "1099 income loan denied",
     "freelance income mortgage",
@@ -78,17 +68,17 @@ SEARCH_QUERIES = [
     "contract work loan",
     "freelancer loan application",
     "self employed denied",
-    "career break credit",
-    "non traditional income",
-    "1099 worker finance",
+    "career break credit score",
+    "non traditional income finance",
     "side hustle income credit",
     "maternity leave credit score",
+    "freelance income unstable bank",
 ]
 
-MIN_RELEVANCE_SCORE  = 7.0   # Higher bar than Instagram — comments are permanent public record
-MAX_POSTS_PER_RUN    = 30    # Posts fetched total; Claude scores them, fewer pass
-MAX_COMMENTS_PER_RUN = 10    # Hard cap on comments posted in one run
-POST_DELAY_SECONDS   = 60    # Reddit API rate limit buffer between posts
+MIN_RELEVANCE_SCORE  = 7.0
+MAX_POSTS_PER_RUN    = 40
+MAX_COMMENTS_PER_RUN = 10
+POST_DELAY_SECONDS   = 60
 
 SEEN_LOG = Path(__file__).parent.parent / "engagement_log" / "reddit_seen.json"
 
@@ -108,58 +98,88 @@ def _save_seen(seen: set[str]) -> None:
     )
 
 
-def _reddit_client() -> Optional[praw.Reddit]:
-    if not all([REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_USERNAME, REDDIT_PASSWORD]):
-        logger.error(
-            "Reddit credentials missing — set REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, "
-            "REDDIT_USERNAME, REDDIT_PASSWORD in .env"
+# ---------------------------------------------------------------------------
+# Public Reddit JSON API (no credentials needed)
+# ---------------------------------------------------------------------------
+
+def _reddit_get(path: str, params: dict) -> Optional[dict]:
+    """Call Reddit's public JSON API with rate-limit courtesy sleep."""
+    try:
+        resp = requests.get(
+            f"{REDDIT_BASE}{path}.json",
+            params=params,
+            headers={"User-Agent": USER_AGENT},
+            timeout=15,
         )
+        if resp.status_code == 429:
+            logger.warning("Reddit rate limited — sleeping 30s")
+            time.sleep(30)
+            resp = requests.get(
+                f"{REDDIT_BASE}{path}.json",
+                params=params,
+                headers={"User-Agent": USER_AGENT},
+                timeout=15,
+            )
+        if not resp.ok:
+            logger.warning("Reddit request failed (%s): %s", resp.status_code, path)
+            return None
+        return resp.json()
+    except Exception as e:
+        logger.warning("Reddit request error: %s", e)
         return None
-    return praw.Reddit(
-        client_id=REDDIT_CLIENT_ID,
-        client_secret=REDDIT_CLIENT_SECRET,
-        username=REDDIT_USERNAME,
-        password=REDDIT_PASSWORD,
-        user_agent=REDDIT_USER_AGENT,
-    )
 
 
-# ---------------------------------------------------------------------------
-# Post fetching
-# ---------------------------------------------------------------------------
-
-def _fetch_posts(reddit: praw.Reddit, seen: set[str]) -> list[dict]:
-    """Search subreddits for relevant posts. Returns raw dicts."""
+def _fetch_posts(seen: set[str]) -> list[dict]:
+    """Search subreddits using the public API. No credentials required."""
     posts: list[dict] = []
-    seen_urls: set[str] = set()
+    seen_ids: set[str] = set()
 
     for query in SEARCH_QUERIES:
         if len(posts) >= MAX_POSTS_PER_RUN:
             break
-        try:
-            for sub in reddit.subreddit("+".join(SUBREDDITS)).search(
-                query, sort="new", time_filter="week", limit=5
-            ):
-                if sub.id in seen or sub.url in seen_urls:
-                    continue
-                if sub.score < 1:
-                    continue
-                posts.append({
-                    "id":         sub.id,
-                    "subreddit":  sub.subreddit.display_name,
-                    "title":      sub.title,
-                    "selftext":   sub.selftext[:800],
-                    "url":        f"https://reddit.com{sub.permalink}",
-                    "score":      sub.score,
-                    "num_comments": sub.num_comments,
-                    "created_utc": sub.created_utc,
-                    "author":     str(sub.author) if sub.author else "[deleted]",
-                })
-                seen_urls.add(sub.url)
-                if len(posts) >= MAX_POSTS_PER_RUN:
-                    break
-        except Exception as e:
-            logger.warning("Reddit search failed for '%s': %s", query, e)
+
+        data = _reddit_get("/search", {
+            "q":           query,
+            "sort":        "new",
+            "t":           "week",
+            "limit":       10,
+            "restrict_sr": False,
+            "type":        "link",
+        })
+        if not data:
+            continue
+
+        for child in data.get("data", {}).get("children", []):
+            post = child.get("data", {})
+            pid  = post.get("id", "")
+            sub  = post.get("subreddit", "")
+
+            if pid in seen or pid in seen_ids:
+                continue
+            if sub.lower() not in [s.lower() for s in SUBREDDITS]:
+                continue
+            if post.get("score", 0) < 1:
+                continue
+            if not post.get("selftext") and not post.get("title"):
+                continue
+
+            posts.append({
+                "id":           pid,
+                "subreddit":    sub,
+                "title":        post.get("title", ""),
+                "selftext":     post.get("selftext", "")[:600],
+                "url":          f"https://reddit.com{post.get('permalink', '')}",
+                "score":        post.get("score", 0),
+                "num_comments": post.get("num_comments", 0),
+                "author":       post.get("author", "[deleted]"),
+                "created_utc":  post.get("created_utc", 0),
+            })
+            seen_ids.add(pid)
+
+            if len(posts) >= MAX_POSTS_PER_RUN:
+                break
+
+        time.sleep(1)  # be polite to Reddit's servers
 
     logger.info("Reddit: fetched %d candidate posts", len(posts))
     return posts
@@ -180,12 +200,13 @@ IvyEdge's core thesis:
 - High earners with non-W-2 income deserve products that match their reality
 - Plain-language financial transparency is a baseline, not a feature
 
-IvyEdge is pre-launch with nothing to sell yet. Comments must be:
+IvyEdge is pre-launch with nothing to sell. Comments must be:
   1. Genuinely useful — practical advice the person can act on today
-  2. On-brand — reflects IvyEdge's POV (the system was built wrong, here's how to work within it)
-  3. Never promotional — no links, no product mentions, no "we're building X"
-  4. Transparent — end every comment with: "(AI-assisted account | IvyEdge)"
-  5. Authentic — should sound like a smart friend who works in finance, not a press release"""
+  2. On-brand — reflects IvyEdge's POV
+  3. Never promotional — no links, no product mentions
+  4. Authentic — smart friend who works in finance, not a press release
+  5. Appropriate length — 2-4 sentences for simple questions, up to a short
+     paragraph for complex situations"""
 
 
 def _score_and_draft(posts: list[dict], client: anthropic.Anthropic) -> list[EngagementOpportunity]:
@@ -193,35 +214,36 @@ def _score_and_draft(posts: list[dict], client: anthropic.Anthropic) -> list[Eng
         return []
 
     posts_text = "\n\n".join(
-        f"POST {i+1} (id={p['id']}, r/{p['subreddit']}, score={p['score']}):\n"
+        f"POST {i+1} (id={p['id']}, r/{p['subreddit']}, score={p['score']}, "
+        f"{p['num_comments']} comments):\n"
         f"Title: {p['title']}\n"
-        f"Body: {p['selftext'] or '(link post)'}"
+        f"Body: {p['selftext'] or '(link/title-only post)'}"
         for i, p in enumerate(posts)
     )
 
     prompt = f"""Below are {len(posts)} Reddit posts found via keyword search.
 
-For each, output a JSON object:
+For each, output:
 {{
   "post_id": "<id>",
   "score": <0-10 float>,
   "rationale": "<one sentence why this is/isn't worth engaging>",
   "suggested_action": "comment" | "upvote_only" | "skip",
-  "suggested_comment": "<if action=comment: full comment text ready to post — include the (AI-assisted account | IvyEdge) disclosure at the end. Empty string otherwise.>"
+  "suggested_comment": "<if action=comment: full comment text. Empty string otherwise.>"
 }}
 
-Output ONLY a JSON array. No prose, no markdown fences.
+JSON array only. No prose, no markdown fences.
 
-HIGH-score posts (≥7) have ALL of:
-- OP is experiencing a real problem IvyEdge's thesis addresses
-- Our comment would give concrete, useful advice
-- Post is recent (within 7 days) and has real engagement
-- No competing authoritative answers already covering what we'd say
+Score ≥7 needs ALL of:
+- OP describing a real problem IvyEdge's thesis addresses
+- Our comment adds concrete, useful advice
+- Post is recent and has real engagement
+- No great answers already covering what we'd say
 
-LOW-score posts (<7):
-- Vague questions we can't add real value to
-- Already have great answers from credible sources
-- Promotional, brand, or bot posts
+Score <7:
+- Vague questions we can't add value to
+- Already well-answered
+- Promotional or bot posts
 - Topics outside IvyEdge's expertise
 
 POSTS:
@@ -272,18 +294,66 @@ POSTS:
 
 
 # ---------------------------------------------------------------------------
-# Posting
+# Auto-posting via PRAW (optional — requires credentials)
 # ---------------------------------------------------------------------------
 
-def _post_comment(reddit: praw.Reddit, submission_id: str, text: str) -> bool:
+def _praw_client():
+    if not all([REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_USERNAME, REDDIT_PASSWORD]):
+        return None
     try:
-        sub = reddit.submission(id=submission_id)
-        sub.reply(text)
-        logger.info("Posted comment to reddit.com/r/%s (id=%s)", sub.subreddit, submission_id)
-        return True
+        import praw
+        return praw.Reddit(
+            client_id=REDDIT_CLIENT_ID,
+            client_secret=REDDIT_CLIENT_SECRET,
+            username=REDDIT_USERNAME,
+            password=REDDIT_PASSWORD,
+            user_agent=USER_AGENT,
+        )
     except Exception as e:
-        logger.error("Failed to post Reddit comment on %s: %s", submission_id, e)
-        return False
+        logger.warning("PRAW init failed: %s", e)
+        return None
+
+
+def engage(
+    opportunities: list[EngagementOpportunity],
+    dry_run: bool = False,
+) -> list[EngagementOpportunity]:
+    """Post comments via PRAW. Falls back to skipping if credentials not set."""
+    reddit = _praw_client()
+    if not reddit:
+        logger.info("Reddit posting credentials not set — skipping auto-post (links saved to report)")
+        for opp in opportunities:
+            opp.status = "pending"
+        return opportunities
+
+    candidates = [
+        o for o in opportunities
+        if o.suggested_action == "comment" and o.suggested_comment
+    ][:MAX_COMMENTS_PER_RUN]
+
+    posted = 0
+    for opp in opportunities:
+        if opp not in candidates:
+            opp.status = "skipped"
+            continue
+        if dry_run:
+            logger.info("[dry-run] Would comment on %s", opp.url)
+            opp.status = "actioned"
+            continue
+        try:
+            sub = reddit.submission(id=opp.post_id)
+            sub.reply(opp.suggested_comment)
+            opp.status = "actioned"
+            posted += 1
+            logger.info("Posted comment to %s", opp.url)
+            if posted < len(candidates):
+                time.sleep(POST_DELAY_SECONDS)
+        except Exception as e:
+            logger.error("Failed to post on %s: %s", opp.url, e)
+            opp.status = "skipped"
+
+    logger.info("Reddit: posted %d comment(s)", posted)
+    return opportunities
 
 
 # ---------------------------------------------------------------------------
@@ -291,66 +361,19 @@ def _post_comment(reddit: praw.Reddit, submission_id: str, text: str) -> bool:
 # ---------------------------------------------------------------------------
 
 def discover(dry_run: bool = False) -> list[EngagementOpportunity]:
-    """Find and score Reddit posts. Does NOT post comments (use engage() for that)."""
-    reddit = _reddit_client()
-    if not reddit:
-        return []
-
+    """Find and score Reddit posts. No credentials required."""
     seen = _load_seen()
-    posts = _fetch_posts(reddit, seen)
+    posts = _fetch_posts(seen)
     if not posts:
         return []
 
     client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
     opportunities = _score_and_draft(posts, client)
 
-    # Mark all fetched posts as seen regardless of score (don't re-evaluate same posts)
     if not dry_run:
         for p in posts:
             seen.add(p["id"])
         _save_seen(seen)
 
     logger.info("Reddit: %d opportunities scored ≥ %.0f", len(opportunities), MIN_RELEVANCE_SCORE)
-    return opportunities
-
-
-def engage(
-    opportunities: list[EngagementOpportunity],
-    dry_run: bool = False,
-) -> list[EngagementOpportunity]:
-    """
-    Post comments for the given opportunities.
-    Respects MAX_COMMENTS_PER_RUN and rate limits.
-    Returns the list with status updated to "actioned" or "skipped".
-    """
-    reddit = _reddit_client()
-    if not reddit:
-        logger.error("Cannot post Reddit comments — credentials not set")
-        return opportunities
-
-    comment_candidates = [
-        o for o in opportunities
-        if o.suggested_action == "comment" and o.suggested_comment
-    ][:MAX_COMMENTS_PER_RUN]
-
-    posted = 0
-    for opp in opportunities:
-        if opp not in comment_candidates:
-            opp.status = "skipped"
-            continue
-
-        if dry_run:
-            logger.info("[dry-run] Would comment on %s (score=%.1f)", opp.url, opp.score)
-            logger.info("  Comment preview: %s", opp.suggested_comment[:120])
-            opp.status = "actioned"
-            continue
-
-        success = _post_comment(reddit, opp.post_id, opp.suggested_comment)
-        opp.status = "actioned" if success else "skipped"
-        if success:
-            posted += 1
-            if posted < len(comment_candidates):
-                time.sleep(POST_DELAY_SECONDS)
-
-    logger.info("Reddit: posted %d comment(s)", posted)
     return opportunities
