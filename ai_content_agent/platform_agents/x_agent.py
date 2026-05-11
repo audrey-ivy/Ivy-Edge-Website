@@ -1,21 +1,34 @@
 """
-IvyEdge — X (Twitter) Engagement Agent (Apify)
+IvyEdge — X (Twitter) Engagement Agent (Playwright)
 
-Discovers posts on X via keyword search using Apify's Twitter scraper actor.
-Scores them with Claude and queues suggested replies for manual posting.
+Discovers posts on X via keyword search using a headless Playwright browser
+with your session cookies. Free, no API credentials needed.
 
-Required in .env:
-    APIFY_API_TOKEN=...
+X's internal API requires a JS-generated transaction ID on every request,
+so direct HTTP calls are blocked (403). Playwright runs a real browser that
+handles X's anti-bot JS automatically.
 
 Setup:
-    pip install apify-client
+    pip install playwright
+    python -m playwright install chromium
+
+First-time cookie setup (do this once):
+    1. Log in to x.com in your browser
+    2. Open DevTools (F12) → Application → Cookies → https://x.com
+    3. Copy the values for: auth_token, ct0
+    4. Add to your .env:
+         X_AUTH_TOKEN=...
+         X_CT0=...
+    5. Run: python -m platform_agents.x_agent --setup
 """
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
+import time
 from pathlib import Path
 from typing import Optional
 
@@ -30,10 +43,8 @@ logger = logging.getLogger("ivyedge.x")
 
 MIN_RELEVANCE_SCORE = 6.0
 MAX_POSTS_PER_RUN   = 30
-RESULTS_PER_QUERY   = 10
-
-SEEN_LOG     = Path(__file__).parent.parent / "engagement_log" / "x_seen.json"
 COOKIES_FILE = Path(__file__).parent.parent / "engagement_log" / "x_cookies.json"
+SEEN_LOG     = Path(__file__).parent.parent / "engagement_log" / "x_seen.json"
 
 SEARCH_QUERIES = [
     # Pillar 1 — non-traditional income & credit
@@ -65,7 +76,6 @@ SIGNAL_KEYWORDS = [
     "1099", "freelance", "self employed", "self-employed", "gig work",
     "career gap", "credit score", "loan denied", "side hustle", "contractor",
     "variable income", "non traditional", "career break", "mortgage denied",
-    "unstable income", "independent contractor",
     # Pillar 6
     "4 day", "four day", "remote work", "work from home", "RTO",
     "return to office", "parental leave", "maternity", "caregiver",
@@ -93,74 +103,215 @@ def _has_signal(text: str) -> bool:
     return any(kw in t for kw in SIGNAL_KEYWORDS)
 
 
+def _load_cookies() -> Optional[dict]:
+    if COOKIES_FILE.exists():
+        return json.loads(COOKIES_FILE.read_text(encoding="utf-8"))
+    auth_token = os.getenv("X_AUTH_TOKEN", "")
+    ct0        = os.getenv("X_CT0", "")
+    if auth_token and ct0:
+        cookies = {"auth_token": auth_token, "ct0": ct0}
+        if os.getenv("X_GUEST_ID"):
+            cookies["guest_id"] = os.getenv("X_GUEST_ID")
+        return cookies
+    return None
+
+
+def _save_cookies(cookies: dict) -> None:
+    COOKIES_FILE.parent.mkdir(parents=True, exist_ok=True)
+    COOKIES_FILE.write_text(json.dumps(cookies, indent=2), encoding="utf-8")
+    logger.info("X cookies saved to %s", COOKIES_FILE)
+
+
 # ---------------------------------------------------------------------------
-# Apify fetch
+# Playwright fetch
 # ---------------------------------------------------------------------------
 
-def _fetch_posts(seen: set[str]) -> list[dict]:
+async def _fetch_posts_async(seen: set[str]) -> list[dict]:
     try:
-        from apify_client import ApifyClient
+        from playwright.async_api import async_playwright
     except ImportError:
-        logger.error("apify-client not installed — run: pip install apify-client")
+        logger.error("playwright not installed — run: pip install playwright && python -m playwright install chromium")
         return []
 
-    token = os.getenv("APIFY_API_TOKEN", "")
-    if not token:
-        logger.error("APIFY_API_TOKEN not set in .env")
+    cookies = _load_cookies()
+    if not cookies:
+        logger.error("X agent: no cookies. Add X_AUTH_TOKEN + X_CT0 to .env then run --setup")
         return []
 
-    client = ApifyClient(token)
     posts: list[dict] = []
     seen_ids: set[str] = set()
 
-    try:
-        run = client.actor("apify/twitter-scraper").call(
-            run_input={
-                "searchTerms":      SEARCH_QUERIES,
-                "maxItems":         RESULTS_PER_QUERY,
-                "tweetLanguage":    "en",
-                "onlyVerifiedUsers": False,
-                "onlyTwitterBlue":   False,
-            },
-            timeout_secs=300,
+    async with async_playwright() as pw:
+        browser = await pw.chromium.launch(headless=True)
+        context = await browser.new_context(
+            user_agent=(
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/124.0.0.0 Safari/537.36"
+            ),
         )
-        items = list(client.dataset(run["defaultDatasetId"]).iterate_items())
-        logger.info("X Apify: %d raw items returned", len(items))
+        await context.add_cookies([
+            {"name": "auth_token", "value": cookies["auth_token"], "domain": ".x.com", "path": "/"},
+            {"name": "ct0",        "value": cookies["ct0"],        "domain": ".x.com", "path": "/"},
+        ])
+        if cookies.get("guest_id"):
+            await context.add_cookies([
+                {"name": "guest_id", "value": cookies["guest_id"], "domain": ".x.com", "path": "/"},
+            ])
 
-        for item in items:
-            # Handle both field name variants across actor versions
-            tid    = str(item.get("id") or item.get("tweetId") or item.get("tweet_id") or "")
-            text   = item.get("text") or item.get("full_text") or item.get("fullText") or ""
-            author = (item.get("author") or {})
-            screen = author.get("userName") or author.get("screen_name") or \
-                     item.get("authorName") or item.get("username") or ""
-            url    = item.get("url") or item.get("tweetUrl") or \
-                     (f"https://x.com/{screen}/status/{tid}" if screen and tid else "")
+        page = await context.new_page()
+        tweet_responses: list[dict] = []
 
-            if not tid or tid in seen or tid in seen_ids:
-                continue
-            if not _has_signal(text):
-                continue
+        async def handle_response(response):
+            if "search/adaptive" in response.url or "SearchTimeline" in response.url:
+                try:
+                    body = await response.json()
+                    tweet_responses.append(body)
+                except Exception:
+                    pass
 
-            posts.append({
-                "id":       tid,
-                "url":      url,
-                "author":   screen,
-                "text":     text[:600],
-                "likes":    item.get("likeCount") or item.get("likes") or item.get("favorite_count") or 0,
-                "reposts":  item.get("retweetCount") or item.get("retweets") or item.get("retweet_count") or 0,
-                "replies":  item.get("replyCount") or item.get("replies") or item.get("reply_count") or 0,
-            })
-            seen_ids.add(tid)
+        page.on("response", handle_response)
 
+        for query in SEARCH_QUERIES:
             if len(posts) >= MAX_POSTS_PER_RUN:
                 break
+            tweet_responses.clear()
+            search_url = (
+                f"https://x.com/search?q={query}+lang%3Aen+-filter%3Aretweets"
+                f"&src=typed_query&f=live"
+            )
+            try:
+                await page.goto(search_url, wait_until="domcontentloaded", timeout=30000)
+                await asyncio.sleep(5)
 
+                for resp_data in tweet_responses:
+                    _extract_tweets_from_response(resp_data, posts, seen, seen_ids, query)
+                    if len(posts) >= MAX_POSTS_PER_RUN:
+                        break
+
+                if not tweet_responses:
+                    dom_posts = await _extract_tweets_from_dom(page, query, seen, seen_ids)
+                    posts.extend(dom_posts)
+
+                logger.info("X query %r: %d posts so far", query, len(posts))
+                await asyncio.sleep(2)
+
+            except Exception as e:
+                logger.warning("X search failed for %r: %s", query, e)
+                await asyncio.sleep(5)
+
+        await browser.close()
+
+    logger.info("X: fetched %d candidate posts", len(posts))
+    return posts[:MAX_POSTS_PER_RUN]
+
+
+def _extract_tweets_from_response(data, posts, seen, seen_ids, query):
+    # adaptive.json format
+    tweet_map = data.get("globalObjects", {}).get("tweets", {})
+    user_map  = data.get("globalObjects", {}).get("users", {})
+    for tid, tw in tweet_map.items():
+        if tid in seen or tid in seen_ids:
+            continue
+        text = tw.get("full_text") or tw.get("text") or ""
+        if not _has_signal(text) and not _has_signal(query):
+            continue
+        uid    = str(tw.get("user_id_str", ""))
+        user   = user_map.get(uid, {})
+        screen = user.get("screen_name", uid)
+        posts.append({
+            "id":      tid,
+            "url":     f"https://x.com/{screen}/status/{tid}",
+            "author":  screen,
+            "text":    text[:600],
+            "likes":   tw.get("favorite_count", 0),
+            "reposts": tw.get("retweet_count", 0),
+            "replies": tw.get("reply_count", 0),
+        })
+        seen_ids.add(tid)
+
+    # GraphQL SearchTimeline format
+    try:
+        instructions = (
+            data.get("data", {})
+                .get("search_by_raw_query", {})
+                .get("search_timeline", {})
+                .get("timeline", {})
+                .get("instructions", [])
+        )
+        for instr in instructions:
+            for entry in instr.get("entries", []):
+                result = (entry.get("content", {})
+                               .get("itemContent", {})
+                               .get("tweet_results", {})
+                               .get("result", {}))
+                _parse_graphql_tweet(result, posts, seen, seen_ids, query)
+    except Exception:
+        pass
+
+
+def _parse_graphql_tweet(result, posts, seen, seen_ids, query):
+    try:
+        legacy = result.get("legacy", {})
+        tid    = legacy.get("id_str", "")
+        if not tid or tid in seen or tid in seen_ids:
+            return
+        text = legacy.get("full_text", "")
+        if not _has_signal(text) and not _has_signal(query):
+            return
+        screen = (result.get("core", {})
+                        .get("user_results", {})
+                        .get("result", {})
+                        .get("legacy", {})
+                        .get("screen_name", ""))
+        posts.append({
+            "id":      tid,
+            "url":     f"https://x.com/{screen}/status/{tid}",
+            "author":  screen,
+            "text":    text[:600],
+            "likes":   legacy.get("favorite_count", 0),
+            "reposts": legacy.get("retweet_count", 0),
+            "replies": legacy.get("reply_count", 0),
+        })
+        seen_ids.add(tid)
+    except Exception:
+        pass
+
+
+async def _extract_tweets_from_dom(page, query, seen, seen_ids):
+    posts = []
+    try:
+        articles = await page.query_selector_all('article[data-testid="tweet"]')
+        for article in articles[:10]:
+            try:
+                text_el = await article.query_selector('[data-testid="tweetText"]')
+                text    = await text_el.inner_text() if text_el else ""
+                if not _has_signal(text) and not _has_signal(query):
+                    continue
+                link_el = await article.query_selector('a[href*="/status/"]')
+                href    = await link_el.get_attribute("href") if link_el else ""
+                parts   = href.strip("/").split("/")
+                tid     = parts[-1] if parts else ""
+                screen  = parts[0]  if parts else ""
+                if not tid or tid in seen or tid in seen_ids:
+                    continue
+                posts.append({
+                    "id":      tid,
+                    "url":     f"https://x.com/{href.lstrip('/')}",
+                    "author":  screen,
+                    "text":    text[:600],
+                    "likes":   0, "reposts": 0, "replies": 0,
+                })
+                seen_ids.add(tid)
+            except Exception:
+                continue
     except Exception as e:
-        logger.error("X Apify run failed: %s", e)
-
-    logger.info("X: %d candidate posts", len(posts))
+        logger.debug("DOM scrape failed: %s", e)
     return posts
+
+
+def _fetch_posts(seen: set[str]) -> list[dict]:
+    return asyncio.run(_fetch_posts_async(seen))
 
 
 # ---------------------------------------------------------------------------
@@ -178,16 +329,15 @@ IvyEdge's thesis:
 - Plain-language financial transparency is a baseline, not a feature
 - Companies that offer 4-day weeks, remote work, and caregiver support keep women in the workforce
 
-X (Twitter) reply norms:
-- 1-2 sentences max — X is a brevity-first platform
-- Warm, specific, and directly responsive to what they said
-- No links, no product names, no "we're building something"
+X reply norms:
+- 1-2 sentences max
+- Warm, specific, directly responsive
+- No links, no product names
 - Can reference working in fintech to signal credibility
-- Should feel like a genuine reply from a smart follower
-- Emojis fine if they fit the tone — don't force them
+- Emojis fine if they fit — don't force them
 
 Reshare guidance:
-- Flag posts worth quote-tweeting to IvyEdge's audience (compelling data, real stories, strong takes)"""
+- Flag posts worth quote-tweeting (compelling data, real stories, strong takes)"""
 
 
 def _score_and_draft(posts: list[dict], client: anthropic.Anthropic) -> list[EngagementOpportunity]:
@@ -200,7 +350,7 @@ def _score_and_draft(posts: list[dict], client: anthropic.Anthropic) -> list[Eng
         for i, p in enumerate(posts)
     )
 
-    prompt = f"""Below are {len(posts)} X (Twitter) posts found via keyword search.
+    prompt = f"""Below are {len(posts)} X posts found via keyword search.
 
 For each, output:
 {{
@@ -214,10 +364,10 @@ For each, output:
 JSON array only. No prose, no markdown fences.
 
 High scores (≥6): Person sharing real experience with 1099/freelance income, career gaps,
-credit issues, OR workplace flexibility/RTO/caregiving. Our reply adds genuine value.
+credit issues, OR workplace flexibility/RTO/caregiving.
 Reshare (quote-tweet) if it's a strong take or data point worth amplifying.
 
-Low scores (<6): Generic finance content, brand posts, venting with no opening for engagement.
+Low scores (<6): Generic content, brand posts, venting with no opening for engagement.
 
 POSTS:
 {posts_text}"""
@@ -267,14 +417,15 @@ POSTS:
     return sorted(opportunities, key=lambda o: o.score, reverse=True)
 
 
-# ---------------------------------------------------------------------------
-# Public entry point
-# ---------------------------------------------------------------------------
-
 def discover(dry_run: bool = False) -> list[EngagementOpportunity]:
     """Search X for relevant posts and return scored opportunities."""
     seen = _load_seen()
-    posts = _fetch_posts(seen)
+    try:
+        posts = _fetch_posts(seen)
+    except Exception as e:
+        logger.error("X fetch failed: %s", e)
+        return []
+
     if not posts:
         logger.info("X: no new posts found")
         return []
@@ -289,3 +440,34 @@ def discover(dry_run: bool = False) -> list[EngagementOpportunity]:
 
     logger.info("X: %d posts worth engaging with", len(opportunities))
     return opportunities
+
+
+def setup_cookies() -> None:
+    auth_token = os.getenv("X_AUTH_TOKEN", "").strip()
+    ct0        = os.getenv("X_CT0", "").strip()
+    if not auth_token or not ct0:
+        print(
+            "\nTo set up X cookies:\n"
+            "1. Log in to x.com in your browser\n"
+            "2. Open DevTools (F12) → Application → Cookies → https://x.com\n"
+            "3. Copy 'auth_token' and 'ct0'\n"
+            "4. Add to .env: X_AUTH_TOKEN=... and X_CT0=...\n"
+            "5. Re-run: python -m platform_agents.x_agent --setup\n"
+        )
+        return
+    _save_cookies({"auth_token": auth_token, "ct0": ct0})
+    print(f"Cookies saved to {COOKIES_FILE}")
+
+
+if __name__ == "__main__":
+    import sys
+    if "--setup" in sys.argv:
+        setup_cookies()
+    else:
+        logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+        opps = discover(dry_run="--dry-run" in sys.argv)
+        for o in opps:
+            print(f"\n[{o.score:.1f}] @{o.author} — {o.url}")
+            print(f"  {o.content[:120]}")
+            if o.suggested_comment:
+                print(f"  Reply: {o.suggested_comment}")

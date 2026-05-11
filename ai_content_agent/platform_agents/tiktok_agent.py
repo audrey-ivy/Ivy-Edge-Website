@@ -1,18 +1,17 @@
 """
-IvyEdge — TikTok Engagement Agent (Apify)
+IvyEdge — TikTok Engagement Agent (TikTokApi + Playwright)
 
-Discovers TikTok videos via hashtag search using Apify's TikTok scraper actor.
-Scores them with Claude and queues suggested comments for manual posting.
-
-Required in .env:
-    APIFY_API_TOKEN=...
+Discovers TikTok videos via hashtag search using the unofficial TikTokApi
+library with a headless Playwright browser. Free, no API credentials needed.
 
 Setup:
-    pip install apify-client
+    pip install TikTokApi playwright
+    python -m playwright install chromium
 """
 
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
@@ -29,9 +28,7 @@ load_dotenv(Path(__file__).parent.parent / ".env", override=True)
 logger = logging.getLogger("ivyedge.tiktok")
 
 MIN_RELEVANCE_SCORE = 5.5
-MAX_VIDEOS_PER_RUN  = 30
-RESULTS_PER_HASHTAG = 8
-
+MAX_VIDEOS_PER_RUN  = 25
 SEEN_LOG = Path(__file__).parent.parent / "engagement_log" / "tiktok_seen.json"
 
 HASHTAGS = [
@@ -97,73 +94,69 @@ def _has_signal(text: str) -> bool:
     return any(kw in t for kw in SIGNAL_KEYWORDS)
 
 
-# ---------------------------------------------------------------------------
-# Apify fetch
-# ---------------------------------------------------------------------------
-
-def _fetch_videos(seen: set[str]) -> list[dict]:
+async def _fetch_videos_async(seen: set[str]) -> list[dict]:
     try:
-        from apify_client import ApifyClient
+        from TikTokApi import TikTokApi
     except ImportError:
-        logger.error("apify-client not installed — run: pip install apify-client")
+        logger.error("TikTokApi not installed — run: pip install TikTokApi && python -m playwright install chromium")
         return []
 
-    token = os.getenv("APIFY_API_TOKEN", "")
-    if not token:
-        logger.error("APIFY_API_TOKEN not set in .env")
-        return []
-
-    client = ApifyClient(token)
+    ms_token = os.getenv("TIKTOK_MS_TOKEN")
     videos: list[dict] = []
-    seen_ids: set[str] = set()
+    seen_urls: set[str] = set()
 
-    try:
-        run = client.actor("clockworks/tiktok-scraper").call(
-            run_input={
-                "hashtags":       HASHTAGS,
-                "resultsPerPage": RESULTS_PER_HASHTAG,
-                "proxyConfiguration": {"useApifyProxy": True},
-            },
-            timeout_secs=300,
+    async with TikTokApi() as api:
+        session_kwargs = dict(
+            num_sessions=1,
+            sleep_after=5,
+            headless=True,
+            browser="webkit",
         )
-        items = list(client.dataset(run["defaultDatasetId"]).iterate_items())
-        logger.info("TikTok Apify: %d raw items returned", len(items))
+        if ms_token:
+            session_kwargs["ms_tokens"] = [ms_token]
+        try:
+            await api.create_sessions(**session_kwargs)
+        except Exception as e:
+            logger.warning("TikTok session creation failed: %s", e)
+            return []
 
-        for item in items:
-            vid_id  = str(item.get("id") or item.get("videoId") or "")
-            caption = item.get("text") or item.get("desc") or item.get("description") or ""
-            author  = (item.get("authorMeta") or {}).get("name") or item.get("author") or ""
-            url     = item.get("webVideoUrl") or item.get("url") or ""
-            hashtag = ""
-            if item.get("hashtags"):
-                hashtag = item["hashtags"][0] if isinstance(item["hashtags"][0], str) \
-                    else item["hashtags"][0].get("name", "")
-
-            if not vid_id or vid_id in seen or vid_id in seen_ids:
-                continue
-            if not _has_signal(caption) and not _has_signal(hashtag):
-                continue
-
-            videos.append({
-                "id":       vid_id,
-                "author":   author,
-                "caption":  caption[:600],
-                "url":      url,
-                "hashtag":  hashtag,
-                "plays":    item.get("playCount") or item.get("plays") or 0,
-                "likes":    item.get("diggCount") or item.get("likes") or 0,
-                "comments": item.get("commentCount") or item.get("comments") or 0,
-            })
-            seen_ids.add(vid_id)
-
+        for hashtag in HASHTAGS:
             if len(videos) >= MAX_VIDEOS_PER_RUN:
                 break
+            try:
+                tag = api.hashtag(name=hashtag)
+                async for video in tag.videos(count=8):
+                    vid_id  = str(video.id)
+                    vid_url = f"https://www.tiktok.com/@{video.author.username}/video/{vid_id}"
+                    caption = getattr(video, "desc", "") or ""
 
-    except Exception as e:
-        logger.error("TikTok Apify run failed: %s", e)
+                    if vid_id in seen or vid_url in seen_urls:
+                        continue
+                    if not _has_signal(caption) and not _has_signal(hashtag):
+                        continue
 
-    logger.info("TikTok: %d candidate videos", len(videos))
+                    videos.append({
+                        "id":       vid_id,
+                        "author":   video.author.username,
+                        "caption":  caption[:600],
+                        "url":      vid_url,
+                        "hashtag":  hashtag,
+                        "plays":    getattr(video.stats, "playCount", 0),
+                        "likes":    getattr(video.stats, "diggCount", 0),
+                        "comments": getattr(video.stats, "commentCount", 0),
+                    })
+                    seen_urls.add(vid_url)
+                    if len(videos) >= MAX_VIDEOS_PER_RUN:
+                        break
+            except Exception as e:
+                logger.warning("TikTok hashtag #%s failed: %s", hashtag, e)
+
+    logger.info("TikTok: fetched %d candidate videos", len(videos))
     return videos
+
+
+def _fetch_videos(seen: set[str]) -> list[dict]:
+    return asyncio.run(_fetch_videos_async(seen))
 
 
 # ---------------------------------------------------------------------------
@@ -190,7 +183,7 @@ TikTok comment norms:
 - Emojis are fine if they fit the tone
 
 Reshare guidance:
-- Flag videos worth reposting — original voices, real stories, compelling data points"""
+- Flag videos worth reposting — original voices, real stories, compelling data"""
 
 
 def _score_and_draft(videos: list[dict], client: anthropic.Anthropic) -> list[EngagementOpportunity]:
@@ -216,9 +209,9 @@ For each, output:
 
 JSON array only. No prose, no markdown fences.
 
-High scores (≥6): Creator is sharing a real experience with 1099/freelance income, career gaps,
-credit struggles, OR workplace flexibility/remote work/caregiving challenges.
-Reshare if it's a compelling original story worth amplifying to IvyEdge's audience.
+High scores (≥6): Creator sharing a real experience with 1099/freelance income, career gaps,
+credit struggles, OR workplace flexibility/remote work/caregiving.
+Reshare if it's a compelling story or take worth amplifying to IvyEdge's audience.
 
 Low scores (<6): Generic finance content, brand accounts, purely motivational with no substance.
 
@@ -270,14 +263,15 @@ VIDEOS:
     return sorted(opportunities, key=lambda o: o.score, reverse=True)
 
 
-# ---------------------------------------------------------------------------
-# Public entry point
-# ---------------------------------------------------------------------------
-
 def discover(dry_run: bool = False) -> list[EngagementOpportunity]:
     """Discover relevant TikTok videos and return scored opportunities."""
     seen = _load_seen()
-    videos = _fetch_videos(seen)
+    try:
+        videos = _fetch_videos(seen)
+    except Exception as e:
+        logger.error("TikTok fetch failed: %s", e)
+        return []
+
     if not videos:
         logger.info("TikTok: no new videos found")
         return []

@@ -1,14 +1,14 @@
 """
-IvyEdge — Instagram Scraper (Apify)
+IvyEdge — Instagram Hashtag Scraper (instaloader)
 
-Discovers public Instagram posts via hashtag search using Apify's
-instagram-hashtag-scraper actor. Reliable, maintained, no Meta API needed.
+Discovers public Instagram posts via hashtag search using instaloader.
+No Meta developer account or API token required — reads only public data.
 
-Required in .env:
-    APIFY_API_TOKEN=...
+Note: Uses Instagram's public web interface (against their ToS).
+Risk is low since we only read (never write) and run conservatively once daily.
 
 Setup:
-    pip install apify-client
+    pip install instaloader
 """
 
 from __future__ import annotations
@@ -16,6 +16,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import time
 from pathlib import Path
 from typing import Optional
 
@@ -29,8 +30,9 @@ load_dotenv(Path(__file__).parent.parent / ".env", override=True)
 logger = logging.getLogger("ivyedge.instagram_scraper")
 
 MIN_RELEVANCE_SCORE = 6.0
-MAX_POSTS_PER_RUN   = 30
-RESULTS_PER_HASHTAG = 5
+MAX_POSTS_PER_RUN   = 25
+POSTS_PER_HASHTAG   = 5
+SLEEP_BETWEEN       = 4  # seconds between hashtag fetches
 
 SEEN_LOG = Path(__file__).parent.parent / "engagement_log" / "instagram_scraper_seen.json"
 
@@ -97,68 +99,68 @@ def _has_signal(text: str) -> bool:
     return any(kw in t for kw in SIGNAL_KEYWORDS)
 
 
-# ---------------------------------------------------------------------------
-# Apify fetch
-# ---------------------------------------------------------------------------
-
 def _fetch_posts(seen: set[str]) -> list[dict]:
     try:
-        from apify_client import ApifyClient
+        import instaloader
     except ImportError:
-        logger.error("apify-client not installed — run: pip install apify-client")
+        logger.error("instaloader not installed — run: pip install instaloader")
         return []
 
-    token = os.getenv("APIFY_API_TOKEN", "")
-    if not token:
-        logger.error("APIFY_API_TOKEN not set in .env")
-        return []
+    L = instaloader.Instaloader(
+        download_pictures=False,
+        download_videos=False,
+        download_video_thumbnails=False,
+        download_geotags=False,
+        download_comments=False,
+        save_metadata=False,
+        compress_json=False,
+        quiet=True,
+    )
 
-    client = ApifyClient(token)
     posts: list[dict] = []
     seen_ids: set[str] = set()
 
-    # Run one actor call with all hashtags to minimise billable tasks
-    try:
-        run = client.actor("apify/instagram-hashtag-scraper").call(
-            run_input={
-                "hashtags":     HASHTAGS,
-                "resultsLimit": RESULTS_PER_HASHTAG,
-            },
-            timeout_secs=300,
-        )
-        items = list(client.dataset(run["defaultDatasetId"]).iterate_items())
-        logger.info("Instagram Apify: %d raw items returned", len(items))
+    for hashtag in HASHTAGS:
+        if len(posts) >= MAX_POSTS_PER_RUN:
+            break
+        try:
+            tag = instaloader.Hashtag.from_name(L.context, hashtag)
+            count = 0
+            for post in tag.get_posts():
+                if count >= POSTS_PER_HASHTAG:
+                    break
+                shortcode = post.shortcode
+                if shortcode in seen or shortcode in seen_ids:
+                    count += 1
+                    continue
+                caption = post.caption or ""
+                if not _has_signal(caption) and not _has_signal(hashtag):
+                    count += 1
+                    continue
 
-        for item in items:
-            pid     = str(item.get("id") or item.get("shortCode") or "")
-            caption = item.get("caption") or item.get("text") or ""
-            url     = item.get("url") or item.get("postUrl") or ""
-            hashtag = (item.get("hashtags") or [""])[0] if item.get("hashtags") else ""
-            author  = item.get("ownerUsername") or item.get("username") or ""
+                posts.append({
+                    "id":       shortcode,
+                    "url":      f"https://www.instagram.com/p/{shortcode}/",
+                    "author":   post.owner_username,
+                    "caption":  caption[:600],
+                    "hashtag":  hashtag,
+                    "likes":    post.likes,
+                    "comments": post.comments,
+                })
+                seen_ids.add(shortcode)
+                count += 1
 
-            if not pid or pid in seen or pid in seen_ids:
-                continue
-            if not _has_signal(caption) and not _has_signal(hashtag):
-                continue
+                if len(posts) >= MAX_POSTS_PER_RUN:
+                    break
 
-            posts.append({
-                "id":       pid,
-                "url":      url or f"https://www.instagram.com/p/{pid}/",
-                "author":   author,
-                "caption":  caption[:600],
-                "hashtag":  hashtag,
-                "likes":    item.get("likesCount") or item.get("likes") or 0,
-                "comments": item.get("commentsCount") or item.get("comments") or 0,
-            })
-            seen_ids.add(pid)
+            logger.info("Instagram #%s: %d posts", hashtag, count)
+            time.sleep(SLEEP_BETWEEN)
 
-            if len(posts) >= MAX_POSTS_PER_RUN:
-                break
+        except Exception as e:
+            logger.warning("Instagram hashtag #%s failed: %s", hashtag, e)
+            time.sleep(SLEEP_BETWEEN * 2)
 
-    except Exception as e:
-        logger.error("Instagram Apify run failed: %s", e)
-
-    logger.info("Instagram: %d candidate posts", len(posts))
+    logger.info("Instagram: fetched %d candidate posts", len(posts))
     return posts
 
 
@@ -175,7 +177,7 @@ IvyEdge's thesis:
 - 1099 income is real income
 - High earners with non-W-2 income deserve products that match their reality
 - Plain-language financial transparency is a baseline, not a feature
-- Companies that support flexible work, remote work, and caregivers keep women in the workforce
+- Companies that offer 4-day weeks, remote work, and caregiver support keep women in the workforce
 
 Instagram comment norms:
 - 1-3 sentences, warm and specific to the post
@@ -185,8 +187,7 @@ Instagram comment norms:
 - Should feel like a genuine comment from a smart follower
 
 Reshare guidance:
-- Flag posts worth reposting to IvyEdge's audience (original voices, real stories, good data)
-- Reshare = amplify their message, not just acknowledge it"""
+- Flag posts worth reposting to IvyEdge's audience (real stories, compelling data, strong takes)"""
 
 
 def _score_and_draft(posts: list[dict], client: anthropic.Anthropic) -> list[EngagementOpportunity]:
@@ -203,7 +204,7 @@ def _score_and_draft(posts: list[dict], client: anthropic.Anthropic) -> list[Eng
 
 For each, output:
 {{
-  "post_id": "<id>",
+  "post_id": "<shortcode id>",
   "score": <0-10 float>,
   "rationale": "<one sentence>",
   "suggested_action": "comment" | "reshare" | "comment_and_reshare" | "skip",
@@ -212,11 +213,11 @@ For each, output:
 
 JSON array only. No prose, no markdown fences.
 
-High scores (≥6): Creator is sharing a real experience with freelance income, career gaps,
-credit struggles, variable-income stress, OR workplace flexibility/remote work/caregiver challenges.
-Our comment adds genuine value. Reshare if it's a compelling original voice worth amplifying.
+High scores (≥6): Creator sharing a real experience with freelance income, career gaps,
+credit struggles, variable-income stress, OR workplace flexibility/remote work/caregiving.
+Reshare if it's a compelling voice worth amplifying to IvyEdge's audience.
 
-Low scores (<6): Generic motivational content, brand posts, or topics we can't add anything specific to.
+Low scores (<6): Generic motivational content, brand posts, topics we can't add anything to.
 
 POSTS:
 {posts_text}"""
@@ -265,10 +266,6 @@ POSTS:
 
     return sorted(opportunities, key=lambda o: o.score, reverse=True)
 
-
-# ---------------------------------------------------------------------------
-# Public entry point
-# ---------------------------------------------------------------------------
 
 def discover(dry_run: bool = False) -> list[EngagementOpportunity]:
     """Scrape Instagram hashtags and return scored opportunities."""
