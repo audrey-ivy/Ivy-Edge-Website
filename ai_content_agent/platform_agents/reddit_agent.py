@@ -56,9 +56,14 @@ SUBREDDITS = [
     "careerguidance",
     "workingmoms",
     "CreditCards",
+    "4dayworkweek",
+    "remotework",
+    "parentsofmultiples",
+    "SAHP",
 ]
 
 SEARCH_QUERIES = [
+    # Pillar 1 — non-traditional income & credit
     "1099 income loan denied",
     "freelance income mortgage",
     "self employed credit score",
@@ -73,6 +78,17 @@ SEARCH_QUERIES = [
     "side hustle income credit",
     "maternity leave credit score",
     "freelance income unstable bank",
+    # Pillar 6 — workplace flexibility & women in workforce
+    "4 day work week women",
+    "return to office women leaving",
+    "RTO mandate women quit",
+    "remote work caregiving",
+    "flexible work women workforce",
+    "paid parental leave US",
+    "caregiver penalty career",
+    "women leaving workforce childcare",
+    "4 day week productivity",
+    "student loans women workforce",
 ]
 
 MIN_RELEVANCE_SCORE  = 6.0

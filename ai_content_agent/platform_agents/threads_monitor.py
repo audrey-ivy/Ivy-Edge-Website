@@ -1,19 +1,19 @@
 """
-IvyEdge — Threads Monitor
+IvyEdge — Threads Monitor + Discovery
 
-The Threads API (via Meta Graph) does not support hashtag search or feed
-discovery — it's primarily a publishing API. What we *can* do:
+Two modes run together each day:
 
-  1. Fetch replies to IvyEdge's own Threads posts
-  2. Identify replies that deserve a response (questions, stories, disagreements)
-  3. Draft Claude-powered replies for human review
+  1. REPLY MONITOR — Fetch replies to IvyEdge's own Threads posts and draft
+     responses. Requires META_ACCESS_TOKEN + THREADS_USER_ID in .env.
 
-This turns Threads into a two-way conversation rather than a broadcast channel,
-which builds the engaged audience IvyEdge needs pre-launch.
+  2. OUTBOUND DISCOVERY (Apify) — Search Threads for posts about IvyEdge's
+     topics using Apify's threads-scraper actor. No Meta credentials needed.
+     Requires APIFY_API_TOKEN in .env.
 
 Required in .env:
-  META_ACCESS_TOKEN=...
-  THREADS_USER_ID=...
+  META_ACCESS_TOKEN=...   (for reply monitor)
+  THREADS_USER_ID=...     (for reply monitor)
+  APIFY_API_TOKEN=...     (for outbound discovery)
 """
 
 from __future__ import annotations
@@ -21,7 +21,6 @@ from __future__ import annotations
 import json
 import logging
 import os
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -31,7 +30,7 @@ from dotenv import load_dotenv
 
 from platform_agents import EngagementOpportunity
 
-load_dotenv()
+load_dotenv(Path(__file__).parent.parent / ".env", override=True)
 
 logger = logging.getLogger("ivyedge.threads")
 
@@ -39,8 +38,43 @@ META_ACCESS_TOKEN = os.getenv("META_ACCESS_TOKEN", "")
 THREADS_USER_ID   = os.getenv("THREADS_USER_ID", "")
 THREADS_BASE      = "https://graph.threads.net/v1.0"
 
-MIN_RELEVANCE_SCORE = 6.0
+MIN_RELEVANCE_SCORE  = 6.0
+MAX_DISCOVERY_POSTS  = 30
+RESULTS_PER_QUERY    = 8
 SEEN_LOG = Path(__file__).parent.parent / "engagement_log" / "threads_seen.json"
+
+# Search queries for outbound discovery
+SEARCH_QUERIES = [
+    # Pillar 1 — non-traditional income & credit
+    "freelance income credit",
+    "self employed loan",
+    "1099 income",
+    "career gap finance",
+    "gig worker credit",
+    "variable income mortgage",
+    "contractor income",
+    "side hustle income",
+    # Pillar 6 — workplace flexibility & women in workforce
+    "4 day work week",
+    "return to office women",
+    "remote work caregiving",
+    "paid parental leave",
+    "flexible work women",
+    "women leaving workforce",
+    "caregiver career",
+    "childcare work",
+]
+
+SIGNAL_KEYWORDS = [
+    # Pillar 1
+    "1099", "freelance", "self employed", "self-employed", "gig",
+    "career gap", "credit", "loan", "income", "contractor",
+    "side hustle", "variable income", "career break",
+    # Pillar 6
+    "4 day", "four day", "remote work", "work from home", "RTO",
+    "return to office", "parental leave", "maternity", "caregiver",
+    "childcare", "women leaving", "flexible work",
+]
 
 
 def _load_seen() -> set[str]:
@@ -58,16 +92,21 @@ def _save_seen(seen: set[str]) -> None:
     )
 
 
+def _has_signal(text: str) -> bool:
+    t = text.lower()
+    return any(kw in t for kw in SIGNAL_KEYWORDS)
+
+
+# ---------------------------------------------------------------------------
+# Mode 1: Fetch replies to IvyEdge's own Threads posts
+# ---------------------------------------------------------------------------
+
 def _check_credentials() -> bool:
     if not META_ACCESS_TOKEN or not THREADS_USER_ID:
-        logger.error("META_ACCESS_TOKEN or THREADS_USER_ID not set — skipping Threads")
+        logger.info("META_ACCESS_TOKEN/THREADS_USER_ID not set — skipping reply monitor")
         return False
     return True
 
-
-# ---------------------------------------------------------------------------
-# Fetch your own recent Threads posts and their replies
-# ---------------------------------------------------------------------------
 
 def _fetch_my_posts(limit: int = 20) -> list[dict]:
     url = f"{THREADS_BASE}/{THREADS_USER_ID}/threads"
@@ -83,7 +122,6 @@ def _fetch_my_posts(limit: int = 20) -> list[dict]:
 
 
 def _fetch_replies(thread_id: str) -> list[dict]:
-    """Fetch direct replies to a specific Threads post."""
     url = f"{THREADS_BASE}/{thread_id}/replies"
     resp = requests.get(url, params={
         "fields":       "id,text,timestamp,username",
@@ -95,7 +133,6 @@ def _fetch_replies(thread_id: str) -> list[dict]:
 
 
 def _fetch_all_replies(seen: set[str]) -> list[dict]:
-    """Collect all unseen replies across recent posts."""
     posts = _fetch_my_posts()
     all_replies = []
     for post in posts:
@@ -110,10 +147,74 @@ def _fetch_all_replies(seen: set[str]) -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
-# Claude scoring + reply drafting
+# Mode 2: Outbound discovery via Apify threads-scraper
 # ---------------------------------------------------------------------------
 
-_SYSTEM_PROMPT = """You are the community voice for IvyEdge, a pre-launch consumer finance
+def _fetch_discovery_posts(seen: set[str]) -> list[dict]:
+    try:
+        from apify_client import ApifyClient
+    except ImportError:
+        logger.error("apify-client not installed — run: pip install apify-client")
+        return []
+
+    token = os.getenv("APIFY_API_TOKEN", "")
+    if not token:
+        logger.info("APIFY_API_TOKEN not set — skipping Threads outbound discovery")
+        return []
+
+    client = ApifyClient(token)
+    posts: list[dict] = []
+    seen_ids: set[str] = set()
+
+    try:
+        run = client.actor("apify/threads-scraper").call(
+            run_input={
+                "searchQueries": SEARCH_QUERIES,
+                "maxItems":      RESULTS_PER_QUERY,
+            },
+            timeout_secs=300,
+        )
+        items = list(client.dataset(run["defaultDatasetId"]).iterate_items())
+        logger.info("Threads Apify: %d raw items returned", len(items))
+
+        for item in items:
+            pid    = str(item.get("id") or item.get("postId") or "")
+            text   = item.get("text") or item.get("caption") or ""
+            author = item.get("username") or item.get("ownerUsername") or ""
+            url    = item.get("url") or item.get("postUrl") or \
+                     (f"https://www.threads.net/@{author}/post/{pid}" if author and pid else "")
+
+            if not pid or pid in seen or pid in seen_ids:
+                continue
+            if not _has_signal(text):
+                continue
+
+            posts.append({
+                "id":      pid,
+                "url":     url,
+                "author":  author,
+                "text":    text[:600],
+                "likes":   item.get("likesCount") or item.get("likes") or 0,
+                "replies": item.get("repliesCount") or item.get("replies") or 0,
+                "source":  "discovery",
+            })
+            seen_ids.add(pid)
+
+            if len(posts) >= MAX_DISCOVERY_POSTS:
+                break
+
+    except Exception as e:
+        logger.error("Threads Apify run failed: %s", e)
+
+    logger.info("Threads discovery: %d candidate posts", len(posts))
+    return posts
+
+
+# ---------------------------------------------------------------------------
+# Claude scoring
+# ---------------------------------------------------------------------------
+
+_REPLY_SYSTEM_PROMPT = """You are the community voice for IvyEdge, a pre-launch consumer finance
 platform for women with non-traditional financial histories.
 
 When responding to replies on IvyEdge's Threads posts:
@@ -124,8 +225,27 @@ When responding to replies on IvyEdge's Threads posts:
 - Max 3 sentences — Threads is a conversational medium
 - You can invite them to join the waitlist or newsletter if the conversation calls for it"""
 
+_DISCOVERY_SYSTEM_PROMPT = """You are the community engagement voice for IvyEdge, a pre-launch
+consumer finance platform for women with non-traditional financial histories
+(freelancers, career returners, entrepreneurs with variable income).
 
-def _score_and_draft(replies: list[dict], client: anthropic.Anthropic) -> list[EngagementOpportunity]:
+IvyEdge's thesis:
+- Career gaps don't make you a credit risk
+- 1099 income is real income
+- High earners with non-W-2 income deserve products that match their reality
+- Companies that offer 4-day weeks, remote work, and caregiver support keep women in the workforce
+
+Threads comment norms:
+- 1-3 sentences, warm and specific
+- No links, no product names, nothing promotional
+- Can reference working in fintech/finance to signal credibility
+- Should feel like a genuine reply from a thoughtful follower
+
+Reshare guidance:
+- Flag posts worth reposting — real stories, strong takes, compelling data"""
+
+
+def _score_replies(replies: list[dict], client: anthropic.Anthropic) -> list[EngagementOpportunity]:
     if not replies:
         return []
 
@@ -153,7 +273,7 @@ JSON array only. No prose, no fences.
     msg = client.messages.create(
         model=os.getenv("IVYEDGE_MODEL", "claude-sonnet-4-6"),
         max_tokens=1500,
-        system=_SYSTEM_PROMPT,
+        system=_REPLY_SYSTEM_PROMPT,
         messages=[{"role": "user", "content": prompt}],
     )
     raw = msg.content[0].text.strip()
@@ -165,7 +285,7 @@ JSON array only. No prose, no fences.
     try:
         scored = json.loads(raw)
     except json.JSONDecodeError:
-        logger.warning("Claude returned unparseable JSON for Threads scoring")
+        logger.warning("Claude returned unparseable JSON for Threads replies")
         return []
 
     reply_map = {r["id"]: r for r in replies}
@@ -191,6 +311,82 @@ JSON array only. No prose, no fences.
     return sorted(opportunities, key=lambda o: o.score, reverse=True)
 
 
+def _score_discovery(posts: list[dict], client: anthropic.Anthropic) -> list[EngagementOpportunity]:
+    if not posts:
+        return []
+
+    posts_text = "\n\n".join(
+        f"POST {i+1} (id={p['id']}, @{p['author']}, "
+        f"{p['likes']} likes, {p['replies']} replies):\n{p['text'] or '(no text)'}"
+        for i, p in enumerate(posts)
+    )
+
+    prompt = f"""Below are {len(posts)} Threads posts found via keyword search.
+
+For each, output:
+{{
+  "post_id": "<id>",
+  "score": <0-10 float>,
+  "rationale": "<one sentence>",
+  "suggested_action": "comment" | "reshare" | "comment_and_reshare" | "skip",
+  "suggested_comment": "<if action includes comment and score >= 6: ready-to-post comment. Empty string otherwise.>"
+}}
+
+JSON array only. No prose, no fences.
+
+High scores (≥6): Person sharing real experience with freelance income, career gaps,
+credit issues, OR workplace flexibility/RTO/caregiving. Our comment adds genuine value.
+Reshare if it's a compelling story or take worth amplifying to IvyEdge's audience.
+
+Low scores (<6): Generic content, brand posts, or topics we can't add anything specific to.
+
+POSTS:
+{posts_text}"""
+
+    msg = client.messages.create(
+        model=os.getenv("IVYEDGE_MODEL", "claude-sonnet-4-6"),
+        max_tokens=2500,
+        system=_DISCOVERY_SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    raw = msg.content[0].text.strip()
+    if raw.startswith("```"):
+        raw = raw.split("\n", 1)[1]
+        if raw.rstrip().endswith("```"):
+            raw = raw.rstrip()[:-3]
+
+    try:
+        scored = json.loads(raw)
+    except json.JSONDecodeError:
+        logger.warning("Claude returned unparseable JSON for Threads discovery")
+        return []
+
+    post_map = {p["id"]: p for p in posts}
+    opportunities = []
+    for item in scored:
+        pid = item.get("post_id", "")
+        if item.get("score", 0) < MIN_RELEVANCE_SCORE:
+            continue
+        action = item.get("suggested_action", "comment")
+        if action == "skip":
+            continue
+        p = post_map.get(pid, {})
+        opp = EngagementOpportunity(
+            platform="threads",
+            post_id=pid,
+            url=p.get("url", ""),
+            author=p.get("author", ""),
+            content=p.get("text", ""),
+            score=float(item.get("score", 0)),
+            rationale=item.get("rationale", ""),
+            suggested_comment=item.get("suggested_comment", ""),
+            suggested_action=action,
+        )
+        opportunities.append(opp)
+
+    return sorted(opportunities, key=lambda o: o.score, reverse=True)
+
+
 # ---------------------------------------------------------------------------
 # Post a reply via Threads API
 # ---------------------------------------------------------------------------
@@ -202,10 +398,10 @@ def post_reply(thread_id: str, text: str) -> Optional[str]:
 
     create_url = f"{THREADS_BASE}/{THREADS_USER_ID}/threads"
     resp = requests.post(create_url, data={
-        "media_type":     "TEXT",
-        "text":           text,
-        "reply_to_id":    thread_id,
-        "access_token":   META_ACCESS_TOKEN,
+        "media_type":   "TEXT",
+        "text":         text,
+        "reply_to_id":  thread_id,
+        "access_token": META_ACCESS_TOKEN,
     }, timeout=15)
     if not resp.ok:
         logger.error("Threads reply creation failed: %s", resp.text[:200])
@@ -230,24 +426,38 @@ def post_reply(thread_id: str, text: str) -> Optional[str]:
 # ---------------------------------------------------------------------------
 
 def discover(dry_run: bool = False) -> list[EngagementOpportunity]:
-    """Fetch replies to IvyEdge's Threads posts and score them."""
-    if not _check_credentials():
-        return []
-
+    """Run both reply monitor and outbound discovery. Returns all opportunities."""
     seen = _load_seen()
-    replies = _fetch_all_replies(seen)
-    if not replies:
-        logger.info("Threads: no new replies found")
-        return []
+    all_opportunities: list[EngagementOpportunity] = []
+    all_seen_ids: list[str] = []
 
-    logger.info("Threads: scoring %d new replies with Claude", len(replies))
     client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-    opportunities = _score_and_draft(replies, client)
 
-    if not dry_run:
-        for r in replies:
-            seen.add(r["id"])
+    # Mode 1: reply monitor (requires Meta credentials)
+    if _check_credentials():
+        replies = _fetch_all_replies(seen)
+        if replies:
+            logger.info("Threads: scoring %d new replies", len(replies))
+            reply_opps = _score_replies(replies, client)
+            all_opportunities.extend(reply_opps)
+            all_seen_ids.extend(r["id"] for r in replies)
+        else:
+            logger.info("Threads: no new replies found")
+
+    # Mode 2: outbound discovery (requires Apify)
+    discovery_posts = _fetch_discovery_posts(seen)
+    if discovery_posts:
+        logger.info("Threads: scoring %d discovery posts", len(discovery_posts))
+        discovery_opps = _score_discovery(discovery_posts, client)
+        all_opportunities.extend(discovery_opps)
+        all_seen_ids.extend(p["id"] for p in discovery_posts)
+    else:
+        logger.info("Threads: no new discovery posts found")
+
+    if not dry_run and all_seen_ids:
+        for sid in all_seen_ids:
+            seen.add(sid)
         _save_seen(seen)
 
-    logger.info("Threads: %d replies worth responding to", len(opportunities))
-    return opportunities
+    logger.info("Threads: %d total opportunities", len(all_opportunities))
+    return sorted(all_opportunities, key=lambda o: o.score, reverse=True)

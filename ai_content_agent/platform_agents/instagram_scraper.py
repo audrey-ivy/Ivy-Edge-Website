@@ -1,15 +1,14 @@
 """
-IvyEdge — Instagram Hashtag Scraper
+IvyEdge — Instagram Scraper (Apify)
 
-Discovers public Instagram posts via hashtag search using instaloader.
-No Meta developer account or API token required — reads only public data.
+Discovers public Instagram posts via hashtag search using Apify's
+instagram-hashtag-scraper actor. Reliable, maintained, no Meta API needed.
 
-Note: This uses Instagram's public web interface, which is against their ToS.
-Risk is low since we only read (never write) and run conservatively once daily.
-All engagement (liking, commenting) still happens manually in the app.
+Required in .env:
+    APIFY_API_TOKEN=...
 
 Setup:
-    pip install instaloader
+    pip install apify-client
 """
 
 from __future__ import annotations
@@ -17,7 +16,6 @@ from __future__ import annotations
 import json
 import logging
 import os
-import time
 from pathlib import Path
 from typing import Optional
 
@@ -31,13 +29,13 @@ load_dotenv(Path(__file__).parent.parent / ".env", override=True)
 logger = logging.getLogger("ivyedge.instagram_scraper")
 
 MIN_RELEVANCE_SCORE = 6.0
-MAX_POSTS_PER_RUN   = 25
-POSTS_PER_HASHTAG   = 5    # conservative — avoids rate limiting
-SLEEP_BETWEEN       = 4    # seconds between hashtag fetches
+MAX_POSTS_PER_RUN   = 30
+RESULTS_PER_HASHTAG = 5
 
 SEEN_LOG = Path(__file__).parent.parent / "engagement_log" / "instagram_scraper_seen.json"
 
 HASHTAGS = [
+    # Pillar 1 — non-traditional income & credit
     "freelancefinance",
     "selfemployedlife",
     "1099life",
@@ -53,13 +51,29 @@ HASHTAGS = [
     "sidehustlemoney",
     "mompreneurs",
     "financialindependence",
+    # Pillar 6 — workplace flexibility & women in workforce
+    "4dayworkweek",
+    "remotework",
+    "worklifebalance",
+    "womenatwork",
+    "flexiblework",
+    "paidparentalleave",
+    "workingmoms",
+    "caregivers",
+    "returntooffice",
+    "womenleavingwork",
 ]
 
 SIGNAL_KEYWORDS = [
+    # Pillar 1
     "1099", "freelance", "self employed", "self-employed", "gig",
     "career gap", "credit", "loan", "income", "contractor",
     "side hustle", "variable income", "career break", "denied",
     "mortgage", "unstable income", "non traditional",
+    # Pillar 6
+    "4 day", "four day", "remote work", "work from home", "RTO",
+    "return to office", "parental leave", "maternity", "caregiver",
+    "childcare", "women leaving", "flexible work", "work life",
 ]
 
 
@@ -84,71 +98,67 @@ def _has_signal(text: str) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# Instaloader fetch
+# Apify fetch
 # ---------------------------------------------------------------------------
 
 def _fetch_posts(seen: set[str]) -> list[dict]:
     try:
-        import instaloader
+        from apify_client import ApifyClient
     except ImportError:
-        logger.error("instaloader not installed — run: pip install instaloader")
+        logger.error("apify-client not installed — run: pip install apify-client")
         return []
 
-    L = instaloader.Instaloader(
-        download_pictures=False,
-        download_videos=False,
-        download_video_thumbnails=False,
-        download_geotags=False,
-        download_comments=False,
-        save_metadata=False,
-        compress_json=False,
-        quiet=True,
-    )
+    token = os.getenv("APIFY_API_TOKEN", "")
+    if not token:
+        logger.error("APIFY_API_TOKEN not set in .env")
+        return []
 
+    client = ApifyClient(token)
     posts: list[dict] = []
     seen_ids: set[str] = set()
 
-    for hashtag in HASHTAGS:
-        if len(posts) >= MAX_POSTS_PER_RUN:
-            break
-        try:
-            tag = instaloader.Hashtag.from_name(L.context, hashtag)
-            count = 0
-            for post in tag.get_posts():
-                if count >= POSTS_PER_HASHTAG:
-                    break
-                shortcode = post.shortcode
-                if shortcode in seen or shortcode in seen_ids:
-                    count += 1
-                    continue
-                caption = post.caption or ""
-                if not _has_signal(caption) and not _has_signal(hashtag):
-                    count += 1
-                    continue
+    # Run one actor call with all hashtags to minimise billable tasks
+    try:
+        run = client.actor("apify/instagram-hashtag-scraper").call(
+            run_input={
+                "hashtags":     HASHTAGS,
+                "resultsLimit": RESULTS_PER_HASHTAG,
+            },
+            timeout_secs=300,
+        )
+        items = list(client.dataset(run["defaultDatasetId"]).iterate_items())
+        logger.info("Instagram Apify: %d raw items returned", len(items))
 
-                posts.append({
-                    "id":        shortcode,
-                    "url":       f"https://www.instagram.com/p/{shortcode}/",
-                    "author":    post.owner_username,
-                    "caption":   caption[:600],
-                    "hashtag":   hashtag,
-                    "likes":     post.likes,
-                    "comments":  post.comments,
-                })
-                seen_ids.add(shortcode)
-                count += 1
+        for item in items:
+            pid     = str(item.get("id") or item.get("shortCode") or "")
+            caption = item.get("caption") or item.get("text") or ""
+            url     = item.get("url") or item.get("postUrl") or ""
+            hashtag = (item.get("hashtags") or [""])[0] if item.get("hashtags") else ""
+            author  = item.get("ownerUsername") or item.get("username") or ""
 
-                if len(posts) >= MAX_POSTS_PER_RUN:
-                    break
+            if not pid or pid in seen or pid in seen_ids:
+                continue
+            if not _has_signal(caption) and not _has_signal(hashtag):
+                continue
 
-            logger.info("Instagram #%s: %d posts", hashtag, count)
-            time.sleep(SLEEP_BETWEEN)
+            posts.append({
+                "id":       pid,
+                "url":      url or f"https://www.instagram.com/p/{pid}/",
+                "author":   author,
+                "caption":  caption[:600],
+                "hashtag":  hashtag,
+                "likes":    item.get("likesCount") or item.get("likes") or 0,
+                "comments": item.get("commentsCount") or item.get("comments") or 0,
+            })
+            seen_ids.add(pid)
 
-        except Exception as e:
-            logger.warning("Instagram hashtag #%s failed: %s", hashtag, e)
-            time.sleep(SLEEP_BETWEEN * 2)
+            if len(posts) >= MAX_POSTS_PER_RUN:
+                break
 
-    logger.info("Instagram: fetched %d candidate posts", len(posts))
+    except Exception as e:
+        logger.error("Instagram Apify run failed: %s", e)
+
+    logger.info("Instagram: %d candidate posts", len(posts))
     return posts
 
 
@@ -165,13 +175,18 @@ IvyEdge's thesis:
 - 1099 income is real income
 - High earners with non-W-2 income deserve products that match their reality
 - Plain-language financial transparency is a baseline, not a feature
+- Companies that support flexible work, remote work, and caregivers keep women in the workforce
 
 Instagram comment norms:
 - 1-3 sentences, warm and specific to the post
 - No links, no product names, nothing promotional
 - Can reference working in fintech/finance to signal credibility
 - Emoji are fine if they fit the tone
-- Should feel like a genuine comment from a smart follower"""
+- Should feel like a genuine comment from a smart follower
+
+Reshare guidance:
+- Flag posts worth reposting to IvyEdge's audience (original voices, real stories, good data)
+- Reshare = amplify their message, not just acknowledge it"""
 
 
 def _score_and_draft(posts: list[dict], client: anthropic.Anthropic) -> list[EngagementOpportunity]:
@@ -188,20 +203,20 @@ def _score_and_draft(posts: list[dict], client: anthropic.Anthropic) -> list[Eng
 
 For each, output:
 {{
-  "post_id": "<shortcode id>",
+  "post_id": "<id>",
   "score": <0-10 float>,
   "rationale": "<one sentence>",
-  "suggested_comment": "<if score >= 6: ready-to-post Instagram comment. Empty string otherwise.>"
+  "suggested_action": "comment" | "reshare" | "comment_and_reshare" | "skip",
+  "suggested_comment": "<if action includes comment and score >= 6: ready-to-post comment. Empty string otherwise.>"
 }}
 
 JSON array only. No prose, no markdown fences.
 
-High scores (≥6): Creator is sharing a real experience with freelance income,
-career gaps, credit struggles, loan denials, or variable-income financial stress.
-Our comment adds genuine value or validation.
+High scores (≥6): Creator is sharing a real experience with freelance income, career gaps,
+credit struggles, variable-income stress, OR workplace flexibility/remote work/caregiver challenges.
+Our comment adds genuine value. Reshare if it's a compelling original voice worth amplifying.
 
-Low scores (<6): Generic motivational content, brand posts, already has great
-engagement that doesn't need us, or topics we can't add anything specific to.
+Low scores (<6): Generic motivational content, brand posts, or topics we can't add anything specific to.
 
 POSTS:
 {posts_text}"""
@@ -230,6 +245,9 @@ POSTS:
         pid = item.get("post_id", "")
         if item.get("score", 0) < MIN_RELEVANCE_SCORE:
             continue
+        action = item.get("suggested_action", "comment")
+        if action == "skip":
+            continue
         p = post_map.get(pid, {})
         opp = EngagementOpportunity(
             platform="instagram",
@@ -241,7 +259,7 @@ POSTS:
             score=float(item.get("score", 0)),
             rationale=item.get("rationale", ""),
             suggested_comment=item.get("suggested_comment", ""),
-            suggested_action="comment",
+            suggested_action=action,
         )
         opportunities.append(opp)
 

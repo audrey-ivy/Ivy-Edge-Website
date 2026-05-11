@@ -165,8 +165,19 @@ def _save_report(opportunities: list[dict], summary: dict, dry_run: bool = False
             action    = item.get("suggested_action", "comment")
             location  = f"r/{subreddit}" if subreddit else f"@{author}"
 
+            # Action badges
+            action_badges = {
+                "comment":            "💬 Comment",
+                "reply":              "💬 Reply",
+                "reshare":            "🔁 Reshare",
+                "comment_and_reshare":"💬🔁 Comment + Reshare",
+                "reply_and_reshare":  "💬🔁 Reply + Reshare",
+            }
+            action_label = action_badges.get(action, f"💬 {action.title()}")
+            is_reshare = "reshare" in action
+
             lines += [
-                f"### {i}. {location} — score {score:.1f}/10",
+                f"### {i}. {location} — score {score:.1f}/10  {action_label}",
                 f"[Open post]({url})",
                 f"",
                 f"> {content}{'…' if len(item.get('content','')) > 200 else ''}",
@@ -174,6 +185,11 @@ def _save_report(opportunities: list[dict], summary: dict, dry_run: bool = False
                 f"**Why engage:** {rationale}",
                 f"",
             ]
+            if is_reshare and not comment:
+                lines += [
+                    f"**→ Reshare this post to IvyEdge's audience.**",
+                    f"",
+                ]
             if comment:
                 lines += [
                     f"**Suggested {action}:**",
