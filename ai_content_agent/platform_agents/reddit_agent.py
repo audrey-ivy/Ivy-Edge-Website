@@ -91,9 +91,9 @@ SEARCH_QUERIES = [
     "student loans women workforce",
 ]
 
-MIN_RELEVANCE_SCORE  = 6.0
-MAX_POSTS_PER_RUN    = 40
-MAX_COMMENTS_PER_RUN = 10
+MIN_RELEVANCE_SCORE  = 7.0
+MAX_POSTS_PER_RUN    = 15
+MAX_COMMENTS_PER_RUN = 5
 POST_DELAY_SECONDS   = 60
 
 SEEN_LOG = Path(__file__).parent.parent / "engagement_log" / "reddit_seen.json"

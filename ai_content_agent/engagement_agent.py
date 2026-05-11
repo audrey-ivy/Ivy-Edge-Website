@@ -144,7 +144,7 @@ def _save_report(opportunities: list[dict], summary: dict, dry_run: bool = False
         lines.append(f"✓ {summary['posted']} Reddit comment(s) auto-posted")
     lines.append("")
 
-    for platform in ["reddit", "instagram", "tiktok", "threads", "x"]:
+    for platform in ["x", "instagram", "tiktok", "threads", "reddit"]:
         items = by_platform.get(platform, [])
         if not items:
             continue
