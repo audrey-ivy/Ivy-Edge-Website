@@ -38,7 +38,7 @@ import anthropic
 from dotenv import load_dotenv
 from competitor_analysis import run_competitor_analysis
 
-load_dotenv()
+load_dotenv(override=True)
 
 logger = logging.getLogger("ivyedge.agent")
 
@@ -87,7 +87,7 @@ class ArticleBrief:
     pillar: str
     primary_keyword: str
     secondary_keywords: list[str] = field(default_factory=list)
-    content_format: str = "educational"  # educational | customer_story | behavioral | industry
+    content_format: str = "educational"  # educational | customer_story | behavioral | industry | contrarian
     target_word_count: tuple[int, int] = (1400, 1600)
     notes: str = ""
 
@@ -265,11 +265,53 @@ class IvyEdgeContentAgent:
                 parts.append(f"# === {key} ===\n\n{self.context[key]}")
         if self.context.get("extras"):
             parts.append(f"# === extra context ===\n\n{self.context['extras']}")
+
+        # Always-present section: IvyEdge's internal operating model.
+        # This is both proof of mission and the factual foundation for
+        # Pillar 6 (Building Differently) content.
+        parts.append(
+            "# === How IvyEdge builds (the internal model) ===\n\n"
+            "IvyEdge practices what it preaches — the company is designed to not push women out:\n"
+            "- 100% Remote: geography never a barrier. RTO mandates caused disproportionate "
+            "female exits (Upwork 2024).\n"
+            "- 32-Hour / 4-Day Work Week: Mondays off for caregiving or rest. 90% of companies "
+            "in the world's largest trial kept it permanently (Scientific American 2025).\n"
+            "- Dependent Care Credit: $400/month toward childcare, eldercare, or any dependent "
+            "care through a company-sponsored DCAP. 455,000 women left the workforce in 2025; "
+            "42% cited caregiving (Catalyst/BLS 2026).\n"
+            "- 12 Weeks Paid Parental Leave: primary AND secondary caregiver. Phased return for "
+            "the first month back. No penalty to pay, title, or trajectory. Average US maternity "
+            "leave is just 7.2 weeks (Minneapolis Fed 2024).\n"
+            "- Education Expenses/Reduction: reimbursement for higher education or equivalent "
+            "paid toward student loans. Women hold roughly two-thirds of outstanding $1.7T "
+            "student loan debt (Investopedia).\n"
+            "- Learning & Wellness Budget: $2,000/year per person for professional development, "
+            "mental health, therapy, or wellbeing. No approval needed. Only 36% of working "
+            "caregivers report \"very good\" mental health (Guardian Life 2025).\n"
+            "- All employees enrolled in the highest level of Ivy Circle membership.\n\n"
+            "Tagline for this pillar: \"We can't truly live our mission while running a company "
+            "that drives women out. We build differently.\""
+        )
+
         return "\n\n".join(parts)
 
     # -- Phase 1: Research ------------------------------------------------
 
-    def research_phase(self, brief: ArticleBrief) -> str:
+    def research_phase(self, brief: ArticleBrief, format_guidance: str = "") -> str:
+        source_links_block = ""
+        if format_guidance and "Recommended source links" in format_guidance:
+            # Extract just the source links section so the researcher knows what URLs to use
+            import re as _re
+            m = _re.search(r"## Recommended source links\n([\s\S]+?)(?=\n## |\Z)", format_guidance)
+            if m:
+                source_links_block = (
+                    "\nSOURCE LINKS FROM COMPETITOR ANALYSIS\n"
+                    "Competitors are already citing these sources. Use them as a starting point.\n"
+                    "For each stat you surface, try to match it to one of these URLs or find a\n"
+                    "more specific page on the same domain. Include the full URL next to each stat.\n\n"
+                    + m.group(1).strip() + "\n"
+                )
+
         prompt = f"""You are a financial-services researcher preparing material for an IvyEdge blog post.
 
 IMPORTANT — PRE-LAUNCH CONTEXT
@@ -287,11 +329,13 @@ ARTICLE BRIEF
 - Primary keyword: {brief.primary_keyword}
 - Secondary keywords: {", ".join(brief.secondary_keywords) or "(none)"}
 - Notes from editor: {brief.notes or "(none)"}
-
+{source_links_block}
 RESEARCH TASKS
 1. Identify 3-5 key insights about this topic that the target persona needs to know.
-2. Surface relevant data points and statistics. Cite real, verifiable sources
-   (Mintel, BLS, CFPB, Fed, peer-reviewed studies, major news outlets).
+2. Surface relevant data points and statistics. For EVERY stat include a real URL
+   in parentheses — e.g. "X% of borrowers (https://www.consumerfinance.gov/...)".
+   Prefer .gov, .edu, CFPB, Federal Reserve, BLS, Experian, myFICO, Urban Institute.
+   Use the source links above if they match; otherwise find the specific page.
 3. Name what traditional finance gets wrong about this topic.
 4. Identify the perspective IvyEdge brings — the *point of view* on the topic,
    not a product pitch. Frame it as a thesis the reader can evaluate.
@@ -302,8 +346,8 @@ OUTPUT FORMAT (markdown)
 ## Key insights
 - ...
 
-## Relevant data
-- ... (with source)
+## Relevant data (every stat must include its source URL in parentheses)
+- [stat] (https://source-url)
 
 ## Traditional approach (what's broken)
 - ...
@@ -332,36 +376,82 @@ OUTPUT FORMAT (markdown)
             f"{format_guidance}\n"
         ) if format_guidance else ""
 
+        contrarian_block = (
+            "\nCONTRARIAN FORMAT INSTRUCTIONS\n"
+            "This post challenges a widely-held belief. Structure:\n"
+            "1. Name the common advice / belief clearly and fairly — don't strawman it\n"
+            "2. Acknowledge why people believe it (it's not stupid — it's just incomplete)\n"
+            "3. Introduce the counter-evidence or overlooked mechanism\n"
+            "4. Give the reader the more accurate mental model\n"
+            "5. Show what changes in practice if they adopt the new view\n"
+            "The tone is curious and confident, never sneering. We're not dunking on bad advice —\n"
+            "we're upgrading it. The common belief to challenge is in the article notes.\n"
+        ) if brief.content_format == "contrarian" else ""
+
         prompt = f"""You are outlining an IvyEdge blog post.
 
 ARTICLE BRIEF
 - Topic: {brief.topic}
 - Persona: {brief.persona}
 - Pillar: {brief.pillar}
+- Format: {brief.content_format}
 - Target length: {brief.target_word_count[0]}-{brief.target_word_count[1]} words
-{format_block}
+{format_block}{contrarian_block}
 RESEARCH (from previous step)
 {research}
 
 PRE-LAUNCH CONTEXT
 IvyEdge has not launched any products. CTAs are audience-building actions —
 not product applications. Use one of:
-  - Join the IvyEdge waitlist (be first when we launch)
-  - Get the next post in your inbox (newsletter signup)
-  - Tell us your story (collect demand signal)
+  - Join the IvyEdge waitlist → link to https://www.ivyedge.co
+  - Get the next post in your inbox (newsletter signup) → link to https://www.ivyedge.co
+  - Tell us your story → link to https://www.instagram.com/ivyedge.co/
   - Share this with someone who needs it (organic distribution)
   - Take our 2-minute survey on [topic-relevant question] (audience research)
+
+CTA LINK RULES (always use these exact URLs — never placeholders like /waitlist):
+  - Waitlist / signup → https://www.ivyedge.co
+  - "Tell us your story" → https://www.instagram.com/ivyedge.co/
+  - Do NOT link to other /blog/ posts — IvyEdge has no other published posts yet.
 
 OUTLINE REQUIREMENTS
 - Structure: Hook -> Problem -> Insight / point of view -> Practical steps -> CTA
 - 3-5 H2 sections, each with 2-3 H3 subsections where useful
 - Each section should call out the specific data point or example to use
+- Each section ends with a key takeaway (one sentence the reader can action or repeat)
 - End with a clear audience-building CTA from the list above
+
+UNIQUE ANGLE REQUIREMENT
+Before settling on the angle, consider: what would the top 5 Google results NOT say?
+Competitor content on this topic is predictable. IvyEdge's job is to say the thing
+that is true but that no one else is saying — the insight that makes the reader feel
+seen and smarter for having read it. Note the chosen angle in the outline.
+
+OPENING HOOK — generate 3 options, each using a different technique:
+  Option A — Surprising stat: lead with a specific, counterintuitive number
+  Option B — Relatable question: ask the exact question the reader is already thinking
+  Option C — Bold statement: make a direct claim that challenges conventional advice
+Mark which one you recommend and why (one sentence).
+
+PERSONA OPENING
+The persona ({brief.persona}) is a real person, not a marketing character.
+Open with a one-sentence scene or moment from her life that makes the financial
+problem immediately real — before any statistics or explanations.
+Example for Maya: "Maya sent her third invoice of the month the same week her
+mortgage pre-approval was denied — for 'insufficient income history.'"
+
+ANALOGIES
+For any concept that typically causes eyes to glaze over (APR calculations, credit
+utilisation mechanics, underwriting models), include a plain-world analogy that
+makes it immediately intuitive. Note the analogy in the outline next to the concept.
 
 OUTPUT FORMAT
 - Working title (one option, plus 2 alternates)
-- Hook (2-3 sentences that name the problem directly)
-- Section list with: H2 header / key points to cover / suggested example or stat
+- Chosen angle (and why it's not already on Google)
+- Hook options A / B / C — with recommended pick
+- Persona opening sentence
+- Section list with: H2 header / key points / suggested stat or example / key takeaway
+- Any analogies planned
 - Proposed CTA (specific audience-building action — waitlist, newsletter, share, survey)
 
 VOICE REMINDER: lead with the answer. Be direct. Make it immediately useful.
@@ -384,9 +474,11 @@ OUTLINE
 PRE-LAUNCH CONTEXT
 IvyEdge has not launched any products. Do NOT reference Ivy Smart Loan, Ivy
 Credit Builder, Ivy Credit Monitor, Ivy Checking, or any specific product.
-Refer to IvyEdge as 'we' / 'us' (the perspective behind the post) — never as
-a product the reader can apply for. The CTA must be an audience-building
-action: waitlist, newsletter signup, share, survey, or 'tell us your story'.
+Refer to IvyEdge as 'we' / 'us' — never as a product the reader can apply for.
+The CTA must be audience-building only. Always use these exact URLs:
+  - Waitlist / signup / "be first to know" → https://www.ivyedge.co
+  - "Tell us your story" → https://www.instagram.com/ivyedge.co/
+  - Do NOT add links to /blog/ paths — IvyEdge has no other published posts yet.
 
 WRITING GUIDELINES
 - Voice: direct, warm, grounded. IvyEdge is the brilliant friend who happens
@@ -395,6 +487,18 @@ WRITING GUIDELINES
 - Lead each section with the answer, then explain.
 - Short paragraphs (3-4 sentences).
 - Concrete examples and specific numbers from the research.
+- OPENING: Use the persona opening sentence from the outline. Start in scene —
+  one specific moment, not a generic statement. Then bridge to the broader problem.
+- ANALOGIES: For every abstract financial mechanism, include a plain-world analogy
+  that makes the concept click on first read. The analogy should feel like something
+  you'd say to a friend, not a textbook. ("Think of your credit utilisation like...")
+- SHOW DON'T TELL: Don't say the reader "feels frustrated" — describe the situation
+  that causes the frustration. Don't say a policy "disadvantages women" — show the
+  exact mechanism and its consequence. Use specific scenes, numbers, and outcomes.
+- SOURCES: Every statistic must be hyperlinked inline to its real source.
+  Format: [description of source](https://actual-url.gov/...). Use government
+  agencies, CFPB, Federal Reserve, BLS, AARP, .edu, or peer-reviewed research.
+  No naked numbers — every data point gets a link.
 - Subheadings for scanability.
 - This is thought leadership: prove we understand the topic and the reader's
   reality better than anyone else writing about it.
@@ -441,14 +545,56 @@ EDITING CHECKLIST
 9. Vary sentence rhythm. Cut anything that sounds like a press release.
 10. PRE-LAUNCH CHECK: Strip any reference to Ivy Smart Loan, Ivy Credit
     Builder, Ivy Credit Monitor, Ivy Checking, or 'apply' / 'check your
-    rate' language. The CTA must be audience-building only (waitlist,
-    newsletter, share, survey, tell us your story).
+    rate' language. The CTA must be audience-building only.
+    Always use these exact URLs — no placeholders like /waitlist:
+      - Waitlist / signup → https://www.ivyedge.co
+      - "Tell us your story" → https://www.instagram.com/ivyedge.co/
+    Remove any markdown links to /blog/ paths — IvyEdge has no other
+    published posts yet. Either delete those links entirely or convert
+    them to plain text (remove the link, keep the anchor text).
 11. READABILITY: Target a Dale-Chall score of 8.5 (college-level, grades 13-15).
     - Replace multi-syllable jargon with precise but common words where meaning is preserved
     - Keep average sentence length 15-18 words; break up any sentence over 25 words
     - Financial terms (APR, FICO, 1099) are acceptable — explain once, then use freely
     - Never simplify to the point of imprecision; simplify to the point of clarity
     - Every paragraph should be readable on first pass; if a sentence needs re-reading, rewrite it
+
+12. SOURCES: Convert every parenthetical citation like *(CFPB, 2022)* or
+    (Experian, 2023) into an inline markdown hyperlink to the real source.
+    Examples:
+      *(CFPB, 2022)* → [CFPB (2022)](https://www.consumerfinance.gov/data-research/consumer-credit-trends/)
+      *(Experian State of Credit, 2023)* → [Experian State of Credit (2023)](https://www.experian.com/blogs/ask-experian/state-of-credit/)
+      *(BLS, 2024)* → [Bureau of Labor Statistics (2024)](https://www.bls.gov/cps/)
+      *(Federal Reserve, 2023)* → [Federal Reserve (2023)](https://www.federalreserve.gov/publications/report-on-the-economic-well-being-of-us-households.htm)
+    If you are not certain of the exact page URL, link to the main research
+    or data page of the authoritative source (consumerfinance.gov,
+    bls.gov, federalreserve.gov, experian.com/blogs, etc.).
+    NO parenthetical-only citations — every stat must have a clickable link.
+13. INSTAGRAM HANDLE: The correct handle is @ivyedge.co. Any reference to
+    @joinivyedge or instagram.com/joinivyedge must be changed to
+    https://www.instagram.com/ivyedge.co/
+15. SHOW DON'T TELL: Replace any sentence that labels an emotion or outcome
+    with one that demonstrates it through specifics.
+    BAD:  "Many women feel frustrated by the credit system."
+    GOOD: "Carmen's business grossed $180k last year. The loan officer asked
+           if she had a co-signer."
+    BAD:  "This policy disproportionately affects women."
+    GOOD: "Lenders require 2 years of W-2 history. The average career break
+           for a caregiver is 2.2 years. Do the math."
+    If any abstract claims remain, rewrite them with a scene, a number, or a
+    consequence that makes the point without having to state it.
+
+16. ANALOGIES: Verify at least one plain-world analogy exists for any abstract
+    financial mechanism. If the draft explains a concept abstractly, add or
+    strengthen the analogy. It should be conversational — something you'd say
+    to a friend, not a textbook.
+
+14. STANDARD FOOTER: Do NOT include the block that reads "IvyEdge is being
+    built for every woman who has been underestimated by a system that never
+    genuinely evaluated her. / If that's you, we want you close when we
+    launch. / Get on the IvyEdge waitlist → / Be first. You've waited long
+    enough." That block is added automatically by the publisher. End the post
+    after the closing CTA paragraph — do not repeat it or duplicate it.
 
 VOICE CALIBRATION
 GOOD: "Your 1099 income isn't unstable. Banks are measuring the wrong thing."
@@ -489,11 +635,17 @@ SEO CHECKLIST
    least one H2. Use it naturally 3-5 times across the body.
 2. Weave secondary keywords in where they fit. Use semantic variations if a
    keyword feels forced.
-3. Suggest 2-3 internal links (use placeholder anchor + IvyEdge URL slug
-   like /products/ivy-smart-loan or /blog/{{slug}}).
-4. Suggest 1-2 external links to authoritative sources (.gov, .edu, CFPB,
-   Fed, BLS, peer-reviewed). Use real, plausible URLs you cite to in the
-   draft itself.
+3. Do NOT add internal links — IvyEdge has no other published pages or
+   blog posts yet. If the draft contains any [anchor text](/blog/...) or
+   [anchor text](/products/...) links, remove the link and keep only the
+   plain anchor text.
+4. REQUIRED — embed 2-4 external source links directly in the draft body:
+   - Every statistic, study, or data point cited must be hyperlinked to
+     its actual source (government agency, .edu, CFPB, Fed, BLS, AARP,
+     peer-reviewed research, or major journalism). Use real URLs.
+   - Format: [anchor text describing the source](https://real-url.gov/...)
+   - Place the link inline where the stat appears, not in a footnotes section.
+   - If the draft cites a stat without a link, add one now. No naked numbers.
 5. Write a meta description: <=155 characters, includes primary keyword,
    action-oriented, value-forward.
 6. Suggest alt text for any images the editor should add (descriptive +
@@ -536,13 +688,13 @@ SECTION 2 — metadata as a single valid JSON object, between these exact delimi
     # -- Phase 6: Social media --------------------------------------------
 
     @staticmethod
-    def _substack_url(topic: str) -> str:
+    def _blog_url(topic: str) -> str:
         slug = re.sub(r"[^a-z0-9\s-]", "", topic.lower())
-        slug = re.sub(r"\s+", "-", slug).strip("-")[:80]
-        return f"https://substack.com/@joinivyedge/p/{slug}"
+        slug = re.sub(r"\s+", "-", slug).strip("-")[:60]
+        return f"https://www.ivyedge.co/blog/{slug}"
 
     def social_phase(self, brief: ArticleBrief, final_draft: str) -> str:
-        post_url = self._substack_url(brief.topic)
+        post_url = self._blog_url(brief.topic)
         prompt = f"""You are writing social media content to distribute an IvyEdge blog post.
 
 PRE-LAUNCH CONTEXT
@@ -554,7 +706,7 @@ BLOG POST
 Topic: {brief.topic}
 Persona: {brief.persona}
 Primary keyword: {brief.primary_keyword}
-Substack URL: {post_url}
+Blog URL: {post_url}
 
 FULL FINAL DRAFT
 {final_draft}
@@ -563,30 +715,42 @@ FULL FINAL DRAFT
 
 ---
 
-Produce all three assets below. Follow each format exactly.
+Produce all four assets below. Follow each format exactly.
 
 ---
 
-## X / Threads
+## X
 
-Write 3 post options (pick the strongest for posting, keep the others as alternates).
+Write ONE post. This is a cold audience — make it stop the scroll immediately.
 Rules:
-- ≤ 280 characters each (including spaces and any hashtags)
-- Lead with a punchy, opinionated first line — no throat-clearing
-- One concrete insight or stat from the post
-- End with the actual Substack URL ({post_url}) — not a placeholder like [link]
-- 1–3 hashtags max; no more
+- ≤ 280 characters total (count carefully — this is a hard limit)
+- First line: a single punchy, opinionated statement or surprising stat — no setup
+- Second line (optional): one concrete consequence or reframe
+- No hashtags — they waste characters and look spammy on X
+- No em-dashes (—); use a dash (-) or a line break instead
+- Do NOT include a URL — the link is appended automatically
+
+Format:
+### Post
+<post text — no URL>
+
+---
+
+## Threads
+
+Write ONE post. Threads rewards a more personal, conversational tone than X.
+Rules:
+- 150–400 characters
+- 2–3 short paragraphs separated by line breaks — feels like a thought unfolding
+- Warmer and more personal than X — like sharing something you genuinely believe
+- Lead with a specific, relatable moment or observation (not a generic stat)
+- End with a question OR a soft CTA — do not include a URL
+- No hashtags
 - No em-dashes (—); use a dash (-) or a line break instead
 
 Format:
-### Option 1
-<post text>
-
-### Option 2
-<post text>
-
-### Option 3
-<post text>
+### Post
+<post text — no URL>
 
 ---
 
@@ -596,7 +760,8 @@ Write one caption + a suggested visual description.
 Rules:
 - Caption: 150–300 words; warm, direct IvyEdge voice; line breaks every 1–2 sentences
 - Hook in the first line (no "Hey!" or emojis to open)
-- 3–5 paragraphs; end with a question or CTA to drive comments; reference "link in bio" for the Substack post ({post_url})
+- 3–5 paragraphs; end with a question or CTA to drive comments; include "link in bio" reference
+- Must include both: the blog article link ({post_url}) AND https://www.ivyedge.co for the waitlist
 - Hashtags: 10–15 highly relevant tags on a separate line at the bottom
 - Visual: 1–2 sentences describing what the static image or carousel should show
   (use only IvyEdge brand colors from the brand voice guidelines; no invented colors)
@@ -612,52 +777,56 @@ Format:
 
 ## TikTok / Reels script
 
-Write a complete, production-ready video script.
+Write a punchy 30-second script. Words appear on screen over music — no voiceover.
 Rules:
-- Length: 45–60 seconds of spoken content (roughly 120–160 words of dialogue)
-- Hook: first 3 seconds must stop the scroll — a bold claim, surprising stat, or
-  direct challenge to a common belief
-- Structure: Hook → Problem (5 s) → 3 insights (25 s) → Payoff / CTA (10 s)
-- Spoken dialogue only — no filler ("um", "so basically", "right?")
-- On-screen text: include [TEXT: ...] cues for words to flash on screen
-- B-roll / visual: include [VISUAL: ...] cues for what to show on camera
-- CTA: end with one clear audience-building action; direct viewers to the Substack post at {post_url} (say "link in bio" for video, include the URL in the production notes)
-- Tone: confident, knowledgeable friend — not a lecture, not a sales pitch
+- Length: 30 seconds — roughly 60–75 words total (they flash on screen phrase by phrase)
+- Body: 3–4 sentences of genuine insight or concrete facts — keep each sentence tight
+- CTA: one closing sentence ending with "ivyedge.co" (e.g. "Read the full breakdown at ivyedge.co")
+- Plain text ONLY — no [TEXT:] or [VISUAL:] cues, no section headers, no bullet points
+- No filler words, no throat-clearing, no "so basically"
+- Confident, direct, warm — like texting a smart friend the most important thing
+
+First, write 5 opening hook options — each under 10 words, each using a different
+technique to stop the scroll. Then pick the strongest one to open the script.
+
+Hook techniques:
+  1. Surprising stat — a number that reframes the problem
+  2. Direct challenge — challenge a belief the reader holds
+  3. Relatable frustration — name the exact moment she's lived
+  4. Counterintuitive truth — say the thing that sounds wrong but is right
+  5. Bold accusation — name who or what is failing her (system, policy, industry)
 
 Format:
+### Hook options
+1. (stat) ...
+2. (challenge) ...
+3. (frustration) ...
+4. (truth) ...
+5. (accusation) ...
+**Recommended:** #N — [one sentence why]
+
 ### Script
+<plain text only — opens with the recommended hook, then body, then CTA>
 
-[HOOK - 0:00-0:03]
-[TEXT: ...]
-[VISUAL: ...]
-<spoken line>
+---
 
-[PROBLEM - 0:03-0:08]
-[VISUAL: ...]
-<spoken lines>
+## Reddit
 
-[INSIGHT 1 - 0:08-0:18]
-[TEXT: ...]
-[VISUAL: ...]
-<spoken lines>
+Write a link post for Reddit personal finance communities.
+Rules:
+- Title: specific, factual, no clickbait — Reddit rewards useful titles
+  (e.g. "Why your credit score dropped during your career gap — even with zero missed payments")
+- Body: 2–4 sentences of genuine value. Share the key insight from the article.
+  End with one sentence: "Full breakdown: [article URL]" — use the actual blog URL ({post_url})
+- No promotional language, no "check out my article" — lead with the insight
+- Sound like a knowledgeable community member sharing something useful
 
-[INSIGHT 2 - 0:18-0:28]
-[TEXT: ...]
-[VISUAL: ...]
-<spoken lines>
+Format:
+### Reddit Title
+<title text>
 
-[INSIGHT 3 - 0:28-0:38]
-[TEXT: ...]
-[VISUAL: ...]
-<spoken lines>
-
-[CTA - 0:38-0:48]
-[TEXT: ...]
-[VISUAL: ...]
-<spoken lines>
-
-### Production notes
-<2–3 sentences on tone, setting, presenter energy, any props or graphics>
+### Reddit Body
+<body text with article link at end>
 """
         return self._call_claude(prompt, PHASE_TOKEN_BUDGETS["social"], "social")
 
@@ -718,7 +887,7 @@ Format:
             logger.warning("Format analysis skipped: %s", e)
             result.format_analysis = ""
 
-        result.research = step("research", lambda: self.research_phase(brief))
+        result.research = step("research", lambda: self.research_phase(brief, result.format_analysis))
         result.outline = step("outline", lambda: self.outline_phase(
             brief, result.research, result.format_analysis
         ))
@@ -785,7 +954,7 @@ WHAT THIS POST MUST DO
 3. Introduce IvyEdge — what we're building and why. One sentence on the mission.
 4. Tell the reader what's coming: a blog that gives them the real information they've been denied,
    and products (launching soon) that evaluate their whole story.
-5. End with a warm, direct CTA to join the waitlist (https://substack.com/@joinivyedge).
+5. End with a warm, direct CTA to join the waitlist at https://www.ivyedge.co.
 
 WHAT TO AVOID
 - No corporate language. No "we're excited to announce." No "we're on a mission to."

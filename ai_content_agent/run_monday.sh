@@ -1,8 +1,21 @@
 #!/usr/bin/env bash
-# IvyEdge Monday pipeline — runs automatically every Monday at 9am.
-# Order: extend calendar → inject trending topics → generate + publish all queued posts
+# IvyEdge Monday pipeline — run once every Monday morning.
+# Order: extend calendar → inject trending topics → generate + publish ONE queued post
+# Buffer posts are scheduled: image cards → Tuesday noon UTC, videos → Thursday noon UTC
+# One article per week, one article per run. Never run this more than once on the same Monday.
 
 set -euo pipefail
+
+# Notify on exit — success or failure
+_notify() {
+  local exit_code=$?
+  if [ $exit_code -eq 0 ]; then
+    osascript -e 'display notification "Content pipeline finished — check Buffer for scheduled posts." with title "✅ IvyEdge Pipeline Done" sound name "Glass"' 2>/dev/null || true
+  else
+    osascript -e "display notification \"Pipeline failed with exit code $exit_code — check logs.\" with title \"❌ IvyEdge Pipeline Failed\" sound name \"Basso\"" 2>/dev/null || true
+  fi
+}
+trap _notify EXIT
 
 AGENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PYTHON="$AGENT_DIR/.venv/bin/python"
@@ -22,11 +35,11 @@ log "========================================"
 log "IvyEdge Monday pipeline starting"
 log "========================================"
 
-# ── Step 1: Extend the editorial calendar (4 weeks ahead, deduplicates safely)
+# ── Step 1: Extend the editorial calendar (4 weeks ahead, 1 post/week)
 log "Step 1: Extending editorial calendar..."
 "$PYTHON" calendar_agent.py \
   --weeks 4 \
-  --posts-per-week 2 \
+  --posts-per-week 1 \
   --output "$CALENDAR" \
   >> "$LOG_FILE" 2>&1
 log "Step 1 done."
@@ -39,20 +52,16 @@ log "Step 2: Checking for trending topics..."
   >> "$LOG_FILE" 2>&1
 log "Step 2 done."
 
-# ── Step 3: Generate and publish all queued posts
-log "Step 3: Running content pipeline..."
-"$PYTHON" run_pipeline.py batch \
+# ── Step 3: Generate article and save to Substack as a DRAFT (not live)
+#    Review it at https://substack.com/dashboard/posts
+#    Then run:  bash approve.sh   (publishes + queues social)
+#          or:  bash reject.sh    (removes topic, rerun this script for a new one)
+log "Step 3: Running content pipeline (draft only)..."
+"$PYTHON" run_pipeline.py \
+  batch \
   --calendar "$CALENDAR" \
-  --publish \
   >> "$LOG_FILE" 2>&1
-log "Step 3 done."
-
-# ── Step 4: Generate image cards + videos, post to Instagram and Threads
-log "Step 4: Running social media agent..."
-"$PYTHON" social_media_agent.py \
-  --output-dir "$AGENT_DIR/output" \
-  >> "$LOG_FILE" 2>&1
-log "Step 4 done."
+log "Step 3 done — article saved as Substack draft. Run approve.sh or reject.sh."
 
 log "========================================"
 log "Monday pipeline complete. Log: $LOG_FILE"
