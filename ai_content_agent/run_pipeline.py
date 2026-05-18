@@ -357,14 +357,25 @@ def cmd_batch(args: argparse.Namespace) -> int:
     # Future posts stay queued until their week arrives.
     today = datetime.utcnow().date()
     cutoff = today + __import__("datetime").timedelta(days=7)
+
+    def _parse_date_flexible(s: str):
+        s = s.strip()
+        try:
+            return __import__("datetime").date.fromisoformat(s)
+        except ValueError:
+            pass
+        for fmt in ("%m/%d/%y", "%m/%d/%Y"):
+            try:
+                return __import__("datetime").datetime.strptime(s, fmt).date()
+            except ValueError:
+                continue
+        return None
+
     queued = []
     for r in all_queued:
-        try:
-            pub = __import__("datetime").date.fromisoformat(r.get("scheduled_date", "").strip())
-            if pub <= cutoff:
-                queued.append(r)
-        except ValueError:
-            queued.append(r)  # no date — include it
+        pub = _parse_date_flexible(r.get("scheduled_date", ""))
+        if pub is None or pub <= cutoff:
+            queued.append(r)
 
     if not queued:
         print(f"No posts due within the next 7 days (cutoff {cutoff}). Nothing to generate.")

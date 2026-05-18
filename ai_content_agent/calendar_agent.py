@@ -34,7 +34,7 @@ from pathlib import Path
 import anthropic
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(Path(__file__).parent / ".env", override=True)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -47,7 +47,7 @@ DEFAULT_MODEL = os.getenv("IVYEDGE_MODEL", "claude-sonnet-4-6")
 CONTEXT_DIR = Path("context")
 
 CSV_COLUMNS = [
-    "publish_date", "title", "persona", "pillar",
+    "scheduled_date", "published_at", "title", "persona", "pillar",
     "primary_keyword", "secondary_keywords", "format", "status", "notes",
 ]
 
@@ -107,6 +107,28 @@ Traditional banks and generic fintechs (Ellevest→Betterment, SoFi,
 LendingClub, Chime, Tala) all lack women-first loan underwriting, P2P
 community investment, paid mentor models, and founding-by-women credibility.
 
+### How We Build (IvyEdge's internal model)
+IvyEdge practices what it preaches — the company is designed to not push women out:
+- 100% Remote: geography never a barrier. 2 in 3 C-suite leaders say RTO mandates
+  caused disproportionate female exits (Upwork 2024).
+- 32-Hour / 4-Day Work Week: Mondays off for caregiving or rest. 90% of companies
+  in the world's largest trial kept it permanently (Scientific American 2025).
+- Dependent Care Credit: up to $400/month for childcare, eldercare, or any dependent
+  care through a company-sponsored DCAP. 455,000 women left the workforce in 2025;
+  42% cited caregiving (Catalyst/BLS 2026).
+- 12 Weeks Paid Parental Leave: primary AND secondary caregiver. Phased return for
+  first month back. No penalty to pay, title, or trajectory. Average US maternity
+  leave is just 7.2 weeks (Minneapolis Fed 2024).
+- Education Expenses/Reduction: reimbursement for higher education or equivalent
+  paid toward student loans. Women hold roughly two-thirds of outstanding $1.7T
+  student loan debt (Investopedia).
+- Learning & Wellness Budget: $2,000/year per person for professional development,
+  mental health, therapy, or wellbeing. No approval needed. Only 36% of working
+  caregivers report "very good" mental health (Guardian Life 2025).
+- All employees enrolled in highest level of Ivy Circle membership.
+Tagline: "We can't truly live our mission while running a company that drives women
+out. We build differently."
+
 ### Blog's current job (pre-launch)
 Prove demand for the thesis. Build the audience. Establish authority on
 women's financial lives. NO product CTAs — use waitlist, newsletter, share,
@@ -142,7 +164,7 @@ def _load_context() -> str:
 PUBLISH_DAYS = {2, 4}  # Tuesday=1, Thursday=3 in Python weekday() — Mon=0
 
 
-def _publish_dates(start: date, n: int) -> list[date]:
+def _scheduled_dates(start: date, n: int) -> list[date]:
     """Return the next n publish dates on Tue/Thu on or after start."""
     dates = []
     d = start
@@ -179,11 +201,12 @@ def _call_claude(client: anthropic.Anthropic, prompt: str) -> str:
 
 PILLAR_DISTRIBUTION = """
 Distribute posts across pillars following the content strategy:
-- Pillar 1 (Financial education for non-traditional paths): ~40% of posts
-- Pillar 2 (Demystifying finance): ~25% of posts
+- Pillar 1 (Financial education for non-traditional paths): ~35% of posts
+- Pillar 2 (Demystifying finance): ~20% of posts
 - Pillar 4 (Behavioral science insights): ~10% of posts
 - Pillar 5 (Industry trends & advocacy): ~5% of posts
-- Pillar 1/2 crossover (freelancer finance + explainer hybrid): ~20% of posts
+- Pillar 6 (Building Differently — how companies can stop pushing women out): ~20% of posts
+- Pillar 1/2 crossover (freelancer finance + explainer hybrid): ~10% of posts
 Pillar 3 (reader stories) is PAUSED — do not include it.
 """
 
@@ -224,13 +247,17 @@ AI-powered financial platform built for women.
 ---
 
 TOPIC GUIDANCE
-Every post must be rooted in at least one of these three territory areas:
+Every post must be rooted in at least one of these four territory areas:
 1. Women in the economy — wage gap, wealth gap, workforce participation,
    caregiving economics, female entrepreneurship, return-to-work
 2. Consumer lending — credit scoring, underwriting, loan approval, APR,
    debt-to-income, secured vs. unsecured, CFPB rules, fair lending
 3. Financial services for women — how the industry was built, what it misses,
    what alternatives exist, what's changing in AI underwriting and open banking
+4. How companies can stop pushing women out — workplace policies, remote work,
+   caregiving support, parental leave, student debt relief, wellness budgets,
+   4-day work weeks, and the data behind each policy's impact on women's
+   workforce participation
 
 Posts must never mention IvyEdge products as live. CTAs are pre-launch only:
 waitlist, newsletter, share, survey, or tell-us-your-story.
@@ -253,11 +280,11 @@ Each object must have these exact keys:
 {{
   "title": "Post title as it will appear on Substack",
   "persona": "Maya | Priya | Carmen | Dominique | All",
-  "pillar": "Pillar 1: Financial Education for Non-Traditional Paths | Pillar 2: Demystifying Finance | Pillar 4: Behavioral Science Insights | Pillar 5: Industry Trends & Advocacy",
+  "pillar": "Pillar 1: Financial Education for Non-Traditional Paths | Pillar 2: Demystifying Finance | Pillar 4: Behavioral Science Insights | Pillar 5: Industry Trends & Advocacy | Pillar 6: Building Differently — How Companies Can Stop Pushing Women Out",
   "primary_keyword": "main SEO keyword phrase",
   "secondary_keywords": "keyword two|keyword three|keyword four",
-  "format": "educational | behavioral | industry",
-  "notes": "1-2 sentence editorial note: the specific angle, the IvyEdge point of view, one data point or hook to anchor it"
+  "format": "educational | behavioral | industry | contrarian | customer_story",
+  "notes": "1-2 sentence editorial note: the specific angle, the IvyEdge point of view, one data point or hook to anchor it. For contrarian posts, note the common belief being challenged and IvyEdge's counter-argument."
 }}
 
 The array must contain exactly {n_posts} objects.
@@ -297,17 +324,14 @@ def _write_calendar(posts: list[dict], dates: list[date], output: Path) -> None:
                 existing_titles.add(row.get("title", "").strip().lower())
 
     new_rows = []
-    date_idx = 0
     for post in posts:
         title = post.get("title", "").strip()
         if title.lower() in existing_titles:
             logger.info("Skipping duplicate: %s", title)
             continue
-        if date_idx >= len(dates):
-            logger.warning("Ran out of publish dates — increase --weeks or --posts-per-week")
-            break
         row = {
-            "publish_date": dates[date_idx].isoformat(),
+            "scheduled_date": "",       # assigned below after merge + sort
+            "published_at": "",         # only set when actually live on Substack
             "title": title,
             "persona": post.get("persona", ""),
             "pillar": post.get("pillar", ""),
@@ -319,9 +343,60 @@ def _write_calendar(posts: list[dict], dates: list[date], output: Path) -> None:
         }
         new_rows.append(row)
         existing_titles.add(title.lower())
-        date_idx += 1
 
+    # Merge new rows in, then re-sort and reassign scheduled_dates.
+    # Published articles keep their published_at and move to the top;
+    # everything else gets weekly dates starting the week after the last published article.
     all_rows = existing_rows + new_rows
+
+    published = [r for r in all_rows if r.get("status") == "published"]
+    unpublished = [r for r in all_rows if r.get("status") != "published"]
+
+    # Find last scheduled_date among already-scheduled unpublished rows
+    from datetime import date as _date, timedelta as _td
+
+    def _parse_date(s: str) -> "_date":
+        """Parse YYYY-MM-DD or M/D/YY or M/D/YYYY."""
+        s = s.strip()
+        try:
+            return _date.fromisoformat(s)
+        except ValueError:
+            pass
+        for fmt in ("%m/%d/%y", "%m/%d/%Y"):
+            try:
+                from datetime import datetime as _dt
+                return _dt.strptime(s, fmt).date()
+            except ValueError:
+                continue
+        raise ValueError(f"Unrecognised date format: {s!r}")
+
+    # Normalise all existing scheduled_dates to ISO format in-place
+    for r in unpublished:
+        if r.get("scheduled_date"):
+            r["scheduled_date"] = _parse_date(r["scheduled_date"]).isoformat()
+
+    existing_dates = [
+        _date.fromisoformat(r["scheduled_date"])
+        for r in unpublished
+        if r.get("scheduled_date")
+    ]
+    next_date = (max(existing_dates) + _td(weeks=1)) if existing_dates else dates[0]
+
+    # Rows that already have a scheduled_date keep it; new rows (no date) get the next slot
+    for row in unpublished:
+        if not row.get("scheduled_date"):
+            row["scheduled_date"] = next_date.isoformat()
+            next_date += _td(weeks=1)
+
+    # Sort unpublished by scheduled_date, then re-assign contiguous weekly dates
+    # to guarantee no two articles share the same date
+    unpublished.sort(key=lambda r: r.get("scheduled_date", ""))
+    start_date = dates[0]
+    for i, row in enumerate(unpublished):
+        row["scheduled_date"] = (start_date + _td(weeks=i)).isoformat()
+
+    all_rows = published + unpublished
+
     fieldnames = list({col for row in all_rows for col in row} | set(CSV_COLUMNS))
     fieldnames = sorted(fieldnames, key=lambda c: CSV_COLUMNS.index(c) if c in CSV_COLUMNS else 99)
 
@@ -372,7 +447,7 @@ def main(argv: list[str] | None = None) -> int:
         start = today + timedelta(days=days_ahead)
 
     n_posts = args.weeks * args.posts_per_week
-    publish_dates = _publish_dates(start, n_posts)
+    scheduled_dates = _scheduled_dates(start, n_posts)
 
     logger.info(
         "Generating %d posts (%d weeks × %d/week) starting %s",
@@ -389,10 +464,10 @@ def main(argv: list[str] | None = None) -> int:
     logger.info("Received %d post ideas from Claude", len(posts))
 
     output = Path(args.output)
-    new_rows = _write_calendar(posts, publish_dates, output)
+    new_rows = _write_calendar(posts, scheduled_dates, output)
 
     print(f"\nDone. {len(new_rows)} posts added to {output}")
-    print(f"Date range: {publish_dates[0]} → {publish_dates[min(len(new_rows)-1, len(publish_dates)-1)]}")
+    print(f"Date range: {scheduled_dates[0]} → {scheduled_dates[min(len(new_rows)-1, len(scheduled_dates)-1)]}")
     print(f"\nRun the batch:\n  python run_pipeline.py batch --calendar {output}")
     return 0
 
