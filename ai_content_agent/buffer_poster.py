@@ -204,11 +204,12 @@ def _create_post(
     scheduled_at: Optional[str] = None,
 ) -> Optional[str]:
     """Create a Buffer post — scheduled if scheduled_at is provided, else immediate. Returns post ID or None."""
+    # Buffer API: AssetInput now uses singular `image`/`video` objects, not arrays
     assets_parts = []
     if image_url:
-        assets_parts.append(f'images: [{{ url: {_gql_string(image_url)} }}]')
+        assets_parts.append(f'image: {{ url: {_gql_string(image_url)} }}')
     if video_url:
-        assets_parts.append(f'videos: [{{ url: {_gql_string(video_url)} }}]')
+        assets_parts.append(f'video: {{ url: {_gql_string(video_url)} }}')
     assets_block = f"assets: {{ {' '.join(assets_parts)} }}" if assets_parts else ""
 
     if platform == "instagram":
