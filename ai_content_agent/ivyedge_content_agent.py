@@ -726,6 +726,7 @@ Rules:
 - ≤ 280 characters total (count carefully — this is a hard limit)
 - First line: a single punchy, opinionated statement or surprising stat — no setup
 - Second line (optional): one concrete consequence or reframe
+- Separate each line with a BLANK LINE (empty line between them) — single line breaks are ignored by social platforms
 - No hashtags — they waste characters and look spammy on X
 - No em-dashes (—); use a dash (-) or a line break instead
 - Do NOT include a URL — the link is appended automatically

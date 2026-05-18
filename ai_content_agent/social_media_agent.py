@@ -192,6 +192,10 @@ def _parse_x_post(social_md: str, fallback_threads: str = "", max_chars: int = 2
              if not l.strip().startswith("#") and not URL_RE.fullmatch(l.strip())]
     text = "\n".join(lines).strip()
 
+    # Ensure blank lines between non-empty lines so Buffer renders line breaks correctly.
+    # Single \n is collapsed by most platforms; \n\n creates a visible break.
+    text = re.sub(r'(?<!\n)\n(?!\n)(?=\S)', '\n\n', text)
+
     # Trim to body_limit if needed
     if len(text) > body_limit:
         sentences = re.split(r'(?<=[.!?])\s+', text)
