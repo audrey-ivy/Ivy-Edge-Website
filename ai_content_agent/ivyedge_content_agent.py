@@ -56,7 +56,7 @@ PHASE_TOKEN_BUDGETS = {
     "draft": 5000,
     "voice_edit": 5000,
     "seo": 5000,
-    "social": 3000,
+    "social": 5000,
 }
 
 # Files in /context loaded on startup. Missing files are skipped with a warning
@@ -828,6 +828,34 @@ Format:
 
 ### Reddit Body
 <body text with article link at end>
+
+---
+
+## LinkedIn Article
+
+Write a full LinkedIn native article for the IvyEdge business page.
+LinkedIn articles live on the page permanently and index on Google — write for both audiences.
+Rules:
+- Headline: specific and benefit-driven, 8–12 words, no clickbait
+- Length: 500–800 words total
+- Structure: 4–6 short sections with bold headers (no # markdown — use **Bold Header**)
+- Voice: warm, authoritative, and direct — like a founder who knows her stuff and wants to help
+- Open with the core problem in 2–3 sentences — no preamble, no "In today's world..."
+- Each section: 2–4 sentences max, no filler
+- Include 1–2 real stats or concrete facts from the article
+- End with a 2-sentence CTA: one sentence naming what IvyEdge is building, one sentence sending readers to the waitlist at https://www.ivyedge.co
+- No hashtags in the body — add 3–5 relevant hashtags on a separate line at the very end
+- No em-dashes (—); use a colon or a dash (-)
+
+Format:
+### Headline
+<headline text>
+
+### Body
+<full article body — plain text with **Bold Headers** for sections, blank lines between paragraphs>
+
+### Hashtags
+<3–5 hashtags on one line>
 """
         return self._call_claude(prompt, PHASE_TOKEN_BUDGETS["social"], "social")
 

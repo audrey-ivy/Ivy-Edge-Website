@@ -167,6 +167,41 @@ def _slugify(text: str) -> str:
     return text[:60] or "post"
 
 
+def _extract_linkedin(social_md: str) -> str:
+    """Pull the LinkedIn article out of 06_social.md and format it as a clean paste-ready doc."""
+    import re as _re
+    headline_match = _re.search(r"###\s*Headline\s*\n(.*?)(?=\n###|\n---|\Z)", social_md, _re.DOTALL)
+    body_match     = _re.search(r"###\s*Body\s*\n(.*?)(?=\n###\s*Hashtags|\n###|\n---|\Z)", social_md, _re.DOTALL)
+    tags_match     = _re.search(r"###\s*Hashtags\s*\n(.*?)(?=\n##|\n---|\Z)", social_md, _re.DOTALL)
+
+    # Only extract if we're inside the LinkedIn section
+    linkedin_match = _re.search(r"##\s*LinkedIn Article(.*)", social_md, _re.DOTALL)
+    if not linkedin_match:
+        return ""
+
+    linkedin_block = linkedin_match.group(1)
+    hl = _re.search(r"###\s*Headline\s*\n(.*?)(?=\n###|\Z)", linkedin_block, _re.DOTALL)
+    bd = _re.search(r"###\s*Body\s*\n(.*?)(?=\n###\s*Hashtags|\n###|\Z)", linkedin_block, _re.DOTALL)
+    tg = _re.search(r"###\s*Hashtags\s*\n(.*?)(?=\n##|\n---|\Z)", linkedin_block, _re.DOTALL)
+
+    headline = hl.group(1).strip() if hl else ""
+    body     = bd.group(1).strip() if bd else ""
+    hashtags = tg.group(1).strip() if tg else ""
+
+    if not headline and not body:
+        return ""
+
+    parts = []
+    if headline:
+        parts.append(f"# {headline}\n")
+    if body:
+        parts.append(body)
+    if hashtags:
+        parts.append(f"\n{hashtags}")
+
+    return "\n\n".join(parts)
+
+
 def _save_result(result: GenerationResult, out_root: Path) -> tuple[Path, float]:
     """Write all artifacts for a single generation to its own folder."""
     date = datetime.utcnow().strftime("%Y-%m-%d")
@@ -188,6 +223,10 @@ def _save_result(result: GenerationResult, out_root: Path) -> tuple[Path, float]
     (folder / "05_final_draft.md").write_text(validated_draft, encoding="utf-8")
     if result.social:
         (folder / "06_social.md").write_text(result.social, encoding="utf-8")
+        # Extract LinkedIn article into its own ready-to-paste file
+        linkedin_md = _extract_linkedin(result.social)
+        if linkedin_md:
+            (folder / "09_linkedin.md").write_text(linkedin_md, encoding="utf-8")
 
     # Dale-Chall readability score on the final draft
     plain = re.sub(r"[#*_`\[\]()]", "", result.final_draft)
