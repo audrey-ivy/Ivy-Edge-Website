@@ -129,19 +129,49 @@ def _is_published(folder: Path, live_slugs: Optional[set[str]] = None) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# Instagram caption parser
+# Social copy parsers
 # ---------------------------------------------------------------------------
 
 def _parse_instagram_caption(social_md: str) -> str:
-    """Extract the Instagram caption from 06_social.md."""
-    match = re.search(
-        r"###\s*Caption\s*\n(.*?)(?=\n###|\n---|\Z)",
-        social_md, re.DOTALL
-    )
-    caption = match.group(1).strip() if match else social_md[:2200].strip()
-    # Ensure blank line before hashtag block
-    caption = re.sub(r'(?<!\n)\n(#\w)', r'\n\n\1', caption)
-    return caption
+    """Extract the first Instagram caption (legacy single-caption fallback)."""
+    captions = _parse_instagram_captions(social_md)
+    return captions[0] if captions else social_md[:2200].strip()
+
+
+def _parse_instagram_captions(social_md: str) -> list[str]:
+    """Extract up to 3 Instagram captions with their hashtags merged in."""
+    captions: list[str] = []
+    for i in range(1, 4):
+        cap_match = re.search(
+            rf"###\s*Caption {i}\s*\n(.*?)(?=\n###|\n##|\n---|\Z)",
+            social_md, re.DOTALL
+        )
+        if not cap_match:
+            break
+        text = cap_match.group(1).strip()
+        # Merge hashtags block for this caption
+        htag_match = re.search(
+            rf"###\s*Hashtags {i}\s*\n(.*?)(?=\n###|\n##|\n---|\Z)",
+            social_md, re.DOTALL
+        )
+        if htag_match:
+            text = text + "\n\n" + htag_match.group(1).strip()
+        # Ensure blank line before hashtag block
+        text = re.sub(r'(?<!\n)\n(#\w)', r'\n\n\1', text)
+        captions.append(text)
+
+    # Legacy: single ### Caption block
+    if not captions:
+        match = re.search(
+            r"###\s*Caption\s*\n(.*?)(?=\n###|\n---|\Z)",
+            social_md, re.DOTALL
+        )
+        if match:
+            caption = match.group(1).strip()
+            caption = re.sub(r'(?<!\n)\n(#\w)', r'\n\n\1', caption)
+            captions.append(caption)
+
+    return captions
 
 
 def _parse_threads_post(social_md: str) -> str:
@@ -164,24 +194,60 @@ def _parse_threads_post(social_md: str) -> str:
     return ""
 
 
-def _parse_x_post(social_md: str, fallback_threads: str = "", max_chars: int = 280, blog_url: str = "") -> str:
+def _parse_x_posts(social_md: str, blog_url: str = "") -> list[str]:
+    """Extract up to 3 X posts, each formatted and trimmed to ≤280 chars."""
+    posts: list[str] = []
+    for i in range(1, 4):
+        match = re.search(
+            rf"###\s*Post {i}\s*\n(.*?)(?=\n###\s*Post|\n###\s*(?!Post)|\n##|\n---|\Z)",
+            social_md, re.DOTALL
+        )
+        if not match:
+            break
+        raw = match.group(1).strip()
+        posts.append(_parse_x_post(social_md, raw_text=raw, blog_url=blog_url))
+
+    # Legacy fallback
+    if not posts:
+        posts.append(_parse_x_post(social_md, blog_url=blog_url))
+    return posts
+
+
+def _parse_story_slides(social_md: str) -> list[str]:
+    """Extract 4 story slide texts."""
+    slides: list[str] = []
+    for i in range(1, 5):
+        match = re.search(
+            rf"###\s*Slide {i}[^\n]*\n(.*?)(?=\n###|\n##|\n---|\Z)",
+            social_md, re.DOTALL
+        )
+        if match:
+            slides.append(match.group(1).strip())
+    return slides
+
+
+def _parse_x_post(social_md: str, fallback_threads: str = "", max_chars: int = 280,
+                  blog_url: str = "", raw_text: str = "") -> str:
     """Return a ≤280-char post for X, always ending with the blog URL.
-    Looks for dedicated ## X section first; falls back to Threads text."""
-    link = blog_url.strip() if blog_url.strip() else "https://www.ivyedge.co/blog"
+    If raw_text is provided, uses that directly. Otherwise looks for ## X section."""
+    link = blog_url.strip() if blog_url.strip() else "https://www.ivyedge.co"
     # X counts every URL as 23 chars regardless of actual length
     url_chars = 23
     suffix = f"\n\n{link}"
     body_limit = max_chars - url_chars - 2  # 2 for the \n\n
 
-    # New format: dedicated ## X section
-    match = re.search(
-        r"##\s*X\s*\n###\s*Post\s*\n(.*?)(?=\n##|\n---|\Z)",
-        social_md, re.DOTALL
-    )
-    if match:
-        text = match.group(1).strip()
+    if raw_text:
+        text = raw_text
     else:
-        text = fallback_threads or ""
+        # New format: dedicated ## X section with single ### Post
+        match = re.search(
+            r"##\s*X\s*\n###\s*Post\s*\n(.*?)(?=\n##|\n---|\Z)",
+            social_md, re.DOTALL
+        )
+        if match:
+            text = match.group(1).strip()
+        else:
+            text = fallback_threads or ""
 
     if not text:
         return link
@@ -303,7 +369,7 @@ def process_folder(
     pillar   = meta.get("pillar", "Pillar 1: Financial Education for Non-Traditional Paths")
     # Always send social traffic to the blog index — individual article slugs
     # are not routed on the website; the blog page loads all posts dynamically.
-    blog_url = "https://www.ivyedge.co/blog"
+    blog_url = "https://www.ivyedge.co"
     social_text = social_path.read_text(encoding="utf-8")
 
     result: dict = {
@@ -311,142 +377,224 @@ def process_folder(
         "title":      title,
         "blog_url":   blog_url,
         "started_at": datetime.now(timezone.utc).isoformat(),
-        "image_card": None,
-        "video":      None,
-        "instagram":  None,
-        "threads":    None,
     }
 
-    # ── 1. Image card ───────────────────────────────────────────────────
+    # ── 1. Image cards (1080×1080) — up to 3 ───────────────────────────
+    card_paths: list[Optional[Path]] = [None, None, None]
     if not video_only:
         try:
             from image_card_generator import generate_card
-            pull_quote  = _parse_pull_quote(social_text)
-            card_path   = folder / "07_image_card.png"
-            generate_card(
-                title=title,
-                pillar=pillar,
-                pull_quote=pull_quote,
-                output_path=card_path,
-                dark=True,
-                blog_url=blog_url,
-            )
-            result["image_card"] = str(card_path)
-            logger.info("Image card: %s", card_path.name)
+            pull_quote = _parse_pull_quote(social_text)
+            for i in range(3):
+                card_path = folder / f"07_image_card_{i+1}.png"
+                generate_card(
+                    title=title,
+                    pillar=pillar,
+                    pull_quote=pull_quote,
+                    output_path=card_path,
+                    dark=(i % 2 == 0),   # alternate dark/light
+                    blog_url=blog_url,
+                )
+                card_paths[i] = card_path
+                result[f"image_card_{i+1}"] = str(card_path)
+            logger.info("Image cards generated: 3")
         except Exception as e:
-            logger.error("Image card failed for %s: %s", folder.name, e)
+            logger.error("Image card generation failed for %s: %s", folder.name, e)
 
-    # ── 2. Video ────────────────────────────────────────────────────────
+    # ── 2. Story cards (1080×1920) — 4 slides ──────────────────────────
+    story_paths: list[Optional[Path]] = [None, None, None, None]
+    story_types = ["stat", "quote", "cta", "question"]
+    if not video_only:
+        try:
+            from image_card_generator import generate_story_card
+            slides = _parse_story_slides(social_text)
+            for i, (slide_type, slide_text) in enumerate(zip(story_types, slides)):
+                if not slide_text:
+                    continue
+                sp = folder / f"07_story_{i+1}.png"
+                generate_story_card(
+                    text=slide_text,
+                    slide_type=slide_type,
+                    output_path=sp,
+                    blog_url=blog_url,
+                )
+                story_paths[i] = sp
+                result[f"story_card_{i+1}"] = str(sp)
+            logger.info("Story cards generated: %d", sum(1 for p in story_paths if p))
+        except Exception as e:
+            logger.error("Story card generation failed for %s: %s", folder.name, e)
+
+    # ── 3. Videos — 2 separate TikTok/Reels scripts ────────────────────
+    video_paths: list[Optional[Path]] = [None, None]
     if not cards_only:
         try:
             from video_generator import generate_video, BACKGROUND_VIDEO, ELEVENLABS_API_KEY
             if not ELEVENLABS_API_KEY:
-                logger.warning("ELEVENLABS_API_KEY not set — skipping video for %s", folder.name)
+                logger.warning("ELEVENLABS_API_KEY not set — skipping videos for %s", folder.name)
             elif not BACKGROUND_VIDEO.exists():
-                logger.warning("Ivy background video missing — skipping video for %s", folder.name)
+                logger.warning("Background video missing — skipping videos for %s", folder.name)
             else:
-                video_path = folder / "08_video.mp4"
-                generate_video(social_path, video_path, title=title)
-                result["video"] = str(video_path)
-                logger.info("Video: %s", video_path.name)
+                for i in range(2):
+                    vp = folder / f"08_video_{i+1}.mp4"
+                    generate_video(social_path, vp, title=title, script_index=i+1)
+                    video_paths[i] = vp
+                    result[f"video_{i+1}"] = str(vp)
+                    logger.info("Video %d: %s", i+1, vp.name)
         except Exception as e:
             logger.error("Video generation failed for %s: %s", folder.name, e)
 
-    # ── 3. Post to Instagram + Threads + TikTok ─────────────────────────
-    # Schedule: image cards → next Wednesday noon UTC
-    #           videos      → next Thursday noon UTC
+    # ── 4. Schedule to Buffer across the week ───────────────────────────
+    #
+    # Tue:  X post 1 (8–10am ET) | IG feed 1 (11am–1pm ET) | Story 1 (7–9am ET)
+    # Wed:  TikTok 1 (6–9pm ET)  | X post 2 (11am–1pm ET)  | Threads | Story 2
+    # Thu:  IG feed 2 (11am–1pm ET) | X post 3 (8–10am ET) | Story 3
+    # Fri:  TikTok 2 (6–9pm ET)  | Story 4
+    # Sat:  IG feed 3 (10am–12pm ET)
     if not cards_only and not video_only and not skip_post:
         from buffer_poster import (
-            next_tuesday_x,
-            next_wednesday_instagram, next_wednesday_threads,
-            next_thursday_tiktok,
-            next_friday_instagram, next_friday_threads,
-            post_to_instagram, post_to_threads, post_to_tiktok, post_to_x,
+            next_tuesday_x, next_wednesday_x, next_thursday_x,
+            next_tuesday_ig, next_thursday_ig, next_saturday_ig,
+            next_wednesday_tiktok, next_friday_tiktok,
+            next_wednesday_threads,
+            next_tuesday_story, next_wednesday_story,
+            next_thursday_story, next_friday_story,
+            post_to_instagram, post_instagram_story,
+            post_to_threads, post_to_tiktok, post_to_x,
         )
-        card_path_obj  = Path(result["image_card"]) if result["image_card"] else None
-        video_path_obj = Path(result["video"])      if result["video"]      else None
-        ig_caption   = _parse_instagram_caption(social_text)
-        # Threads gets its own voice — just append the blog link cleanly
+
+        ig_captions  = _parse_instagram_captions(social_text)
+        x_posts      = _parse_x_posts(social_text, blog_url=blog_url)
         _threads_raw = _parse_threads_post(social_text)
         threads_text = f"{_threads_raw}\n\n{blog_url}" if _threads_raw else blog_url
-        x_text       = _parse_x_post(social_text, fallback_threads=_threads_raw, blog_url=blog_url)
 
-        # Instagram card — Wednesday 11am–1pm ET
+        # Pad lists so index access is always safe
+        while len(ig_captions) < 3:
+            ig_captions.append(ig_captions[0] if ig_captions else "")
+        while len(x_posts) < 3:
+            x_posts.append(x_posts[0] if x_posts else "")
+
+        # -- Tuesday --------------------------------------------------
+        # X post 1
         try:
-            _at = next_wednesday_instagram()
-            ig_card_url = post_to_instagram(ig_caption, image_path=card_path_obj, scheduled_at=_at)
-            result["instagram_card"] = ig_card_url
-            logger.info("Instagram card scheduled for %s", _at)
+            _at = next_tuesday_x()
+            result["x_1"] = post_to_x(x_posts[0], image_path=card_paths[0], scheduled_at=_at)
+            logger.info("X post 1 scheduled %s", _at)
         except Exception as e:
-            logger.error("Instagram card post failed for %s: %s", folder.name, e)
+            logger.error("X post 1 failed: %s", e)
 
-        # Instagram Reels — Friday 7–9pm ET
+        # Instagram feed 1
         try:
-            if video_path_obj and video_path_obj.exists():
-                _at = next_friday_instagram()
-                ig_vid_url = post_to_instagram(ig_caption, video_path=video_path_obj, scheduled_at=_at)
-                result["instagram"] = ig_vid_url
-                logger.info("Instagram Reels scheduled for %s", _at)
+            if ig_captions[0]:
+                _at = next_tuesday_ig()
+                result["ig_1"] = post_to_instagram(ig_captions[0], image_path=card_paths[0], scheduled_at=_at)
+                logger.info("IG feed 1 scheduled %s", _at)
         except Exception as e:
-            logger.error("Instagram video post failed for %s: %s", folder.name, e)
+            logger.error("IG feed 1 failed: %s", e)
 
-        # Threads card — Wednesday 12–2pm ET
+        # Story 1
+        try:
+            if story_paths[0]:
+                _at = next_tuesday_story()
+                result["story_1"] = post_instagram_story(story_paths[0], scheduled_at=_at)
+                logger.info("Story 1 scheduled %s", _at)
+        except Exception as e:
+            logger.error("Story 1 failed: %s", e)
+
+        # -- Wednesday ------------------------------------------------
+        # TikTok video 1
+        try:
+            if video_paths[0] and video_paths[0].exists():
+                _at = next_wednesday_tiktok()
+                tiktok_text = _format_tiktok_caption(_threads_raw, blog_url=blog_url)
+                result["tiktok_1"] = post_to_tiktok(tiktok_text, video_paths[0], scheduled_at=_at)
+                logger.info("TikTok 1 scheduled %s", _at)
+        except Exception as e:
+            logger.error("TikTok 1 failed: %s", e)
+
+        # X post 2
+        try:
+            _at = next_wednesday_x()
+            result["x_2"] = post_to_x(x_posts[1], scheduled_at=_at)
+            logger.info("X post 2 scheduled %s", _at)
+        except Exception as e:
+            logger.error("X post 2 failed: %s", e)
+
+        # Threads
         try:
             if threads_text:
                 _at = next_wednesday_threads()
-                thr_card_url = post_to_threads(threads_text, image_path=card_path_obj, scheduled_at=_at)
-                result["threads_card"] = thr_card_url
-                logger.info("Threads card scheduled for %s", _at)
-            else:
-                logger.warning("No Threads text found — skipping")
+                result["threads"] = post_to_threads(threads_text, image_path=card_paths[0], scheduled_at=_at)
+                logger.info("Threads scheduled %s", _at)
         except Exception as e:
-            logger.error("Threads card post failed for %s: %s", folder.name, e)
+            logger.error("Threads failed: %s", e)
 
-        # Threads video — Friday 6–8pm ET
+        # Story 2
         try:
-            if threads_text and video_path_obj and video_path_obj.exists():
-                _at = next_friday_threads()
-                thr_vid_url = post_to_threads(threads_text, video_path=video_path_obj, scheduled_at=_at)
-                result["threads"] = thr_vid_url
-                logger.info("Threads video scheduled for %s", _at)
+            if story_paths[1]:
+                _at = next_wednesday_story()
+                result["story_2"] = post_instagram_story(story_paths[1], scheduled_at=_at)
+                logger.info("Story 2 scheduled %s", _at)
         except Exception as e:
-            logger.error("Threads video post failed for %s: %s", folder.name, e)
+            logger.error("Story 2 failed: %s", e)
 
-        # TikTok — Thursday 6–9pm ET
+        # -- Thursday -------------------------------------------------
+        # Instagram feed 2
         try:
-            if video_path_obj and video_path_obj.exists():
-                _at = next_thursday_tiktok()
-                raw_tiktok_text = _parse_threads_post(social_text)
-                tiktok_text = _format_tiktok_caption(raw_tiktok_text, blog_url=blog_url)
-                tiktok_url = post_to_tiktok(tiktok_text, video_path_obj, scheduled_at=_at)
-                result["tiktok"] = tiktok_url
-                logger.info("TikTok scheduled for %s", _at)
-            else:
-                logger.info("No video yet — TikTok skipped")
+            if ig_captions[1]:
+                _at = next_thursday_ig()
+                result["ig_2"] = post_to_instagram(ig_captions[1], image_path=card_paths[1], scheduled_at=_at)
+                logger.info("IG feed 2 scheduled %s", _at)
         except Exception as e:
-            logger.error("TikTok post failed for %s: %s", folder.name, e)
+            logger.error("IG feed 2 failed: %s", e)
 
-        # X card — Tuesday 8–10am ET
+        # X post 3
         try:
-            if x_text:
-                _at = next_tuesday_x()
-                x_card_url = post_to_x(x_text, image_path=card_path_obj, scheduled_at=_at)
-                result["x_card"] = x_card_url
-                logger.info("X card scheduled for %s", _at)
+            _at = next_thursday_x()
+            result["x_3"] = post_to_x(x_posts[2], scheduled_at=_at)
+            logger.info("X post 3 scheduled %s", _at)
         except Exception as e:
-            logger.error("X card post failed for %s: %s", folder.name, e)
+            logger.error("X post 3 failed: %s", e)
 
-        # X video — Tuesday 8–10am ET (same morning window, different random minute)
+        # Story 3
         try:
-            if x_text and video_path_obj and video_path_obj.exists():
-                _at = next_tuesday_x()
-                x_vid_url = post_to_x(x_text, video_path=video_path_obj, scheduled_at=_at)
-                result["x"] = x_vid_url
-                logger.info("X video scheduled for %s", _at)
+            if story_paths[2]:
+                _at = next_thursday_story()
+                result["story_3"] = post_instagram_story(story_paths[2], scheduled_at=_at)
+                logger.info("Story 3 scheduled %s", _at)
         except Exception as e:
-            logger.error("X video post failed for %s: %s", folder.name, e)
+            logger.error("Story 3 failed: %s", e)
 
-        # Reddit — link post to relevant subreddits (posted immediately on Tuesday)
+        # -- Friday ---------------------------------------------------
+        # TikTok video 2
+        try:
+            if video_paths[1] and video_paths[1].exists():
+                _at = next_friday_tiktok()
+                tiktok_text = _format_tiktok_caption(ig_captions[2][:200], blog_url=blog_url)
+                result["tiktok_2"] = post_to_tiktok(tiktok_text, video_paths[1], scheduled_at=_at)
+                logger.info("TikTok 2 scheduled %s", _at)
+        except Exception as e:
+            logger.error("TikTok 2 failed: %s", e)
+
+        # Story 4
+        try:
+            if story_paths[3]:
+                _at = next_friday_story()
+                result["story_4"] = post_instagram_story(story_paths[3], scheduled_at=_at)
+                logger.info("Story 4 scheduled %s", _at)
+        except Exception as e:
+            logger.error("Story 4 failed: %s", e)
+
+        # -- Saturday -------------------------------------------------
+        # Instagram feed 3
+        try:
+            if ig_captions[2]:
+                _at = next_saturday_ig()
+                result["ig_3"] = post_to_instagram(ig_captions[2], image_path=card_paths[2], scheduled_at=_at)
+                logger.info("IG feed 3 scheduled %s", _at)
+        except Exception as e:
+            logger.error("IG feed 3 failed: %s", e)
+
+        # Reddit — posted immediately
         try:
             reddit_title, reddit_body = _parse_reddit_post(social_text)
             if reddit_title and blog_url:
@@ -460,8 +608,6 @@ def process_folder(
                 )
                 result["reddit"] = reddit_urls
                 logger.info("Reddit: posted to %d subreddit(s)", len(reddit_urls))
-            else:
-                logger.info("Reddit: no title or blog URL — skipping")
         except Exception as e:
             logger.error("Reddit post failed for %s: %s", folder.name, e)
 

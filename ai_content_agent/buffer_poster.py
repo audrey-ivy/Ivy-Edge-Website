@@ -69,59 +69,106 @@ def _next_weekday_random(weekday: int, window_start_utc: int, window_end_utc: in
 # Platform-specific send times — random within optimal windows (ET audience)
 #
 # Mon: article publishes to Substack
-# Tue: X card           →  8–10am ET = 13–15 UTC  (morning scroll)
-# Wed: Instagram card   → 11am–1pm ET = 16–18 UTC  (lunch peak)
-#      Threads card     → 12–2pm ET   = 17–19 UTC  (midday)
-# Thu: TikTok video     →  6–9pm ET   = 23–00 UTC  (prime TikTok window)
-# Fri: Instagram Reels  →  7–9pm ET   = 00–02 UTC  (Reels peak)
-#      Threads video    →  6–8pm ET   = 23–01 UTC  (evening scroll)
+# Tue: X post 1 (8–10am ET)  |  IG feed 1 (11am–1pm ET)  |  Story 1 (7–9am ET)
+# Wed: TikTok 1 (6–9pm ET)   |  X post 2 (11am–1pm ET)   |  Threads  |  Story 2 (8–10am ET)
+# Thu: IG feed 2 (11am–1pm ET)|  X post 3 (8–10am ET)     |  Story 3 (7–9am ET)
+# Fri: TikTok 2 (6–9pm ET)   |  Story 4 (8–10am ET)
+# Sat: IG feed 3 (10am–12pm ET)
 # ---------------------------------------------------------------------------
 
+# ── X (Twitter) ──────────────────────────────────────────────────────────
+
 def next_tuesday_x() -> str:
-    """X card — Tuesday, random 8–10am ET (13–15 UTC)."""
+    """X post 1 — Tuesday, random 8–10am ET (13–15 UTC)."""
     return _next_weekday_random(1, window_start_utc=13, window_end_utc=15)
 
-def next_wednesday_instagram() -> str:
-    """Instagram card — Wednesday, random 11am–1pm ET (16–18 UTC)."""
+def next_wednesday_x() -> str:
+    """X post 2 — Wednesday, random 11am–1pm ET (16–18 UTC)."""
     return _next_weekday_random(2, window_start_utc=16, window_end_utc=18)
 
-def next_wednesday_threads() -> str:
-    """Threads card — Wednesday, random 12–2pm ET (17–19 UTC)."""
-    return _next_weekday_random(2, window_start_utc=17, window_end_utc=19)
+def next_thursday_x() -> str:
+    """X post 3 — Thursday, random 8–10am ET (13–15 UTC)."""
+    return _next_weekday_random(3, window_start_utc=13, window_end_utc=15)
 
-def next_thursday_tiktok() -> str:
-    """TikTok video — Thursday, random 6–9pm ET (23–00 UTC)."""
-    return _next_weekday_random(3, window_start_utc=23, window_end_utc=24)
+# ── Instagram feed ────────────────────────────────────────────────────────
 
-def next_friday_instagram() -> str:
-    """Instagram Reels — Friday, random 7–9pm ET (00–02 UTC Saturday)."""
-    return _next_weekday_random(5, window_start_utc=0, window_end_utc=2)
+def next_tuesday_ig() -> str:
+    """IG feed post 1 — Tuesday, random 11am–1pm ET (16–18 UTC)."""
+    return _next_weekday_random(1, window_start_utc=16, window_end_utc=18)
 
-def next_friday_threads() -> str:
-    """Threads video — Friday, random 6–8pm ET (23–01 UTC)."""
+def next_thursday_ig() -> str:
+    """IG feed post 2 — Thursday, random 11am–1pm ET (16–18 UTC)."""
+    return _next_weekday_random(3, window_start_utc=16, window_end_utc=18)
+
+def next_saturday_ig() -> str:
+    """IG feed post 3 — Saturday, random 10am–12pm ET (15–17 UTC)."""
+    return _next_weekday_random(5, window_start_utc=15, window_end_utc=17)
+
+# ── TikTok / Reels ────────────────────────────────────────────────────────
+
+def next_wednesday_tiktok() -> str:
+    """TikTok video 1 — Wednesday, random 6–9pm ET (23–00 UTC)."""
+    return _next_weekday_random(2, window_start_utc=23, window_end_utc=24)
+
+def next_friday_tiktok() -> str:
+    """TikTok video 2 — Friday, random 6–9pm ET (23–00 UTC)."""
     return _next_weekday_random(4, window_start_utc=23, window_end_utc=24)
 
-# Legacy aliases so nothing breaks
+# ── Threads ───────────────────────────────────────────────────────────────
+
+def next_wednesday_threads() -> str:
+    """Threads — Wednesday, random 12–2pm ET (17–19 UTC)."""
+    return _next_weekday_random(2, window_start_utc=17, window_end_utc=19)
+
+# ── Stories ───────────────────────────────────────────────────────────────
+
+def next_tuesday_story() -> str:
+    """Story 1 — Tuesday, random 7–9am ET (12–14 UTC)."""
+    return _next_weekday_random(1, window_start_utc=12, window_end_utc=14)
+
+def next_wednesday_story() -> str:
+    """Story 2 — Wednesday, random 8–10am ET (13–15 UTC)."""
+    return _next_weekday_random(2, window_start_utc=13, window_end_utc=15)
+
+def next_thursday_story() -> str:
+    """Story 3 — Thursday, random 7–9am ET (12–14 UTC)."""
+    return _next_weekday_random(3, window_start_utc=12, window_end_utc=14)
+
+def next_friday_story() -> str:
+    """Story 4 — Friday, random 8–10am ET (13–15 UTC)."""
+    return _next_weekday_random(4, window_start_utc=13, window_end_utc=15)
+
+# ── Legacy aliases (keep old call-sites working) ──────────────────────────
+
 def next_tuesday_noon() -> str:
-    return next_wednesday_instagram()
+    return next_tuesday_ig()
 
 def next_tuesday_instagram() -> str:
-    return next_wednesday_instagram()
+    return next_tuesday_ig()
 
 def next_tuesday_threads() -> str:
     return next_wednesday_threads()
 
-def next_thursday_x() -> str:
-    return next_tuesday_x()
+def next_wednesday_instagram() -> str:
+    return next_tuesday_ig()
+
+def next_thursday_tiktok() -> str:
+    return next_wednesday_tiktok()
 
 def next_thursday_instagram() -> str:
-    return next_friday_instagram()
+    return next_thursday_ig()
 
 def next_thursday_threads() -> str:
-    return next_friday_threads()
+    return next_wednesday_threads()
 
 def next_thursday_noon() -> str:
-    return next_friday_instagram()
+    return next_thursday_ig()
+
+def next_friday_instagram() -> str:
+    return next_saturday_ig()
+
+def next_friday_threads() -> str:
+    return next_wednesday_threads()
 
 
 # ---------------------------------------------------------------------------
@@ -212,7 +259,9 @@ def _create_post(
         assets_parts.append(f'video: {{ url: {_gql_string(video_url)} }}')
     assets_block = f"assets: {{ {' '.join(assets_parts)} }}" if assets_parts else ""
 
-    if platform == "instagram":
+    if platform == "instagram_story":
+        metadata_block = 'metadata: { instagram: { type: story } }'
+    elif platform == "instagram":
         post_type = "reel" if video_url else "post"
         metadata_block = f'metadata: {{ instagram: {{ type: {post_type} shouldShareToFeed: true }} }}'
     elif platform == "tiktok":
@@ -295,6 +344,26 @@ def post_to_instagram(
         BUFFER_IG_CHANNEL_ID, caption,
         image_url=image_url, video_url=video_url,
         platform="instagram", scheduled_at=scheduled_at,
+    )
+
+
+def post_instagram_story(
+    image_path: Path,
+    caption: str = "",
+    scheduled_at: Optional[str] = None,
+) -> Optional[str]:
+    """Post an image as an Instagram Story via Buffer."""
+    if not BUFFER_IG_CHANNEL_ID:
+        logger.error("BUFFER_IG_CHANNEL_ID not set — run --list-channels")
+        return None
+    image_url = _upload_media_safe(image_path, "image", "Story image")
+    if not image_url:
+        logger.error("Story image upload failed")
+        return None
+    return _create_post(
+        BUFFER_IG_CHANNEL_ID, caption,
+        image_url=image_url,
+        platform="instagram_story", scheduled_at=scheduled_at,
     )
 
 

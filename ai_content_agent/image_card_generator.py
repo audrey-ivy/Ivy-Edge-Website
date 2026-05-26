@@ -147,6 +147,7 @@ def generate_card(
     pull_quote: str = "",
     output_path: Optional[Path] = None,
     dark: bool = True,
+    blog_url: str = "",
 ) -> Path:
     """
     Generate a 1080x1080 branded image card.
@@ -211,20 +212,28 @@ def generate_card(
             draw.text((PADDING, quote_y + i * 46), line, font=quote_font, fill=quote_color)
 
     # ── Footer divider ───────────────────────────────────────────────────
-    draw.rectangle([(PADDING, SIZE - 110), (SIZE - PADDING, SIZE - 107)], fill=accent_color)
+    draw.rectangle([(PADDING, SIZE - 130), (SIZE - PADDING, SIZE - 127)], fill=accent_color)
 
-    # ── IvyEdge wordmark ─────────────────────────────────────────────────
-    wordmark_font  = _load_font(fonts, "DMSans.ttf", 36)
-    tagline_font   = _load_font(fonts, "DMSans.ttf", 22)
-    draw.text((PADDING, SIZE - 96), "IvyEdge",       font=wordmark_font, fill=title_color)
-    draw.text((PADDING, SIZE - 52), "Grow through anything.", font=tagline_font, fill=footer_color)
+    # ── IvyEdge wordmark + tagline ────────────────────────────────────────
+    wordmark_font = _load_font(fonts, "DMSans.ttf", 36)
+    tagline_font  = _load_font(fonts, "DMSans.ttf", 20)
+    draw.text((PADDING, SIZE - 116), "IvyEdge",             font=wordmark_font, fill=title_color)
+    draw.text((PADDING, SIZE - 72),  "Grow through anything.", font=tagline_font, fill=footer_color)
 
-    # ── ivyedge.co (right-aligned) ───────────────────────────────────────
-    url_font = _load_font(fonts, "DMSans.ttf", 22)
-    url_text = "ivyedge.co"
-    url_bbox = draw.textbbox((0, 0), url_text, font=url_font)
-    url_w = url_bbox[2] - url_bbox[0]
-    draw.text((SIZE - PADDING - url_w, SIZE - 52), url_text, font=url_font, fill=footer_color)
+    # ── URL right-aligned: blog URL (or ivyedge.co fallback) ─────────────
+    url_font  = _load_font(fonts, "DMSans.ttf", 22)
+    blog_font = _load_font(fonts, "DMMono-Regular.ttf", 19)
+
+    # Show blog slug URL if provided, otherwise fall back to root domain
+    display_url = blog_url.replace("https://www.", "").replace("https://", "") if blog_url else "ivyedge.co"
+    url_bbox    = draw.textbbox((0, 0), display_url, font=blog_font)
+    url_w       = url_bbox[2] - url_bbox[0]
+    draw.text((SIZE - PADDING - url_w, SIZE - 116), display_url, font=blog_font, fill=_hex(MINT))
+
+    site_text = "ivyedge.co"
+    site_bbox = draw.textbbox((0, 0), site_text, font=url_font)
+    site_w    = site_bbox[2] - site_bbox[0]
+    draw.text((SIZE - PADDING - site_w, SIZE - 72), site_text, font=url_font, fill=_hex(CORAL_PINK))
 
     # ── Save ─────────────────────────────────────────────────────────────
     if output_path is None:
@@ -232,6 +241,111 @@ def generate_card(
     output_path.parent.mkdir(parents=True, exist_ok=True)
     img.save(str(output_path), "PNG")
     logger.info("Image card saved: %s", output_path)
+    return output_path
+
+
+# ---------------------------------------------------------------------------
+# Story card generator — 1080×1920 (9:16 vertical for Instagram Stories)
+# ---------------------------------------------------------------------------
+
+STORY_W = 1080
+STORY_H = 1920
+STORY_PAD = 80
+
+# Slide type → background colour + text colour
+_STORY_THEMES = {
+    "stat":     (FOREST_GREEN,  WHITE,      CORAL_PINK),   # bg, text, accent
+    "quote":    (DEEP_PLUM,     WHITE,      MINT),
+    "cta":      (NEAR_BLACK,    WHITE,      SAGE_GREEN),
+    "question": (CORAL_PINK,    NEAR_BLACK, FOREST_GREEN),
+}
+
+
+def generate_story_card(
+    text: str,
+    slide_type: str = "stat",      # "stat" | "quote" | "cta" | "question"
+    output_path: Optional[Path] = None,
+    blog_url: str = "",
+) -> Path:
+    """
+    Generate a 1080×1920 branded Story card.
+
+    Args:
+        text:        The slide text (≤12 words).
+        slide_type:  One of: stat, quote, cta, question.
+        output_path: Where to save the PNG.
+        blog_url:    Shown as a small footer URL.
+
+    Returns:
+        Path to the saved PNG.
+    """
+    fonts = _ensure_fonts()
+
+    bg_hex, txt_hex, acc_hex = _STORY_THEMES.get(slide_type, _STORY_THEMES["stat"])
+    bg_color  = _hex(bg_hex)
+    txt_color = _hex(txt_hex)
+    acc_color = _hex(acc_hex)
+
+    img  = Image.new("RGB", (STORY_W, STORY_H), color=bg_color)
+    draw = ImageDraw.Draw(img)
+
+    # ── Accent bar top ───────────────────────────────────────────────────
+    draw.rectangle([(0, 0), (STORY_W, 14)], fill=acc_color)
+
+    # ── IvyEdge wordmark (top-left) ──────────────────────────────────────
+    wm_font = _load_font(fonts, "DMSans.ttf", 42)
+    draw.text((STORY_PAD, 48), "IvyEdge", font=wm_font, fill=txt_color)
+
+    # ── Tagline (below wordmark) ──────────────────────────────────────────
+    tag_font = _load_font(fonts, "DMSans.ttf", 28)
+    draw.text((STORY_PAD, 104), "Grow through anything.", font=tag_font,
+              fill=_hex(SILVER))
+
+    # ── Main text — vertically centred ───────────────────────────────────
+    content_w = STORY_W - 2 * STORY_PAD
+    main_font_size = 100
+    main_font = _load_font(fonts, "Fraunces.ttf", main_font_size)
+
+    # Wrap to fit width
+    main_lines = _wrap_text(draw, text, main_font, content_w)
+    # Shrink if too many lines
+    while len(main_lines) > 5 and main_font_size > 60:
+        main_font_size -= 8
+        main_font  = _load_font(fonts, "Fraunces.ttf", main_font_size)
+        main_lines = _wrap_text(draw, text, main_font, content_w)
+
+    line_h      = main_font_size + 20
+    block_h     = len(main_lines) * line_h
+    text_y      = (STORY_H - block_h) // 2 - 60   # slightly above true center
+
+    for i, line in enumerate(main_lines):
+        draw.text((STORY_PAD, text_y + i * line_h), line, font=main_font, fill=txt_color)
+
+    # ── Accent bar below text ────────────────────────────────────────────
+    bar_y = text_y + block_h + 40
+    draw.rectangle([(STORY_PAD, bar_y), (STORY_PAD + 120, bar_y + 6)], fill=acc_color)
+
+    # ── Footer — URL bottom-left, slide type label bottom-right ──────────
+    foot_font   = _load_font(fonts, "DMMono-Regular.ttf", 26)
+    display_url = (blog_url.replace("https://www.", "").replace("https://", "")
+                   if blog_url else "ivyedge.co")
+    draw.text((STORY_PAD, STORY_H - 80), display_url, font=foot_font,
+              fill=_hex(SILVER))
+
+    label = slide_type.upper()
+    label_bbox = draw.textbbox((0, 0), label, font=foot_font)
+    label_w    = label_bbox[2] - label_bbox[0]
+    draw.text((STORY_W - STORY_PAD - label_w, STORY_H - 80), label,
+              font=foot_font, fill=acc_color)
+
+    # ── Accent bar bottom ────────────────────────────────────────────────
+    draw.rectangle([(0, STORY_H - 14), (STORY_W, STORY_H)], fill=acc_color)
+
+    if output_path is None:
+        output_path = Path(f"/tmp/ivyedge_story_{slide_type}.png")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    img.save(str(output_path), "PNG")
+    logger.info("Story card saved: %s", output_path)
     return output_path
 
 

@@ -56,12 +56,25 @@ MAX_PHRASES        = int(CONTENT_DURATION / MIN_PHRASE_SECONDS)  # = 9
 # Script parser
 # ---------------------------------------------------------------------------
 
-def parse_tiktok_script(social_md: str) -> str:
-    """Extract all spoken dialogue lines from the TikTok script."""
-    tiktok_match = re.search(
-        r"###\s*Script\s*\n(.*?)(?=\n###\s*Production|\Z)",
+def parse_tiktok_script(social_md: str, script_index: int = 1) -> str:
+    """Extract spoken dialogue lines from the TikTok script.
+
+    script_index: 1 = Script 1 (default / first video), 2 = Script 2 (second video).
+    Falls back to the legacy single-script format if numbered scripts are not found.
+    """
+    # New format: ### Script 1 / ### Script 2
+    numbered_match = re.search(
+        rf"###\s*Script {script_index}\s*\n(.*?)(?=\n###\s*Script|\n###\s*Hook options|\n##|\Z)",
         social_md, re.DOTALL
     )
+    if numbered_match:
+        tiktok_match = numbered_match
+    else:
+        # Legacy: single ### Script section (also handles script_index=1 fallback)
+        tiktok_match = re.search(
+            r"###\s*Script\s*\n(.*?)(?=\n###\s*Production|\Z)",
+            social_md, re.DOTALL
+        )
     if not tiktok_match:
         tiktok_match = re.search(
             r"##\s*TikTok.*?\n(.*?)(?=\n##\s*Production notes|\Z)",
@@ -247,6 +260,7 @@ def generate_video(
     output_path: Path,
     title: str = "",
     chunk_index: Optional[int] = None,
+    script_index: int = 1,
 ) -> Path:
     """
     Generate a branded TikTok/Reels MP4 with music and timed text overlays.
@@ -256,6 +270,7 @@ def generate_video(
     is on screen long enough to read comfortably (~3-4 seconds each).
     chunk_index selects which 30-second slice of the music to use;
     defaults to a hash of the title so different posts use different chunks.
+    script_index: 1 or 2 — selects Script 1 or Script 2 from the social file.
     """
     try:
         from moviepy import VideoFileClip, AudioFileClip, CompositeVideoClip, ImageClip
@@ -267,7 +282,7 @@ def generate_video(
         raise FileNotFoundError(f"Ivy background video not found: {BACKGROUND_VIDEO}")
 
     social_text = social_md_path.read_text(encoding="utf-8")
-    spoken      = parse_tiktok_script(social_text)
+    spoken      = parse_tiktok_script(social_text, script_index=script_index)
 
     if not spoken:
         raise ValueError("No spoken dialogue found in TikTok script.")
