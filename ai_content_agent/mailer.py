@@ -27,13 +27,14 @@ from typing import Optional
 
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 
 logger = logging.getLogger("ivyedge.mailer")
 
 EMAIL_FROM        = os.getenv("EMAIL_FROM", "")
 EMAIL_APP_PASSWORD = os.getenv("EMAIL_APP_PASSWORD", "")
 NOTIFY_EMAIL      = os.getenv("NOTIFY_EMAIL", "")
+BARBIE_EMAIL      = os.getenv("BARBIE_EMAIL", "")
 SMTP_HOST         = os.getenv("EMAIL_SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT         = int(os.getenv("EMAIL_SMTP_PORT", "587"))
 
@@ -292,4 +293,108 @@ def send(
         return True
     except Exception as e:
         logger.error("Failed to send email: %s", e)
+        return False
+
+
+# ---------------------------------------------------------------------------
+# Barbie content brief email
+# ---------------------------------------------------------------------------
+
+def send_barbie_brief(
+    topic: str,
+    brief_md: str,
+    to: Optional[str] = None,
+) -> bool:
+    """Email the weekly Barbie filming brief to Audrey (and optionally the girls)."""
+    recipient = to or BARBIE_EMAIL
+    if not recipient:
+        logger.warning("BARBIE_EMAIL not set in .env — skipping Barbie brief email")
+        return False
+    if not EMAIL_FROM or not EMAIL_APP_PASSWORD:
+        logger.error("EMAIL_FROM or EMAIL_APP_PASSWORD not set in .env")
+        return False
+
+    from datetime import datetime, timezone
+    today   = datetime.now(timezone.utc).strftime("%B %-d, %Y")
+    subject = f"🐱 Barbie Content Brief — {today}"
+
+    # Convert markdown to simple HTML
+    def _md_to_html(md: str) -> str:
+        import re
+        lines = md.split("\n")
+        out   = []
+        for line in lines:
+            if line.startswith("## "):
+                out.append(f'<h2 style="color:#1c6350;margin:24px 0 8px;">{line[3:]}</h2>')
+            elif line.startswith("### "):
+                out.append(f'<h3 style="color:#62466b;margin:16px 0 6px;">{line[4:]}</h3>')
+            elif line.startswith("**") and line.endswith("**"):
+                out.append(f'<p style="margin:6px 0;"><strong>{line[2:-2]}</strong></p>')
+            elif line.startswith("- "):
+                out.append(f'<li style="margin:4px 0;">{line[2:]}</li>')
+            elif line.strip() == "---":
+                out.append('<hr style="border:none;border-top:1px solid #eee;margin:20px 0;">')
+            elif line.strip():
+                # Bold inline **text**
+                formatted = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', line)
+                out.append(f'<p style="margin:6px 0;color:#333;">{formatted}</p>')
+            else:
+                out.append('<br>')
+        return "\n".join(out)
+
+    body_html = _md_to_html(brief_md)
+
+    html = f"""<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f5f5f5;
+             font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+<div style="max-width:680px;margin:24px auto;background:#fff;border-radius:12px;
+            overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+
+  <div style="background:linear-gradient(135deg,#1c6350 0%,#62466b 100%);padding:28px 32px;">
+    <div style="font-size:28px;">🐱🌿</div>
+    <h1 style="color:white;margin:8px 0 4px;font-size:22px;">Barbie Content Brief</h1>
+    <div style="color:#9ce3d0;font-size:14px;">{today} &nbsp;·&nbsp; {topic}</div>
+  </div>
+
+  <div style="background:#fff8f0;padding:16px 32px;border-bottom:1px solid #eee;
+              font-size:14px;color:#555;">
+    Hey! Here's this week's filming guide for Barbie. 🎬
+    Film when you can — see the schedule inside for the best posting days.
+  </div>
+
+  <div style="padding:24px 32px;">
+    {body_html}
+  </div>
+
+  <div style="background:#f8f9fa;padding:16px 32px;border-top:1px solid #eee;
+              font-size:12px;color:#999;text-align:center;">
+    IvyEdge · Generated automatically every Monday
+  </div>
+
+</div>
+</body>
+</html>"""
+
+    plain = f"Barbie Content Brief — {today}\n\nTopic: {topic}\n\n{brief_md}"
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"]    = f"IvyEdge 🐱 <{EMAIL_FROM}>"
+    msg["To"]      = recipient
+
+    msg.attach(MIMEText(plain, "plain"))
+    msg.attach(MIMEText(html,  "html"))
+
+    try:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+            server.ehlo()
+            server.starttls()
+            server.login(EMAIL_FROM, EMAIL_APP_PASSWORD)
+            server.sendmail(EMAIL_FROM, recipient, msg.as_string())
+        logger.info("Barbie brief sent to %s", recipient)
+        return True
+    except Exception as e:
+        logger.error("Failed to send Barbie brief: %s", e)
         return False

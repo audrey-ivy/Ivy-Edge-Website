@@ -1013,6 +1013,23 @@ Format for each:
 ## Quick Tips for the Girls
 3–4 bullet points of practical filming advice for this specific week's content
 (lighting, angles, how to get Barbie to cooperate, etc.)
+
+---
+
+## This Week's Posting Schedule
+
+Write this as a simple checklist the girls can check off. Use this exact structure:
+
+| Done | What | Where | When |
+|------|------|--------|------|
+| ☐ | Photo 1: [title] | Instagram feed | Tuesday |
+| ☐ | Video 1: [title] | TikTok + Reels | Wednesday |
+| ☐ | Video 2: [title] | TikTok + Reels | Friday |
+| ☐ | Photo 2: [title] | Instagram feed | Saturday |
+| ☐ | Video 3: [title] | TikTok + Reels | Sunday |
+
+Add one line below the table:
+"Film anytime — just try to post on the days above for the best reach!"
 """
         return self._call_claude(prompt, 4000, "barbie")
 
