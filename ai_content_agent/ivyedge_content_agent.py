@@ -935,6 +935,13 @@ Format:
 who film short videos with their cat, Barbie. Barbie wears a tiny ivy-leaf hat as her signature look.
 The videos and photos support Ivy Edge, a financial education brand for freelancers and gig workers.
 
+CRITICAL — BARBIE SPEAKS IN FIRST PERSON:
+All voiceover scripts are written FROM BARBIE'S PERSPECTIVE. Barbie is the character.
+The girls are just her voice. Use "I", "me", "my mom", "my house", "I live here" — never
+"our mom" or anything that breaks the illusion. Barbie is a confident, slightly unimpressed
+cat who understands money better than most humans and is not afraid to say so.
+She is funny, direct, and always right.
+
 The girls do NOT need to understand the financial topic deeply — they just need clear,
 fun, doable directions. Write like a cool older sister giving instructions, not a brand manager.
 
