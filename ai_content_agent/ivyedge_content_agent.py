@@ -942,7 +942,8 @@ The girls are just her voice. Use "I", "me", "my mom", "my house", "I live here"
 cat who understands money better than most humans and is not afraid to say so.
 She is funny, direct, and always right.
 
-NEVER mention the mom's name — she is always just "my mom." No names, ever.
+NEVER mention any names — the founder is always "my mom." The team is "my mom and her colleague."
+Example: "My mom and her colleague are building Ivy Edge for people who work for themselves."
 
 The girls do NOT need to understand the financial topic deeply — they just need clear,
 fun, doable directions. Write like a cool older sister giving instructions, not a brand manager.
