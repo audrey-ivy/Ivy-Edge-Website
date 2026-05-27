@@ -1,5 +1,5 @@
 """
-IvyEdge — TikTok Engagement Agent (TikTokApi + Playwright)
+Ivy Edge — TikTok Engagement Agent (TikTokApi + Playwright)
 
 Discovers TikTok videos via hashtag search using the unofficial TikTokApi
 library with a headless Playwright browser. Free, no API credentials needed.
@@ -163,11 +163,11 @@ def _fetch_videos(seen: set[str]) -> list[dict]:
 # Claude scoring + comment drafting
 # ---------------------------------------------------------------------------
 
-_SYSTEM_PROMPT = """You are the community engagement voice for IvyEdge, a pre-launch
+_SYSTEM_PROMPT = """You are the community engagement voice for Ivy Edge, a pre-launch
 consumer finance platform for women with non-traditional financial histories
 (freelancers, career returners, entrepreneurs with variable income).
 
-IvyEdge's thesis:
+Ivy Edge's thesis:
 - Career gaps don't make you a credit risk
 - 1099 income is real income
 - High earners with non-W-2 income deserve products that match their reality
@@ -211,7 +211,7 @@ JSON array only. No prose, no markdown fences.
 
 High scores (≥6): Creator sharing a real experience with 1099/freelance income, career gaps,
 credit struggles, OR workplace flexibility/remote work/caregiving.
-Reshare if it's a compelling story or take worth amplifying to IvyEdge's audience.
+Reshare if it's a compelling story or take worth amplifying to Ivy Edge's audience.
 
 Low scores (<6): Generic finance content, brand accounts, purely motivational with no substance.
 

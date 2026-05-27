@@ -1,8 +1,8 @@
 """
-IvyEdge Image Card Generator
+Ivy Edge Image Card Generator
 
 Generates 1080x1080 branded static image cards for Instagram and Threads.
-Uses IvyEdge brand colors and typography from brand_voice.md.
+Uses Ivy Edge brand colors and typography from brand_voice.md.
 Downloads required fonts on first run to assets/fonts/.
 """
 
@@ -214,10 +214,10 @@ def generate_card(
     # ── Footer divider ───────────────────────────────────────────────────
     draw.rectangle([(PADDING, SIZE - 130), (SIZE - PADDING, SIZE - 127)], fill=accent_color)
 
-    # ── IvyEdge wordmark + tagline ────────────────────────────────────────
+    # ── Ivy Edge wordmark + tagline ────────────────────────────────────────
     wordmark_font = _load_font(fonts, "DMSans.ttf", 36)
     tagline_font  = _load_font(fonts, "DMSans.ttf", 20)
-    draw.text((PADDING, SIZE - 116), "IvyEdge",             font=wordmark_font, fill=title_color)
+    draw.text((PADDING, SIZE - 116), "Ivy Edge",             font=wordmark_font, fill=title_color)
     draw.text((PADDING, SIZE - 72),  "Grow through anything.", font=tagline_font, fill=footer_color)
 
     # ── URL right-aligned: blog URL (or ivyedge.co fallback) ─────────────
@@ -292,9 +292,9 @@ def generate_story_card(
     # ── Accent bar top ───────────────────────────────────────────────────
     draw.rectangle([(0, 0), (STORY_W, 14)], fill=acc_color)
 
-    # ── IvyEdge wordmark (top-left) ──────────────────────────────────────
+    # ── Ivy Edge wordmark (top-left) ──────────────────────────────────────
     wm_font = _load_font(fonts, "DMSans.ttf", 42)
-    draw.text((STORY_PAD, 48), "IvyEdge", font=wm_font, fill=txt_color)
+    draw.text((STORY_PAD, 48), "Ivy Edge", font=wm_font, fill=txt_color)
 
     # ── Tagline (below wordmark) ──────────────────────────────────────────
     tag_font = _load_font(fonts, "DMSans.ttf", 28)

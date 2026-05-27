@@ -1,6 +1,6 @@
 # Example articles
 
-This folder is one of the most important parts of the context library. Showing the agent examples of on-brand IvyEdge writing is more effective than telling it what good looks like.
+This folder is one of the most important parts of the context library. Showing the agent examples of on-brand Ivy Edge writing is more effective than telling it what good looks like.
 
 ## What to include
 
@@ -34,4 +34,4 @@ Drop 2–4 markdown files here:
 
 ## Why this matters
 
-Single-shot prompts that say "write like IvyEdge" produce generic output. Examples are how the model actually learns the difference between on-brand and off-brand. Keep refreshing this folder — every editor revision is a free training example for the agent.
+Single-shot prompts that say "write like Ivy Edge" produce generic output. Examples are how the model actually learns the difference between on-brand and off-brand. Keep refreshing this folder — every editor revision is a free training example for the agent.

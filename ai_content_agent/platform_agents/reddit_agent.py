@@ -1,7 +1,7 @@
 """
-IvyEdge — Reddit Engagement Agent
+Ivy Edge — Reddit Engagement Agent
 
-Searches relevant subreddits for posts about the problems IvyEdge addresses,
+Searches relevant subreddits for posts about the problems Ivy Edge addresses,
 scores them for relevance using Claude, and writes a daily report with direct
 links and copy-paste comments for manual engagement.
 
@@ -12,7 +12,7 @@ agent runs in discovery-only mode and outputs links for manual action.
 Required for auto-posting (optional — discovery works without these):
   REDDIT_CLIENT_ID=...
   REDDIT_CLIENT_SECRET=...
-  REDDIT_USERNAME=JoinIvyEdge
+  REDDIT_USERNAME=JoinIvy Edge
   REDDIT_PASSWORD=...
 """
 
@@ -38,10 +38,10 @@ logger = logging.getLogger("ivyedge.reddit")
 
 REDDIT_CLIENT_ID     = os.getenv("REDDIT_CLIENT_ID", "")
 REDDIT_CLIENT_SECRET = os.getenv("REDDIT_CLIENT_SECRET", "")
-REDDIT_USERNAME      = os.getenv("REDDIT_USERNAME", "JoinIvyEdge")
+REDDIT_USERNAME      = os.getenv("REDDIT_USERNAME", "JoinIvy Edge")
 REDDIT_PASSWORD      = os.getenv("REDDIT_PASSWORD", "")
 
-USER_AGENT   = f"IvyEdgeBot/1.0 by u/{REDDIT_USERNAME}"
+USER_AGENT   = f"Ivy EdgeBot/1.0 by u/{REDDIT_USERNAME}"
 REDDIT_BASE  = "https://www.reddit.com"
 
 SUBREDDITS = [
@@ -207,20 +207,20 @@ def _fetch_posts(seen: set[str]) -> list[dict]:
 # Claude scoring + comment drafting
 # ---------------------------------------------------------------------------
 
-_SYSTEM_PROMPT = """You are the community engagement strategist for IvyEdge, a pre-launch
+_SYSTEM_PROMPT = """You are the community engagement strategist for Ivy Edge, a pre-launch
 consumer finance platform for women with non-traditional financial histories
 (freelancers, career returners, entrepreneurs with variable income).
 
-IvyEdge's core thesis:
+Ivy Edge's core thesis:
 - Career gaps don't make you a credit risk
 - 1099 income is real income
 - Five years of business history is an arbitrary threshold
 - High earners with non-W-2 income deserve products that match their reality
 - Plain-language financial transparency is a baseline, not a feature
 
-IvyEdge is pre-launch with nothing to sell. Comments must be:
+Ivy Edge is pre-launch with nothing to sell. Comments must be:
   1. Genuinely useful — practical advice the person can act on today
-  2. On-brand — reflects IvyEdge's POV
+  2. On-brand — reflects Ivy Edge's POV
   3. Never promotional — no links, no product mentions
   4. Authentic — smart friend who works in finance, not a press release
   5. Appropriate length — 2-4 sentences for simple questions, up to a short
@@ -253,12 +253,12 @@ For each, output:
 
 JSON array only. No prose, no markdown fences.
 
-High scores (≥6): OP is describing a real problem IvyEdge addresses — 1099/gig/freelance
+High scores (≥6): OP is describing a real problem Ivy Edge addresses — 1099/gig/freelance
 income issues, credit gaps, career breaks, loan denials, variable income frustrations.
 Our comment adds concrete, useful advice they can act on today.
 
 Low scores (<6): vague questions, already well-answered, promotional posts,
-topics outside IvyEdge's expertise (investing, crypto, etc).
+topics outside Ivy Edge's expertise (investing, crypto, etc).
 
 POSTS:
 {posts_text}"""

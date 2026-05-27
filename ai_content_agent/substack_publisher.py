@@ -1,5 +1,5 @@
 """
-Substack publisher for IvyEdge.
+Substack publisher for Ivy Edge.
 
 Converts a markdown draft to Substack's ProseMirror JSON format, creates a
 draft, then publishes it. Authentication uses the substack.sid session cookie.
@@ -25,7 +25,7 @@ load_dotenv(override=True)
 logger = logging.getLogger("ivyedge.substack")
 
 PUBLICATION_HOST = "joinivyedge.substack.com"
-AUTHOR_ID = 502617299  # IvyEdge Substack author ID
+AUTHOR_ID = 502617299  # Ivy Edge Substack author ID
 BASE_URL = f"https://{PUBLICATION_HOST}/api/v1"
 
 
@@ -147,25 +147,25 @@ class SubstackPublisher:
         html = markdown.markdown(md, extensions=["extra", "sane_lists", "tables"])
         return self._html_to_prosemirror(html)
 
-    # The exact IvyEdge standard footer — appended once after stripping any AI-generated copy
+    # The exact Ivy Edge standard footer — appended once after stripping any AI-generated copy
     _STANDARD_FOOTER = """
 
 ---
 
-IvyEdge is being built for every woman who has been underestimated by a system that never genuinely evaluated her.
+Ivy Edge is being built for every woman who has been underestimated by a system that never genuinely evaluated her.
 
 If that's you, we want you close when we launch.
 
-[Get on the IvyEdge waitlist →](https://www.ivyedge.co)
+[Get on the Ivy Edge waitlist →](https://www.ivyedge.co)
 
 *Be first. You've waited long enough.*
 """
 
     @staticmethod
     def _strip_duplicate_closing(md: str) -> str:
-        """Remove the IvyEdge boilerplate block if the AI already wrote it,
+        """Remove the Ivy Edge boilerplate block if the AI already wrote it,
         so we can append it exactly once. Preserves the article's own closing CTA."""
-        BOILERPLATE = "IvyEdge is being built for every woman who has been underestimated"
+        BOILERPLATE = "Ivy Edge is being built for every woman who has been underestimated"
         md = md.rstrip()
         if BOILERPLATE.lower() not in md.lower():
             return md

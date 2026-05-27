@@ -30,7 +30,7 @@ Each summary should be ~300–800 words and include:
 ## Quotes (short, attributable)
 - "..."
 
-## How it connects to IvyEdge
+## How it connects to Ivy Edge
 - ...
 ```
 

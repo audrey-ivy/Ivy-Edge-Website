@@ -1,5 +1,5 @@
 """
-IvyEdge Mailer
+Ivy Edge Mailer
 
 Sends the daily engagement review queue as a formatted HTML email.
 
@@ -181,7 +181,7 @@ def build_html(opportunities: list[dict], summary: dict) -> str:
   <div style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);
               padding:28px 32px;">
     <div style="color:#a78bfa;font-size:12px;font-weight:bold;
-                text-transform:uppercase;letter-spacing:1px;">IvyEdge</div>
+                text-transform:uppercase;letter-spacing:1px;">Ivy Edge</div>
     <h1 style="color:white;margin:6px 0 4px;font-size:22px;">
       Daily Engagement Brief
     </h1>
@@ -211,7 +211,7 @@ def build_html(opportunities: list[dict], summary: dict) -> str:
   <!-- Footer -->
   <div style="background:#f8f9fa;padding:16px 32px;border-top:1px solid #eee;
               font-size:12px;color:#999;text-align:center;">
-    IvyEdge Engagement Agent &nbsp;·&nbsp;
+    Ivy Edge Engagement Agent &nbsp;·&nbsp;
     Run: <code>python engagement_agent.py --show-queue</code> to view full queue
   </div>
 
@@ -226,7 +226,7 @@ def build_plain(opportunities: list[dict], summary: dict) -> str:
     posted   = summary.get("posted", 0)
 
     lines = [
-        f"IvyEdge Daily Engagement Brief — {today}",
+        f"Ivy Edge Daily Engagement Brief — {today}",
         f"{'='*50}",
         f"{total} opportunities | {summary.get('discovered', total)} discovered",
     ]
@@ -271,11 +271,11 @@ def send(
 
     today = datetime.now(timezone.utc).strftime("%b %-d")
     total = len(opportunities)
-    subject = f"IvyEdge Engagement Brief — {today} ({total} opportunities)"
+    subject = f"Ivy Edge Engagement Brief — {today} ({total} opportunities)"
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
-    msg["From"]    = f"IvyEdge Agent <{EMAIL_FROM}>"
+    msg["From"]    = f"Ivy Edge Agent <{EMAIL_FROM}>"
     msg["To"]      = recipient
 
     plain = build_plain(opportunities, summary)
@@ -306,13 +306,16 @@ def send_barbie_brief(
     to: Optional[str] = None,
 ) -> bool:
     """Email the weekly Barbie filming brief to Audrey (and optionally the girls)."""
-    recipient = to or BARBIE_EMAIL
-    if not recipient:
+    recipients_raw = to or BARBIE_EMAIL
+    if not recipients_raw:
         logger.warning("BARBIE_EMAIL not set in .env — skipping Barbie brief email")
         return False
     if not EMAIL_FROM or not EMAIL_APP_PASSWORD:
         logger.error("EMAIL_FROM or EMAIL_APP_PASSWORD not set in .env")
         return False
+    # Support comma-separated list of recipients
+    recipients = [r.strip() for r in recipients_raw.split(",") if r.strip()]
+    recipient  = ", ".join(recipients)
 
     from datetime import datetime, timezone
     today   = datetime.now(timezone.utc).strftime("%B %-d, %Y")
@@ -370,7 +373,7 @@ def send_barbie_brief(
 
   <div style="background:#f8f9fa;padding:16px 32px;border-top:1px solid #eee;
               font-size:12px;color:#999;text-align:center;">
-    IvyEdge · Generated automatically every Monday
+    Ivy Edge · Generated automatically every Monday
   </div>
 
 </div>
@@ -381,7 +384,7 @@ def send_barbie_brief(
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
-    msg["From"]    = f"IvyEdge 🐱 <{EMAIL_FROM}>"
+    msg["From"]    = f"Ivy Edge 🐱 <{EMAIL_FROM}>"
     msg["To"]      = recipient
 
     msg.attach(MIMEText(plain, "plain"))
@@ -392,7 +395,7 @@ def send_barbie_brief(
             server.ehlo()
             server.starttls()
             server.login(EMAIL_FROM, EMAIL_APP_PASSWORD)
-            server.sendmail(EMAIL_FROM, recipient, msg.as_string())
+            server.sendmail(EMAIL_FROM, recipients, msg.as_string())
         logger.info("Barbie brief sent to %s", recipient)
         return True
     except Exception as e:

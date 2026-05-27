@@ -1,11 +1,11 @@
-# IvyEdge — Brand Voice
+# Ivy Edge — Brand Voice
 
 > **Tagline:** Grow through anything.
 > **Mission:** Make financial growth accessible to every woman — regardless of income type, career path, or where she's starting from.
 
-> ⚠️ **Pre-launch.** IvyEdge has not launched any products yet. The blog is the audience-building arm of pre-launch — we prove demand for the thesis with thought leadership, not product CTAs. Voice principles below stay constant through and after launch; the only thing that changes is what the CTA points at.
+> ⚠️ **Pre-launch.** Ivy Edge has not launched any products yet. The blog is the audience-building arm of pre-launch — we prove demand for the thesis with thought leadership, not product CTAs. Voice principles below stay constant through and after launch; the only thing that changes is what the CTA points at.
 
-IvyEdge is being built for women who have been doing everything right and still can't get a fair shot from traditional finance. Our editorial voice carries that mission into every word.
+Ivy Edge is being built for women who have been doing everything right and still can't get a fair shot from traditional finance. Our editorial voice carries that mission into every word.
 
 ---
 
@@ -129,7 +129,7 @@ These are the voice the brand will speak in once products are live. For pre-laun
 
 ## Pre-launch CTAs (use these in posts)
 
-- **Waitlist:** "We're building this. Get on the IvyEdge waitlist — be first when we launch."
+- **Waitlist:** "We're building this. Get on the Ivy Edge waitlist — be first when we launch."
 - **Newsletter:** "More like this every Thursday. Get the next post in your inbox."
 - **Story collection:** "Has this happened to you? Tell us your story — we read every one."
 - **Survey:** "2-minute question: which of these has happened to you? [link]"
@@ -210,7 +210,7 @@ Use this section whenever describing visuals, carousel design, video backgrounds
 **Dale-Chall score: 8.5**
 
 A Dale-Chall score of 8.5 corresponds to college-level reading (grades 13–15). This is the right
-target for IvyEdge: our readers are smart, research-driven women who are not looking to be talked
+target for Ivy Edge: our readers are smart, research-driven women who are not looking to be talked
 down to. We make complex finance legible — not simple.
 
 **What this means in practice:**
@@ -229,10 +229,10 @@ Every Substack post ends with this footer, verbatim, after the main CTA:
 
 ---
 
-IvyEdge is being built for every woman who has been underestimated by a system that never genuinely evaluated her.
+Ivy Edge is being built for every woman who has been underestimated by a system that never genuinely evaluated her.
 
 If that's you, we want you close when we launch.
 
-[Get on the IvyEdge waitlist →](https://substack.com/@joinivyedge)
+[Get on the Ivy Edge waitlist →](https://www.ivyedge.co)
 
 *Be first. You've waited long enough.*

@@ -1,10 +1,10 @@
-# IvyEdge — Blog Content Strategy
+# Ivy Edge — Blog Content Strategy
 
-> ⚠️ **Pre-launch phase.** IvyEdge has not launched any products yet. The blog's job right now is to **prove demand for the thesis** — that women are systematically underserved by the financial system, and that there's an audience for a different approach. Posts establish authority on the topic, build an email list, and collect demand signal. They do **not** drive product applications, because there's nothing to apply for.
+> ⚠️ **Pre-launch phase.** Ivy Edge has not launched any products yet. The blog's job right now is to **prove demand for the thesis** — that women are systematically underserved by the financial system, and that there's an audience for a different approach. Posts establish authority on the topic, build an email list, and collect demand signal. They do **not** drive product applications, because there's nothing to apply for.
 
 ## Editorial mission
 
-The IvyEdge blog exists to make financial growth accessible — not just through products, but through clarity. We write for women who have been told the system doesn't work for them. We show them exactly how it does work, why it's been broken, and what they can do about it. **In doing so, we prove there's a real audience for a financial platform built on these principles.**
+The Ivy Edge blog exists to make financial growth accessible — not just through products, but through clarity. We write for women who have been told the system doesn't work for them. We show them exactly how it does work, why it's been broken, and what they can do about it. **In doing so, we prove there's a real audience for a financial platform built on these principles.**
 
 ## Editorial principles (every post)
 
@@ -12,7 +12,7 @@ The IvyEdge blog exists to make financial growth accessible — not just through
 - Tell the truth about how finance works, even when it's unflattering to the industry
 - Be immediately useful — readers walk away with something they can do
 - Sound like a brilliant friend who happens to work in finance, not a bank brochure
-- Position IvyEdge as thought leaders without referencing any product (we're pre-launch)
+- Position Ivy Edge as thought leaders without referencing any product (we're pre-launch)
 
 ## Standard structure
 
@@ -26,7 +26,7 @@ The IvyEdge blog exists to make financial growth accessible — not just through
 
 | CTA type | Sample copy | What it proves |
 | --- | --- | --- |
-| **Waitlist** | *"We're building this. Get on the IvyEdge waitlist — be first when we launch."* | Aggregate intent (highest-value signal) |
+| **Waitlist** | *"We're building this. Get on the Ivy Edge waitlist — be first when we launch."* | Aggregate intent (highest-value signal) |
 | **Newsletter** | *"More like this every Thursday. Get the next post in your inbox."* | Topic engagement, recurring audience |
 | **Survey** | *"2-minute question: which of these has happened to you? [link]"* | Qualitative validation + segmentation |
 | **Story collection** | *"Has this happened to you? Tell us your story — we read every one."* | Compounding content + persona research |
@@ -38,7 +38,7 @@ The IvyEdge blog exists to make financial growth accessible — not just through
 
 ## Content pillars
 
-### Pillar 1 — Financial education for non-traditional career paths (40%)
+### Pillar 1 — Financial education for non-traditional career paths (35%)
 
 **Audience:** Maya (freelancers), Priya (career returners), Carmen (entrepreneurs).
 **SEO opportunity:** High-intent searches like "credit card for freelancers," "loan with career gap," "how to get credit as 1099 worker."
@@ -54,7 +54,7 @@ The IvyEdge blog exists to make financial growth accessible — not just through
 - "Managing Cash Flow as a 1099 Worker: What Your Bank Doesn't Tell You"
 - "How to Document Non-W-2 Income for Loan Applications"
 
-### Pillar 2 — Demystifying finance (25%)
+### Pillar 2 — Demystifying finance (20%)
 
 **Audience:** All personas. Educational content that builds trust.
 **SEO opportunity:** "How does credit scoring work," "what is APR really," "how do banks decide who gets approved."
@@ -78,7 +78,7 @@ The IvyEdge blog exists to make financial growth accessible — not just through
 
 - Use the **Tell us your story** CTA on Pillar 1 and 2 posts to *collect* stories now
 - Build a story bank tagged by persona (Priya/Maya/Carmen/Dominique)
-- The first 2–3 stories get published (with explicit, written permission) the week IvyEdge launches — that's a powerful launch moment
+- The first 2–3 stories get published (with explicit, written permission) the week Ivy Edge launches — that's a powerful launch moment
 - In the interim, if a post needs a human-shaped example, use a **composite scenario** drawn from research, clearly labeled as such ("Take a freelancer making $112K across six clients — banks call this unstable income. Here's why they're wrong.")
 
 **Sample article ideas (held for post-launch)**
@@ -114,6 +114,34 @@ The IvyEdge blog exists to make financial growth accessible — not just through
 - "The Financial Inclusion Gap: What the Data Actually Shows"
 - "Open Banking Is Coming to the US"
 
+### Pillar 6 — Building Differently: How Companies Can Stop Pushing Women Out (20%)
+
+**Audience:** All personas + press, HR leaders, policy advocates, women considering joining Ivy Edge.
+**SEO opportunity:** "4 day work week productivity", "remote work gender gap", "paid parental leave statistics", "caregiver support at work", "companies with best maternity leave"
+
+Ivy Edge's own operating model is both proof of mission and content fodder. We can't truly live our mission while running a company that drives women out. We build differently.
+
+**Ivy Edge's internal model (the policies behind the pillar)**
+
+- **100% Remote** — geography never a barrier, no commute, no office politics. 2 in 3 C-suite leaders say RTO mandates caused disproportionate female exits (Upwork 2024).
+- **32-Hour Work Week, 4 days** — Mondays off for caregiving, rest, or whatever keeps you whole. 90% of companies in the world's largest 4-day week trial kept it permanently (Scientific American 2025).
+- **Dependent Care Credit** — up to $400/month for childcare, eldercare, or any dependent care through a company-sponsored DCAP. 455,000 women left the workforce in 2025; 42% cited caregiving (Catalyst/BLS 2026).
+- **12 Weeks Paid Parental Leave** — primary AND secondary caregiver. Phased return for the first month back. No penalty to pay, title, or trajectory. Average US maternity leave is just 7.2 weeks (Minneapolis Fed 2024).
+- **Education Expenses/Reduction** — reimbursement for higher education or equivalent paid toward student loans. Women hold roughly two-thirds of outstanding $1.7T student loan debt (Investopedia).
+- **Learning & Wellness Budget** — $2,000/year per person for professional development, mental health, therapy, or wellbeing. No approval needed. Only 36% of working caregivers report "very good" mental health (Guardian Life 2025).
+- **All employees enrolled** in the highest level of Ivy Circle membership.
+
+**Sample article ideas**
+
+- "What a 4-Day Work Week Actually Does to Women's Workforce Participation"
+- "Why RTO Mandates Are Quietly Pushing Women Out — And What the Data Shows"
+- "The Real Cost of No Caregiver Support (And Why $400/Month Changes Everything)"
+- "12 Weeks Isn't Just Nice-to-Have: The Economics of Paid Parental Leave"
+- "How Remote-First Hiring Unlocks Talent That Offices Were Losing"
+- "Student Loan Debt Is a Women's Issue — And Employers Can Fix Part of It"
+- "The Mental Health Cost of Caregiving While Working"
+- "Why a Wellness Budget Is a Retention Strategy, Not a Perk"
+
 ---
 
 ## SEO targets by pillar
@@ -123,6 +151,7 @@ The IvyEdge blog exists to make financial growth accessible — not just through
 | 1 | loan for freelancers, credit card for 1099 workers, loan with career gap | how to get approved for loan as freelancer, credit building after career break, business loan 4 years profitable |
 | 2 | how credit score works, what is APR, underwriting process | why did my credit score drop during career gap, APR vs interest rate difference, what do underwriters look for |
 | 5 | AI in banking, alternative credit scoring, CFPB junk fees | using ChatGPT to choose bank, how AI credit models work, new overdraft fee rules 2026 |
+| 6 | 4 day work week productivity, remote work gender gap, paid parental leave statistics | caregiver support at work, companies with best maternity leave, 4 day work week women workforce, RTO mandate women leaving jobs |
 
 ## On-page SEO requirements
 
@@ -131,7 +160,7 @@ Every post must include:
 - Target keyword in title (H1), URL slug, and first 100 words
 - Meta description (150–160 characters) with keyword and value prop
 - H2 / H3 subheads with semantic keywords
-- 2–3 internal links to relevant IvyEdge pages (product pages, related posts)
+- 2–3 internal links to relevant Ivy Edge pages (product pages, related posts)
 - 1–2 authoritative external links (research, news, .gov / .edu sources)
 - Alt text for all images (descriptive + keyword where natural)
 - Schema markup: Article schema with author, publish date, update date
@@ -164,7 +193,7 @@ Every post must include:
 
 ## KPIs (pre-launch — 6-month targets)
 
-The blog is a **demand-validation instrument** before it's an acquisition instrument. We're proving people care about the topics IvyEdge will eventually solve.
+The blog is a **demand-validation instrument** before it's an acquisition instrument. We're proving people care about the topics Ivy Edge will eventually solve.
 
 | Metric | What it proves | 6-month target |
 | --- | --- | --- |

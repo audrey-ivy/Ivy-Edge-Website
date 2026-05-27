@@ -1,0 +1,1449 @@
+[08:10:30] ========================================
+[08:10:30] IvyEdge Monday pipeline starting
+[08:10:30] ========================================
+[08:10:30] Step 1: Extending editorial calendar...
+ERROR: ANTHROPIC_API_KEY not set in .env
+[09:40:51] ========================================
+[09:40:51] ========================================
+[09:40:51] IvyEdge Monday pipeline starting
+[09:40:51] IvyEdge Monday pipeline starting
+[09:40:51] ========================================
+[09:40:51] ========================================
+[09:40:51] Step 1: Extending editorial calendar...
+[09:40:51] Step 1: Extending editorial calendar...
+ERROR: ANTHROPIC_API_KEY not set in .env
+[09:42:35] ========================================
+[09:42:35] ========================================
+[09:42:35] IvyEdge Monday pipeline starting
+[09:42:35] IvyEdge Monday pipeline starting
+[09:42:35] ========================================
+[09:42:35] ========================================
+[09:42:35] Step 1: Extending editorial calendar...
+[09:42:35] Step 1: Extending editorial calendar...
+ERROR: ANTHROPIC_API_KEY not set in .env
+[09:44:53] ========================================
+[09:44:53] ========================================
+[09:44:53] IvyEdge Monday pipeline starting
+[09:44:53] IvyEdge Monday pipeline starting
+[09:44:53] ========================================
+[09:44:53] ========================================
+[09:44:53] Step 1: Extending editorial calendar...
+[09:44:53] Step 1: Extending editorial calendar...
+09:44:54 [INFO] Generating 8 posts (4 weeks × 2/week) starting 2026-05-12
+09:44:54 [INFO] Calling Claude (claude-sonnet-4-6)...
+09:45:33 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:45:33 [INFO] Received 8 post ideas from Claude
+09:45:33 [INFO] Wrote 8 new posts (41 total) → /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+
+Done. 8 posts added to /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+Date range: 2026-05-13 → 2026-06-05
+
+Run the batch:
+  python run_pipeline.py batch --calendar /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+[09:45:34] Step 1 done.
+[09:45:34] Step 1 done.
+[09:45:34] Step 2: Checking for trending topics...
+[09:45:34] Step 2: Checking for trending topics...
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:227: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  cutoff = datetime.utcnow() - timedelta(days=RECENCY_DAYS)
+2026-05-11 09:45:34,923 INFO Pillar 1: Financial Education for Non-Tr: 0 articles found
+2026-05-11 09:45:35,300 INFO Pillar 2: Demystifying Finance: 0 articles found
+2026-05-11 09:45:35,536 INFO Pillar 3: Real Stories: 0 articles found
+2026-05-11 09:45:35,769 INFO Pillar 4: Tools & How-Tos: 0 articles found
+2026-05-11 09:45:36,159 INFO Pillar 5: Industry Trends & Advocacy: 0 articles found
+2026-05-11 09:45:37,625 INFO Pillar 6: Building Differently — How Com: 0 articles found
+2026-05-11 09:46:12,404 INFO Google Trends: 0 unique rising queries discovered
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:305: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  cutoff = datetime.utcnow() - timedelta(days=ARXIV_RECENCY_DAYS)
+2026-05-11 09:46:12,773 WARNING arXiv fetch failed for 'lending discrimination gender': <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
+2026-05-11 09:46:12,819 WARNING arXiv fetch failed for 'credit score women fairness': <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
+2026-05-11 09:46:12,864 WARNING arXiv fetch failed for 'fintech algorithmic bias gender': <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
+2026-05-11 09:46:12,910 WARNING arXiv fetch failed for 'mortgage discrimination algorithmic underwriting': <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
+2026-05-11 09:46:12,970 WARNING arXiv fetch failed for 'consumer credit gender racial bias': <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
+2026-05-11 09:46:13,014 WARNING arXiv fetch failed for 'alternative credit scoring non-traditional income': <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
+2026-05-11 09:46:13,060 WARNING arXiv fetch failed for 'gig economy income financial access': <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
+2026-05-11 09:46:13,105 WARNING arXiv fetch failed for 'small business lending women minority': <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
+2026-05-11 09:46:13,147 WARNING arXiv fetch failed for 'motherhood penalty labor market': <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
+2026-05-11 09:46:13,194 WARNING arXiv fetch failed for 'caregiving gender wage gap employment': <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
+2026-05-11 09:46:13,238 WARNING arXiv fetch failed for 'childcare cost women labor force participation': <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
+2026-05-11 09:46:13,283 WARNING arXiv fetch failed for 'parental leave gender employment outcomes': <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
+2026-05-11 09:46:13,325 WARNING arXiv fetch failed for 'women workforce re-entry barriers': <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
+2026-05-11 09:46:13,370 WARNING arXiv fetch failed for 'gender pay gap employer policy': <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
+2026-05-11 09:46:13,415 WARNING arXiv fetch failed for 'workplace flexibility women retention': <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
+2026-05-11 09:46:13,463 WARNING arXiv fetch failed for 'eldercare women labor supply': <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
+2026-05-11 09:46:13,511 WARNING arXiv fetch failed for 'DEI gender diversity corporate outcomes': <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
+2026-05-11 09:46:13,555 WARNING arXiv fetch failed for 'gender discrimination hiring promotion': <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1032)>
+2026-05-11 09:46:13,555 INFO arXiv: 0 unique recent paper(s) found across 18 queries
+Fetching news...
+Searching arXiv for recent research...
+No recent news or research found. Try again later or check your network.
+[09:46:13] Step 2 done.
+[09:46:13] Step 2 done.
+[09:46:13] Step 3: Running content pipeline...
+[09:46:13] Step 3: Running content pipeline...
+usage: run_pipeline.py [-h] [--model MODEL] [--context-dir CONTEXT_DIR]
+                       [--output OUTPUT] [--publish]
+                       {intro,single,batch} ...
+run_pipeline.py: error: unrecognized arguments: --publish
+[09:49:21] ========================================
+[09:49:21] ========================================
+[09:49:21] IvyEdge Monday pipeline starting
+[09:49:21] IvyEdge Monday pipeline starting
+[09:49:21] ========================================
+[09:49:21] ========================================
+[09:49:21] Step 1: Extending editorial calendar...
+[09:49:21] Step 1: Extending editorial calendar...
+09:49:21 [INFO] Generating 8 posts (4 weeks × 2/week) starting 2026-05-12
+09:49:21 [INFO] Calling Claude (claude-sonnet-4-6)...
+09:50:02 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:50:02 [INFO] Received 8 post ideas from Claude
+09:50:02 [INFO] Wrote 8 new posts (49 total) → /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+
+Done. 8 posts added to /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+Date range: 2026-05-13 → 2026-06-05
+
+Run the batch:
+  python run_pipeline.py batch --calendar /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+[09:50:02] Step 1 done.
+[09:50:02] Step 1 done.
+[09:50:02] Step 2: Checking for trending topics...
+[09:50:02] Step 2: Checking for trending topics...
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:227: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  cutoff = datetime.utcnow() - timedelta(days=RECENCY_DAYS)
+2026-05-11 09:50:03,807 INFO Pillar 1: Financial Education for Non-Tr: 0 articles found
+2026-05-11 09:50:04,197 INFO Pillar 2: Demystifying Finance: 0 articles found
+2026-05-11 09:50:04,424 INFO Pillar 3: Real Stories: 0 articles found
+2026-05-11 09:50:04,672 INFO Pillar 4: Tools & How-Tos: 0 articles found
+2026-05-11 09:50:05,074 INFO Pillar 5: Industry Trends & Advocacy: 0 articles found
+2026-05-11 09:50:06,454 INFO Pillar 6: Building Differently — How Com: 0 articles found
+2026-05-11 09:50:32,095 INFO Google Trends: 0 unique rising queries discovered
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:305: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  cutoff = datetime.utcnow() - timedelta(days=ARXIV_RECENCY_DAYS)
+2026-05-11 09:50:32,483 WARNING arXiv fetch failed for 'lending discrimination gender': HTTP Error 429: Unknown Error
+2026-05-11 09:50:32,819 WARNING arXiv fetch failed for 'credit score women fairness': HTTP Error 429: Unknown Error
+2026-05-11 09:50:47,891 WARNING arXiv fetch failed for 'fintech algorithmic bias gender': The read operation timed out
+2026-05-11 09:50:48,135 WARNING arXiv fetch failed for 'mortgage discrimination algorithmic underwriting': HTTP Error 429: Unknown Error
+2026-05-11 09:51:03,217 WARNING arXiv fetch failed for 'consumer credit gender racial bias': The read operation timed out
+2026-05-11 09:51:18,301 WARNING arXiv fetch failed for 'alternative credit scoring non-traditional income': The read operation timed out
+2026-05-11 09:51:33,378 WARNING arXiv fetch failed for 'gig economy income financial access': The read operation timed out
+2026-05-11 09:51:48,430 WARNING arXiv fetch failed for 'small business lending women minority': The read operation timed out
+2026-05-11 09:52:03,480 WARNING arXiv fetch failed for 'motherhood penalty labor market': The read operation timed out
+2026-05-11 09:52:18,583 WARNING arXiv fetch failed for 'caregiving gender wage gap employment': The read operation timed out
+2026-05-11 09:52:46,452 WARNING arXiv fetch failed for 'parental leave gender employment outcomes': The read operation timed out
+2026-05-11 09:53:01,523 WARNING arXiv fetch failed for 'women workforce re-entry barriers': The read operation timed out
+2026-05-11 09:53:16,595 WARNING arXiv fetch failed for 'gender pay gap employer policy': The read operation timed out
+2026-05-11 09:53:31,669 WARNING arXiv fetch failed for 'workplace flexibility women retention': The read operation timed out
+2026-05-11 09:53:46,741 WARNING arXiv fetch failed for 'eldercare women labor supply': The read operation timed out
+2026-05-11 09:54:01,794 WARNING arXiv fetch failed for 'DEI gender diversity corporate outcomes': The read operation timed out
+2026-05-11 09:54:02,051 WARNING arXiv fetch failed for 'gender discrimination hiring promotion': HTTP Error 429: Unknown Error
+2026-05-11 09:54:02,052 INFO arXiv: 5 unique recent paper(s) found across 18 queries
+2026-05-11 09:54:25,543 INFO HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:466: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+2026-05-11 09:54:30,155 INFO HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:541: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+2026-05-11 09:54:30,158 INFO Bumped 4 scheduled post(s) to next week to make room for trending content: "Your Career Gap Didn't Hurt Your Credit Score — The Model Did", "What Banks Actually Mean When They Call Your Income 'Unstable'", "What Underwriters Actually See When They Look at 1099 Income", "APR vs. Interest Rate: Why One Number Is 3 Points Higher"
+2026-05-11 09:54:30,162 INFO Added 1 trending post(s) to /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv (weekly cap: 2)
+Fetching news...
+Searching arXiv for recent research...
+Analyzing 0 articles + 5 papers with Claude...
+
+============================================================
+## Trending Now
+
+*Honest assessment upfront: this week's feed is a poor match for IvyEdge's audience. The arXiv batch is dominated by ML/computer science and materials science papers with no direct relevance to consumer finance, women's economic lives, or workplace structure. There are no rising search terms provided, no news items, and no fintech/policy/labor research in the mix. Recommendations below are the closest available signals — but urgency is low and the angles require more editorial lift than a typical fast-follow.*
+
+---
+
+### "Vibe Econometrics" — When AI-Generated Financial Analysis Can't Be Trusted
+
+- **Hook:** A new paper coins "vibe methodology" — the idea that AI tools democratize not just capability but also the specific ways analysis can go silently wrong. For women using AI-assisted tools to understand their finances or document income, this is a credibility and risk story.
+- **IvyEdge angle:** IvyEdge's audience increasingly turns to AI tools (ChatGPT, Copilot, etc.) to decode loan terms, estimate tax liability, or model freelance income. This paper gives us standing to say: AI financial guidance can look confident while resting on unverifiable assumptions — and women with non-traditional income profiles are most exposed when that guidance is wrong, because their financial situations don't fit the default assumptions baked into most models. We're not anti-AI; we're pro-knowing-when-to-verify.
+- **Pillar:** 2 — Demystifying Finance
+- **Suggested post title:** *"Can You Trust AI to Explain Your Finances? Here's What a New Study Says to Watch For"*
+- **Cite:** https://arxiv.org/abs/2605.08071v1
+- **Urgency:** Publish within 14 days — no breaking news hook, so timing pressure is low, but "AI financial tools" is a persistent search trend worth owning early
+
+---
+
+## Evergreen Signals
+
+- **The AI-as-financial-advisor problem for non-traditional earners.** The "vibe methodology" paper gestures at a broader pattern worth a dedicated content series: AI tools trained on conventional financial data will systematically underserve freelancers, career returners, and entrepreneurs because their income, credit, and asset patterns are edge cases in most training sets. This could anchor a multi-part series under Pillar 1 (Financial Education) and Pillar 4 (Tools & How-Tos): *"What AI Gets Wrong About Your Money — And How to Fill the Gaps."* No single news hook needed; the pattern is durable.
+
+- **The democratization framing as a double-edged sword.** The arXiv paper's core argument — that tools marketed as democratizing access also democratize failure modes — maps cleanly onto a broader IvyEdge theme: fintech products marketed to underserved women often reproduce the same systemic blind spots as legacy finance, just with a friendlier UI. This is evergreen material for Pillar 5 (Industry Trends & Advocacy) and could inform op-ed-style content or a founder/editorial voice piece.
+
+---
+
+## Skip (and why)
+
+- **LLMs Improving LLMs / VecCISC / EmambaIR / Perovskite Defect Diffusion:** Zero relevance to IvyEdge's audience or mission. Pure computer science and materials science research with no consumer finance, labor, or gender economics dimension. Do not force an angle.
+
+---
+
+**Editorial note for this week:** The feed suggests a content gap in the news pipeline — no labor data, no fintech regulation news, no academic research on the gender wealth gap, caregiving economics, or credit access. For next week's brief, it's worth flagging to whoever is sourcing inputs: NWLC, IWPR, CFPB releases, and SSRN (economics/finance preprints) will consistently yield stronger IvyEdge-relevant signals than the general arXiv CS feed.
+============================================================
+
+Generating calendar suggestions...
+
+Suggested posts (1):
+  2026-05-25 — Can You Trust AI to Explain Your Finances? Here's What a New Study Says to Watch For
+[09:54:30] Step 2 done.
+[09:54:30] Step 2 done.
+[09:54:30] Step 3: Running content pipeline...
+[09:54:30] Step 3: Running content pipeline...
+09:54:31 [INFO] Loaded context: {'brand_voice': '11663 chars', 'personas': '4680 chars', 'product_knowledge': '6165 chars', 'strategy': '11935 chars', 'inclusive_marketing': '3395 chars', 'extras': '2932 chars'}
+09:54:31 [INFO] ---- Phase: format_analysis ----
+09:54:31 [INFO] Competitor analysis for: 'freelance income proof'
+09:54:32 [INFO] DuckDuckGo returned 10 candidates for 'freelance income proof'
+09:54:34 [INFO]   [1/5] How to Prove Income as a Freelancer in 2026 - Soli — 3057 words, H2×11
+09:54:35 [INFO]   [2/5] Self-Employed Proof of Income: 6 Methods on How to — 2612 words, H2×10
+09:54:37 [INFO]   [3/5] Proof of Income for Freelancers: A Complete Guide — 2302 words, H2×16
+09:54:39 [INFO]   [4/5] Freelance Proof of Income for Gig Workers: Proving — 1496 words, H2×5
+09:54:40 [INFO]   [5/5] How to Prove Your Self Employed Income as a Freela — 1797 words, H2×9
+09:55:10 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:55:10 [INFO] ---- Phase: research ----
+09:56:07 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:56:07 [INFO] [research] 56.6s, in=11238 out=2500
+09:56:07 [INFO] ---- Phase: outline ----
+09:57:06 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:57:06 [INFO] [outline] 59.1s, in=15321 out=2500
+09:57:06 [INFO] ---- Phase: draft ----
+09:58:12 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:58:12 [INFO] [draft] 65.9s, in=13912 out=2732
+09:58:12 [INFO] ---- Phase: voice_edit ----
+09:59:18 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:59:18 [INFO] [voice_edit] 66.1s, in=14762 out=2623
+09:59:18 [INFO] ---- Phase: seo ----
+10:00:37 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:00:37 [INFO] [seo] 79.1s, in=6818 out=3705
+10:00:37 [INFO] ---- Phase: social ----
+10:01:04 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:01:04 [INFO] [social] 27.4s, in=4146 out=1361
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/run_pipeline.py:79: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  date = datetime.utcnow().strftime("%Y-%m-%d")
+10:01:05 [INFO] Dale-Chall: 10.28 (target 8.5) ↑ too complex
+10:01:05 [INFO] Saved draft to output/2026-05-11_your-1099-income-isnt-unstable-heres-how-to-prove-it
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/run_pipeline.py:258: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  row["drafted_at"] = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+10:01:05 [INFO] Draft created: id=197218828 title='Your 1099 Income Isn't 'Unstable' — Here's How to Prove It'
+10:01:05 [INFO] Published: https://joinivyedge.substack.com/p/197218828
+10:01:05 [INFO] ---- Phase: format_analysis ----
+10:01:05 [INFO] Competitor analysis for: 'what credit score measures'
+10:01:06 [INFO] DuckDuckGo returned 12 candidates for 'what credit score measures'
+10:01:11 [INFO]   [1/5] AEI's Critique Misses the Mark on VantageScore 4.0 — 1325 words, H2×6
+10:01:13 [INFO]   [2/5] Credit Score Ranges Explained: Where You Fall and  — 1741 words, H2×5
+10:01:15 [INFO]   [3/5] How Is Your Credit Score Calculated? — 1856 words, H2×14
+10:01:17 [INFO]   [4/5] What is a credit score and how does it work? | Fid — 1222 words, H2×0
+10:01:20 [INFO]   [5/5] How is Credit Score Calculated and What Makes Up a — 2332 words, H2×38
+10:01:48 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:01:48 [INFO] ---- Phase: research ----
+10:02:44 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:02:44 [INFO] [research] 55.9s, in=11215 out=2500
+10:02:44 [INFO] ---- Phase: outline ----
+10:03:41 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:03:41 [INFO] [outline] 57.0s, in=15310 out=2500
+10:03:41 [INFO] ---- Phase: draft ----
+10:04:44 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:04:44 [INFO] [draft] 63.2s, in=13912 out=2676
+10:04:44 [INFO] ---- Phase: voice_edit ----
+10:05:58 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:05:58 [INFO] [voice_edit] 73.7s, in=14706 out=2563
+10:05:58 [INFO] ---- Phase: seo ----
+10:07:21 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:07:21 [INFO] [seo] 83.7s, in=6755 out=3930
+10:07:21 [INFO] ---- Phase: social ----
+10:07:48 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:07:48 [INFO] [social] 26.7s, in=4162 out=1345
+10:07:48 [INFO] Dale-Chall: 9.67 (target 8.5) ↑ too complex
+10:07:48 [INFO] Saved draft to output/2026-05-11_what-your-credit-score-actually-measures-and-what-it-misses
+10:07:48 [INFO] Draft created: id=197219631 title='What Your Credit Score Actually Measures (And What It Misses)'
+10:07:49 [INFO] Published: https://joinivyedge.substack.com/p/197219631
+10:07:49 [INFO] ---- Phase: format_analysis ----
+10:07:49 [INFO] Competitor analysis for: 'career gap credit score'
+10:07:50 [INFO] DuckDuckGo returned 11 candidates for 'career gap credit score'
+10:07:55 [INFO]   [1/5] Can Your Credit Score Affect Job Applications? — 1600 words, H2×12
+10:07:57 [INFO]   [2/5] What Really Shows Up on a Credit Check for Employm — 1050 words, H2×4
+10:07:59 [INFO]   [3/5] When Your Credit Doesn’t Match Your Career — 789 words, H2×1
+10:08:01 [INFO]   [4/5] Bad Credit Could Cost You Your Dream Job: Half of  — 1493 words, H2×6
+10:08:03 [INFO]   [5/5] Background checks: When a credit report can hurt y — 1008 words, H2×3
+10:08:31 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:08:31 [INFO] ---- Phase: research ----
+10:09:26 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:09:26 [INFO] [research] 55.1s, in=11223 out=2467
+10:09:26 [INFO] ---- Phase: outline ----
+10:10:24 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:10:24 [INFO] [outline] 58.1s, in=15283 out=2500
+10:10:24 [INFO] ---- Phase: draft ----
+10:11:23 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:11:23 [INFO] [draft] 59.1s, in=13912 out=2417
+10:11:23 [INFO] ---- Phase: voice_edit ----
+10:12:24 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:12:24 [INFO] [voice_edit] 61.5s, in=14447 out=2326
+10:12:24 [INFO] ---- Phase: seo ----
+10:13:35 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:13:35 [INFO] [seo] 70.7s, in=6520 out=3431
+10:13:35 [INFO] ---- Phase: social ----
+10:14:05 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:14:05 [INFO] [social] 29.7s, in=3909 out=1382
+10:14:05 [INFO] Dale-Chall: 9.56 (target 8.5) ↑ too complex
+10:14:05 [INFO] Saved draft to output/2026-05-11_the-career-gap-that-made-your-credit-score-drop-and-why-that
+10:14:05 [INFO] Draft created: id=197220304 title='The Career Gap That Made Your Credit Score Drop (And Why That's Backwards)'
+10:14:06 [INFO] Published: https://joinivyedge.substack.com/p/197220304
+10:14:06 [INFO] ---- Phase: format_analysis ----
+10:14:06 [INFO] Competitor analysis for: 'APR vs interest rate'
+10:14:06 [INFO] DuckDuckGo returned 0 candidates for 'APR vs interest rate'
+10:14:06 [WARNING] No usable results found for 'APR vs interest rate'
+10:14:06 [INFO] ---- Phase: research ----
+[10:14:35] ========================================
+[10:14:35] ========================================
+[10:14:35] IvyEdge Monday pipeline starting
+[10:14:35] IvyEdge Monday pipeline starting
+[10:14:35] ========================================
+[10:14:35] ========================================
+[10:14:35] Step 1: Extending editorial calendar...
+[10:14:35] Step 1: Extending editorial calendar...
+10:14:36 [INFO] Generating 8 posts (4 weeks × 2/week) starting 2026-05-12
+10:14:36 [INFO] Calling Claude (claude-sonnet-4-6)...
+10:14:57 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:14:57 [INFO] [research] 50.6s, in=11230 out=2271
+10:14:57 [INFO] ---- Phase: outline ----
+10:15:10 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:15:10 [INFO] Received 8 post ideas from Claude
+10:15:10 [INFO] Skipping duplicate: What a 4-Day Work Week Actually Does to Women's Workforce Participation
+10:15:10 [INFO] Skipping duplicate: Why RTO Mandates Are Quietly Pushing Women Out — And What the Data Shows
+10:15:10 [INFO] Skipping duplicate: Student Loan Debt Is a Women's Issue — And Employers Can Fix Part of It
+10:15:10 [INFO] Wrote 5 new posts (55 total) → /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+
+Done. 5 posts added to /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+Date range: 2026-05-13 → 2026-05-27
+
+Run the batch:
+  python run_pipeline.py batch --calendar /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+[10:15:10] Step 1 done.
+[10:15:10] Step 1 done.
+[10:15:10] Step 2: Checking for trending topics...
+[10:15:10] Step 2: Checking for trending topics...
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:227: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  cutoff = datetime.utcnow() - timedelta(days=RECENCY_DAYS)
+2026-05-11 10:15:11,704 INFO Pillar 1: Financial Education for Non-Tr: 0 articles found
+2026-05-11 10:15:12,086 INFO Pillar 2: Demystifying Finance: 0 articles found
+2026-05-11 10:15:12,400 INFO Pillar 3: Real Stories: 0 articles found
+2026-05-11 10:15:12,654 INFO Pillar 4: Tools & How-Tos: 0 articles found
+2026-05-11 10:15:13,043 INFO Pillar 5: Industry Trends & Advocacy: 0 articles found
+2026-05-11 10:15:14,451 INFO Pillar 6: Building Differently — How Com: 0 articles found
+2026-05-11 10:15:40,067 INFO Google Trends: 0 unique rising queries discovered
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:305: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  cutoff = datetime.utcnow() - timedelta(days=ARXIV_RECENCY_DAYS)
+2026-05-11 10:15:40,394 WARNING arXiv fetch failed for 'lending discrimination gender': HTTP Error 429: Unknown Error
+2026-05-11 10:15:46,465 WARNING arXiv fetch failed for 'credit score women fairness': The read operation timed out
+10:15:52 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:15:52 [INFO] [outline] 55.4s, in=13823 out=2500
+10:15:52 [INFO] ---- Phase: draft ----
+2026-05-11 10:15:52,539 WARNING arXiv fetch failed for 'fintech algorithmic bias gender': The read operation timed out
+2026-05-11 10:15:58,612 WARNING arXiv fetch failed for 'mortgage discrimination algorithmic underwriting': The read operation timed out
+2026-05-11 10:15:59,037 WARNING arXiv fetch failed for 'consumer credit gender racial bias': HTTP Error 429: Unknown Error
+2026-05-11 10:15:59,523 WARNING arXiv fetch failed for 'alternative credit scoring non-traditional income': HTTP Error 429: Unknown Error
+2026-05-11 10:15:59,758 WARNING arXiv fetch failed for 'gig economy income financial access': HTTP Error 429: Unknown Error
+2026-05-11 10:16:05,824 WARNING arXiv fetch failed for 'small business lending women minority': The read operation timed out
+2026-05-11 10:16:11,889 WARNING arXiv fetch failed for 'motherhood penalty labor market': The read operation timed out
+2026-05-11 10:16:17,958 WARNING arXiv fetch failed for 'caregiving gender wage gap employment': The read operation timed out
+2026-05-11 10:16:18,293 WARNING arXiv fetch failed for 'parental leave gender employment outcomes': HTTP Error 429: Unknown Error
+2026-05-11 10:16:18,490 WARNING arXiv fetch failed for 'women workforce re-entry barriers': HTTP Error 429: Unknown Error
+2026-05-11 10:16:18,695 WARNING arXiv fetch failed for 'gender pay gap employer policy': HTTP Error 429: Unknown Error
+2026-05-11 10:16:24,760 WARNING arXiv fetch failed for 'workplace flexibility women retention': The read operation timed out
+2026-05-11 10:16:30,827 WARNING arXiv fetch failed for 'eldercare women labor supply': The read operation timed out
+2026-05-11 10:16:36,900 WARNING arXiv fetch failed for 'DEI gender diversity corporate outcomes': The read operation timed out
+2026-05-11 10:16:37,177 WARNING arXiv fetch failed for 'gender discrimination hiring promotion': HTTP Error 429: Unknown Error
+2026-05-11 10:16:37,178 INFO arXiv: 5 unique recent paper(s) found across 18 queries
+10:16:46 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:16:46 [INFO] [draft] 53.8s, in=13912 out=2367
+10:16:46 [INFO] ---- Phase: voice_edit ----
+2026-05-11 10:16:54,163 INFO HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:466: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+2026-05-11 10:16:55,478 INFO HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+Fetching news...
+Searching arXiv for recent research...
+Analyzing 0 articles + 5 papers with Claude...
+
+============================================================
+## Trending Now
+
+*Honest assessment: this week's feed is a poor match for IvyEdge. The arXiv papers are all technical AI/ML and materials science research with no direct relevance to women's financial lives, non-traditional income, or structural workplace issues. There are no rising search terms included in this brief, and no news items were provided beyond these papers.*
+
+**There are no genuinely timely stories this week that warrant a fast-follow IvyEdge post based on the provided inputs.**
+
+Rather than force an angle that doesn't exist, the editorial call is: hold the trending slot this week and pull from the evergreen pipeline.
+
+---
+
+## Evergreen Signals
+
+- **"Vibe Econometrics" → financial literacy and AI-assisted tools for non-experts.** The Ashton paper (arXiv 2605.08071) touches on something worth tracking: AI tools are being marketed as democratizing financial/analytical capability, but may also democratize the failure modes — bad assumptions dressed up as confident outputs. For IvyEdge's audience of freelancers and career returners increasingly using AI to model their finances, understand loan options, or navigate tax tools, this is a real risk worth a future explainer. Pillar: **Demystifying Finance** — *"What AI-Powered Finance Tools Won't Tell You About Their Assumptions."*
+
+- **The gap between "tools exist" and "tools work for non-traditional users."** Nothing in this week's feed addresses it, but its absence is itself a signal. Freelancers and career returners are underserved by both legacy financial products and emerging AI-powered ones (which are typically trained on traditional employment data). A recurring content series interrogating whether new fintech tools actually work for IvyEdge's audience — or just replicate the same exclusions with a shinier interface — would be differentiated and defensible. Pillar: **Industry Trends & Advocacy.**
+
+---
+
+## Skip (and Why)
+
+- **All other arXiv papers this week** (LLM test-time scaling, image reconstruction, perovskite defects, reasoning trace clustering) — zero relevance to IvyEdge's audience or mission. No forced angles warranted.
+- **Temptation to retrofit the AI papers into a "women in tech" post** — resist. IvyEdge's Building Differently pillar covers structural employer accountability, not general tech commentary. Without a specific story about hiring, caregiving penalties, or return-to-work barriers, there's no honest hook here.
+
+---
+
+*Editorial note for this week: If the team wants to publish on schedule, this is a strong week to run a planned evergreen piece, a Real Stories post already in the pipeline, or a Tools & How-Tos checklist that doesn't depend on news peg. The feed will be more productive when the Rising Search Terms signal is populated — that data stream is where the real editorial leverage will come from.*
+============================================================
+
+Generating calendar suggestions...
+No urgent posts suggested this week.
+[10:16:55] Step 2 done.
+[10:16:55] Step 2 done.
+[10:16:55] Step 3: Running content pipeline...
+[10:16:55] Step 3: Running content pipeline...
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/run_pipeline.py:231: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+10:16:56 [INFO] Loaded context: {'brand_voice': '11663 chars', 'personas': '4680 chars', 'product_knowledge': '6165 chars', 'strategy': '11935 chars', 'inclusive_marketing': '3395 chars', 'extras': '2932 chars'}
+10:16:56 [INFO] ---- Phase: format_analysis ----
+10:16:56 [INFO] Competitor analysis for: 'how career gaps affect credit score'
+10:16:57 [INFO] DuckDuckGo returned 10 candidates for 'how career gaps affect credit score'
+10:16:59 [INFO]   [1/5] How Employment Status Affects Your Credit - Dollar — 839 words, H2×5
+10:17:01 [INFO]   [2/5] Can Job History Affect Credit Scores? | Equifax — 2141 words, H2×21
+10:17:03 [INFO]   [3/5] Bad Credit Could Cost You Your Dream Job: Half of  — 1492 words, H2×6
+10:17:05 [INFO]   [4/5] Employment History and Credit Decisions — 787 words, H2×1
+10:17:07 [INFO]   [5/5] What Really Shows Up on a Credit Check for Employm — 1050 words, H2×4
+10:17:34 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:17:34 [INFO] ---- Phase: research ----
+10:17:41 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:17:41 [INFO] [voice_edit] 55.1s, in=14397 out=2246
+10:17:41 [INFO] ---- Phase: seo ----
+10:18:33 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:18:33 [INFO] [research] 59.2s, in=11317 out=2500
+10:18:33 [INFO] ---- Phase: outline ----
+10:18:47 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:18:47 [INFO] [seo] 65.8s, in=6439 out=3363
+10:18:47 [INFO] ---- Phase: social ----
+10:19:11 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:19:11 [INFO] [social] 24.4s, in=3801 out=1325
+10:19:11 [INFO] Dale-Chall: 9.53 (target 8.5) ↑ too complex
+10:19:11 [INFO] Saved draft to output/2026-05-11_apr-vs-interest-rate-why-one-number-is-3-points-higher
+10:19:12 [INFO] Draft created: id=197220959 title='APR vs. Interest Rate: Why One Number Is 3 Points Higher'
+10:19:12 [INFO] Published: https://joinivyedge.substack.com/p/197220959
+10:19:12 [INFO] ---- Phase: format_analysis ----
+10:19:12 [INFO] Competitor analysis for: 'lending algorithm discrimination women'
+10:19:14 [INFO] DuckDuckGo returned 10 candidates for 'lending algorithm discrimination women'
+10:19:15 [INFO]   [1/5] Overcoming the algorithmic gender bias in AI-drive — 1302 words, H2×2
+10:19:18 [INFO]   [2/5] Algorithmic Bias, Financial Inclusion, and Gender  — 851 words, H2×0
+10:19:20 [INFO]   [3/5] When Algorithms Judge Your Credit: Understanding A — 7632 words, H2×0
+10:19:23 [INFO]   [4/5] Algorithmic discrimination in the credit domain: w — 20942 words, H2×16
+10:19:28 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:19:28 [INFO] [outline] 54.4s, in=15319 out=2500
+10:19:28 [INFO] ---- Phase: draft ----
+10:19:30 [INFO]   [5/5] AI lending will make finance deals even more unfai — 973 words, H2×1
+10:19:59 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:19:59 [INFO] ---- Phase: research ----
+10:20:29 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:20:29 [INFO] [draft] 61.0s, in=13911 out=2482
+10:20:29 [INFO] ---- Phase: voice_edit ----
+10:21:00 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:21:00 [INFO] [research] 60.4s, in=11321 out=2500
+10:21:00 [INFO] ---- Phase: outline ----
+10:21:27 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:21:27 [INFO] [voice_edit] 58.2s, in=14512 out=2352
+10:21:27 [INFO] ---- Phase: seo ----
+10:21:59 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:21:59 [INFO] [outline] 59.1s, in=15312 out=2500
+10:21:59 [INFO] ---- Phase: draft ----
+10:22:38 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:22:38 [INFO] [seo] 71.2s, in=6557 out=3372
+10:22:38 [INFO] ---- Phase: social ----
+10:22:56 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:22:56 [INFO] [draft] 57.2s, in=13912 out=2378
+10:22:56 [INFO] ---- Phase: voice_edit ----
+10:23:06 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:23:06 [INFO] [social] 28.1s, in=3922 out=1381
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/run_pipeline.py:79: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  date = datetime.utcnow().strftime("%Y-%m-%d")
+10:23:06 [INFO] Dale-Chall: 9.60 (target 8.5) ↑ too complex
+10:23:06 [INFO] Saved draft to output/2026-05-11_your-career-gap-didnt-tank-your-credit-score-the-metric-did
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/run_pipeline.py:284: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  row["drafted_at"] = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+10:23:07 [INFO] Draft created: id=197221395 title='Your Career Gap Didn't Tank Your Credit Score — The Metric Did'
+10:23:07 [INFO] Published: https://joinivyedge.substack.com/p/197221395
+10:23:07 [INFO] ---- Phase: format_analysis ----
+10:23:07 [INFO] Competitor analysis for: 'how career gaps affect credit score'
+10:23:08 [INFO] DuckDuckGo returned 10 candidates for 'how career gaps affect credit score'
+10:23:10 [INFO]   [1/5] How Employment Status Affects Your Credit - Dollar — 839 words, H2×5
+10:23:13 [INFO]   [2/5] Can Job History Affect Credit Scores? | Equifax — 2141 words, H2×21
+10:23:14 [INFO]   [3/5] Bad Credit Could Cost You Your Dream Job: Half of  — 1493 words, H2×6
+10:23:17 [INFO]   [4/5] Employment History and Credit Decisions — 787 words, H2×1
+10:23:18 [INFO]   [5/5] What Really Shows Up on a Credit Check for Employm — 1050 words, H2×4
+10:23:45 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:23:45 [INFO] ---- Phase: research ----
+10:23:54 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:23:55 [INFO] [voice_edit] 58.4s, in=14408 out=2283
+10:23:55 [INFO] ---- Phase: seo ----
+10:24:46 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:24:46 [INFO] [research] 60.5s, in=11274 out=2500
+10:24:46 [INFO] ---- Phase: outline ----
+10:25:10 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:25:10 [INFO] [seo] 75.4s, in=6493 out=3394
+10:25:10 [INFO] ---- Phase: social ----
+10:25:36 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:25:36 [INFO] [social] 25.7s, in=3842 out=1340
+10:25:36 [INFO] Dale-Chall: 10.58 (target 8.5) ↑ too complex
+10:25:36 [INFO] Saved draft to output/2026-05-11_lending-algorithms-are-overcharging-women-new-research-prove
+10:25:36 [INFO] Draft created: id=197221677 title='Lending Algorithms Are Overcharging Women — New Research Proves It'
+10:25:37 [INFO] Published: https://joinivyedge.substack.com/p/197221677
+10:25:37 [INFO] ---- Phase: format_analysis ----
+10:25:37 [INFO] Competitor analysis for: 'how career gaps affect credit score'
+10:25:38 [INFO] DuckDuckGo returned 9 candidates for 'how career gaps affect credit score'
+10:25:39 [INFO]   [1/5] How Employment Status Affects Your Credit - Dollar — 839 words, H2×5
+10:25:43 [INFO]   [2/5] Does Changing Jobs Affect Your Credit Score? — 1982 words, H2×24
+10:25:44 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:25:44 [INFO] [outline] 58.0s, in=15319 out=2500
+10:25:44 [INFO] ---- Phase: draft ----
+10:25:45 [INFO]   [3/5] Employment History and Credit Decisions — 787 words, H2×1
+10:25:47 [INFO]   [4/5] Bad Credit Could Cost You Your Dream Job: Half of  — 1492 words, H2×6
+10:25:48 [INFO]   [5/5] Can Job History Affect Credit Scores? | Equifax — 2141 words, H2×21
+10:26:15 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:26:15 [INFO] ---- Phase: research ----
+10:26:46 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:26:46 [INFO] [draft] 62.5s, in=13912 out=2662
+10:26:46 [INFO] ---- Phase: voice_edit ----
+10:28:45 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:28:45 [INFO] [voice_edit] 118.7s, in=14692 out=2571
+10:28:45 [INFO] ---- Phase: seo ----
+10:29:05 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:29:05 [INFO] [research] 169.9s, in=11316 out=2500
+10:29:05 [INFO] ---- Phase: outline ----
+10:30:05 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:30:05 [INFO] [outline] 60.3s, in=15319 out=2500
+10:30:05 [INFO] ---- Phase: draft ----
+10:30:07 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:30:07 [INFO] [seo] 81.4s, in=6770 out=4170
+10:30:07 [INFO] ---- Phase: social ----
+10:30:38 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:30:38 [INFO] [social] 31.9s, in=4059 out=1466
+10:30:38 [INFO] Dale-Chall: 9.99 (target 8.5) ↑ too complex
+10:30:38 [INFO] Saved draft to output/2026-05-11_your-career-gap-didnt-break-your-credit-score-the-model-did
+10:30:40 [INFO] Draft created: id=197222540 title='Your Career Gap Didn't Break Your Credit Score — The Model Did'
+10:30:42 [INFO] Published: https://joinivyedge.substack.com/p/197222540
+10:30:42 [INFO] ---- Phase: format_analysis ----
+10:30:42 [INFO] Competitor analysis for: 'how underwriting works for women'
+10:30:43 [INFO] DuckDuckGo returned 9 candidates for 'how underwriting works for women'
+10:30:44 [INFO]   [1/5] Behind the Scenes: How Does Life Insurance Underwr — 2154 words, H2×5
+10:30:46 [INFO]   [2/5] Life Insurance Underwriting: How It Works and What — 3172 words, H2×9
+10:30:47 [INFO]   [3/5] Gender Pay Gap in Underwriting: An In-Depth Analys — 1183 words, H2×8
+10:30:50 [INFO]   [4/5] The Ultimate Guide to Thriving as a Woman in Insur — 541 words, H2×6
+10:30:58 [INFO]   [5/5] Life Insurance Underwriting: What It Is and How It — 1963 words, H2×7
+10:31:07 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:31:07 [INFO] [draft] 61.9s, in=13912 out=2526
+10:31:07 [INFO] ---- Phase: voice_edit ----
+10:31:26 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:31:26 [INFO] ---- Phase: research ----
+10:32:08 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:32:08 [INFO] [voice_edit] 60.5s, in=14556 out=2441
+10:32:08 [INFO] ---- Phase: seo ----
+10:32:26 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:32:26 [INFO] [research] 60.1s, in=11293 out=2500
+10:32:26 [INFO] ---- Phase: outline ----
+10:33:20 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:33:20 [INFO] [seo] 72.2s, in=6641 out=3391
+10:33:20 [INFO] ---- Phase: social ----
+10:33:27 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:33:27 [INFO] [outline] 61.0s, in=15316 out=2500
+10:33:27 [INFO] ---- Phase: draft ----
+10:33:46 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:33:46 [INFO] [social] 26.0s, in=3983 out=1394
+10:33:46 [INFO] Dale-Chall: 9.54 (target 8.5) ↑ too complex
+10:33:46 [INFO] Saved draft to output/2026-05-11_your-career-gap-didnt-hurt-your-credit-score-the-model-did
+10:33:46 [INFO] Draft created: id=197222916 title='Your Career Gap Didn't Hurt Your Credit Score — The Model Did'
+10:33:47 [INFO] Published: https://joinivyedge.substack.com/p/197222916
+10:33:47 [INFO] ---- Phase: format_analysis ----
+10:33:47 [INFO] Competitor analysis for: 'how to get approved for a loan as a freelancer'
+10:33:48 [INFO] DuckDuckGo returned 12 candidates for 'how to get approved for a loan as a freelancer'
+10:33:56 [INFO]   [1/5] Loans for Gig Workers: Get the Cash You Need Betwe — 4539 words, H2×2
+10:33:58 [INFO]   [2/5] Fund Your Career: How to Get a Loan as a Self-Empl — 2806 words, H2×9
+10:33:59 [INFO]   [3/5] Personal Loans for Gig Workers: Get Approved (2026 — 1534 words, H2×8
+10:34:01 [INFO]   [4/5] Getting Funding as a Freelancer: A Guide | TheCred — 1588 words, H2×2
+10:34:20 [INFO]   [5/5] THIS is how to get independent contractor loans &  — 3688 words, H2×15
+10:34:28 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:34:28 [INFO] [draft] 61.2s, in=13912 out=2477
+10:34:28 [INFO] ---- Phase: voice_edit ----
+10:34:47 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:34:47 [INFO] ---- Phase: research ----
+10:35:28 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:35:28 [INFO] [voice_edit] 60.0s, in=14507 out=2352
+10:35:28 [INFO] ---- Phase: seo ----
+10:35:45 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:35:45 [INFO] [research] 57.8s, in=11322 out=2500
+10:35:45 [INFO] ---- Phase: outline ----
+10:36:44 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:36:44 [INFO] [outline] 59.3s, in=15320 out=2500
+10:36:44 [INFO] ---- Phase: draft ----
+10:36:51 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:36:51 [INFO] [seo] 82.6s, in=6548 out=3834
+10:36:51 [INFO] ---- Phase: social ----
+10:37:15 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:37:15 [INFO] [social] 24.0s, in=3964 out=1272
+10:37:15 [INFO] Dale-Chall: 10.18 (target 8.5) ↑ too complex
+10:37:15 [INFO] Saved draft to output/2026-05-11_the-underwriting-model-that-wasnt-built-for-you-and-whats-re
+10:37:15 [INFO] Draft created: id=197223356 title='The Underwriting Model That Wasn't Built for You — And What's Replacing It'
+10:37:16 [INFO] Published: https://joinivyedge.substack.com/p/197223356
+Found 3 post(s) due by 2026-05-18 (skipping 21 future posts). Generating...
+
+  [Your Career Gap Didn't Tank Your Credit ] format_analysis
+  [Your Career Gap Didn't Tank Your Credit ] research
+  [Your Career Gap Didn't Tank Your Credit ] outline
+  [Your Career Gap Didn't Tank Your Credit ] draft
+  [Your Career Gap Didn't Tank Your Credit ] voice_edit
+  [Your Career Gap Didn't Tank Your Credit ] seo
+  [Your Career Gap Didn't Tank Your Credit ] social
+  Published to Substack: https://joinivyedge.substack.com/p/197221395
+  Canonical blog URL:    https://www.ivyedge.co/blog/your-career-gap-didnt-tank-your-credit-score-the-metric-did
+  [Your Career Gap Didn't Break Your Credit] format_analysis
+  [Your Career Gap Didn't Break Your Credit] research
+  [Your Career Gap Didn't Break Your Credit] outline
+  [Your Career Gap Didn't Break Your Credit] draft
+  [Your Career Gap Didn't Break Your Credit] voice_edit
+  [Your Career Gap Didn't Break Your Credit] seo
+  [Your Career Gap Didn't Break Your Credit] social
+  Published to Substack: https://joinivyedge.substack.com/p/197222540
+  Canonical blog URL:    https://www.ivyedge.co/blog/your-career-gap-didnt-break-your-credit-score-the-model-did
+  [The Underwriting Model That Wasn't Built] format_analysis
+  [The Underwriting Model That Wasn't Built] research
+  [The Underwriting Model That Wasn't Built] outline
+  [The Underwriting Model That Wasn't Built] draft
+  [The Underwriting Model That Wasn't Built] voice_edit
+  [The Underwriting Model That Wasn't Built] seo
+  [The Underwriting Model That Wasn't Built] social
+  Published to Substack: https://joinivyedge.substack.com/p/197223356
+  Canonical blog URL:    https://www.ivyedge.co/blog/the-underwriting-model-that-wasnt-built-for-you-and-whats-re
+Traceback (most recent call last):
+  File "/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/run_pipeline.py", line 335, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/run_pipeline.py", line 331, in main
+    return args.func(args)
+           ~~~~~~~~~^^^^^^
+  File "/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/run_pipeline.py", line 293, in cmd_batch
+    writer.writerows(rows)
+    ~~~~~~~~~~~~~~~~^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/csv.py", line 229, in writerows
+    return self.writer.writerows(map(self._dict_to_list, rowdicts))
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/csv.py", line 221, in _dict_to_list
+    raise ValueError("dict contains fields not in fieldnames: "
+                     + ", ".join([repr(x) for x in wrong_fields]))
+ValueError: dict contains fields not in fieldnames: 'dale_chall'
+10:37:41 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:37:41 [INFO] [draft] 57.1s, in=13912 out=2288
+10:37:41 [INFO] ---- Phase: voice_edit ----
+10:38:38 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:38:38 [INFO] [voice_edit] 57.0s, in=14318 out=2194
+10:38:38 [INFO] ---- Phase: seo ----
+10:39:48 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:39:48 [INFO] [seo] 69.2s, in=6400 out=3198
+10:39:48 [INFO] ---- Phase: social ----
+10:40:18 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:40:18 [INFO] [social] 30.3s, in=3760 out=1353
+10:40:18 [INFO] Dale-Chall: 9.92 (target 8.5) ↑ too complex
+10:40:18 [INFO] Saved draft to output/2026-05-11_what-underwriters-actually-see-when-they-look-at-1099-income
+10:40:18 [INFO] Draft created: id=197223710 title='What Underwriters Actually See When They Look at 1099 Income'
+10:40:19 [INFO] Published: https://joinivyedge.substack.com/p/197223710
+10:40:19 [INFO] ---- Phase: format_analysis ----
+10:40:19 [INFO] Competitor analysis for: 'APR vs interest rate difference'
+10:40:19 [INFO] DuckDuckGo returned 0 candidates for 'APR vs interest rate difference'
+10:40:19 [WARNING] No usable results found for 'APR vs interest rate difference'
+10:40:19 [INFO] ---- Phase: research ----
+10:41:18 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:41:18 [INFO] [research] 58.1s, in=11316 out=2500
+10:41:18 [INFO] ---- Phase: outline ----
+10:42:14 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:42:14 [INFO] [outline] 56.6s, in=14062 out=2500
+10:42:14 [INFO] ---- Phase: draft ----
+10:43:09 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:43:09 [INFO] [draft] 54.9s, in=13912 out=2382
+10:43:09 [INFO] ---- Phase: voice_edit ----
+10:44:03 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:44:03 [INFO] [voice_edit] 53.4s, in=14412 out=2288
+10:44:03 [INFO] ---- Phase: seo ----
+10:45:09 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:45:09 [INFO] [seo] 66.5s, in=6487 out=3327
+10:45:09 [INFO] ---- Phase: social ----
+10:45:38 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:45:38 [INFO] [social] 28.9s, in=3849 out=1263
+10:45:38 [INFO] Dale-Chall: 9.86 (target 8.5) ↑ too complex
+10:45:38 [INFO] Saved draft to output/2026-05-11_apr-vs-interest-rate-the-3-point-gap-nobody-explains-to-you
+10:45:38 [INFO] Draft created: id=197224354 title='APR vs. Interest Rate: The 3-Point Gap Nobody Explains to You'
+10:45:39 [INFO] Published: https://joinivyedge.substack.com/p/197224354
+10:45:39 [INFO] ---- Phase: format_analysis ----
+10:45:39 [INFO] Competitor analysis for: 'business loan denied 4 years profitable'
+10:45:40 [INFO] DuckDuckGo returned 10 candidates for 'business loan denied 4 years profitable'
+10:45:42 [INFO]   [1/5] Business Loan Denial Reasons: What to Do Next | Bl — 2029 words, H2×5
+10:45:46 [INFO]   [2/5] Why You Got Denied for a Business Loan (And What t — 2011 words, H2×19
+10:45:51 [INFO]   [3/5] Business Loan Denied? Here's What to Do Next — 6706 words, H2×14
+10:45:55 [INFO]   [4/5] Your Next Steps After a Small Business Loan Is Den — 3300 words, H2×10
+10:46:23 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:46:23 [INFO] ---- Phase: research ----
+10:47:22 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:47:22 [INFO] [research] 59.1s, in=11295 out=2500
+10:47:22 [INFO] ---- Phase: outline ----
+10:48:23 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:48:23 [INFO] [outline] 60.3s, in=15315 out=2500
+10:48:23 [INFO] ---- Phase: draft ----
+10:49:22 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:49:22 [INFO] [draft] 59.4s, in=13911 out=2300
+10:49:22 [INFO] ---- Phase: voice_edit ----
+10:50:20 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:50:20 [INFO] [voice_edit] 58.3s, in=14330 out=2199
+10:50:20 [INFO] ---- Phase: seo ----
+10:51:33 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:51:33 [INFO] [seo] 73.0s, in=6397 out=3229
+10:51:33 [INFO] ---- Phase: social ----
+10:51:58 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:51:58 [INFO] [social] 24.5s, in=3788 out=1370
+10:51:58 [INFO] Dale-Chall: 9.81 (target 8.5) ↑ too complex
+10:51:58 [INFO] Saved draft to output/2026-05-11_the-arbitrary-rule-keeping-profitable-women-out-of-business-
+10:51:58 [INFO] Draft created: id=197225099 title='The Arbitrary Rule Keeping Profitable Women Out of Business Loans'
+10:51:59 [INFO] Published: https://joinivyedge.substack.com/p/197225099
+10:51:59 [INFO] ---- Phase: format_analysis ----
+10:51:59 [INFO] Competitor analysis for: 'does checking credit score improve credit'
+10:52:00 [INFO] DuckDuckGo returned 12 candidates for 'does checking credit score improve credit'
+10:52:04 [INFO]   [1/5] Kovo | Build Credit Fast â #1 Credit Builder â — 1822 words, H2×19
+10:52:06 [INFO]   [2/5] Does Checking Your Credit Score Lower It? (2026) | — 1976 words, H2×5
+10:52:08 [INFO]   [3/5] Does Checking Your Credit Score Lower It? - Experi — 1645 words, H2×10
+10:52:26 [INFO]   [4/5] 9 Real Ways to Improve Your Credit Fast - NerdWall — 2706 words, H2×4
+10:52:28 [INFO]   [5/5] 8 tips on how to improve your credit score | Fidel — 1286 words, H2×0
+10:52:56 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:52:56 [INFO] ---- Phase: research ----
+10:53:54 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:53:54 [INFO] [research] 58.8s, in=11296 out=2500
+10:53:54 [INFO] ---- Phase: outline ----
+10:54:54 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:54:54 [INFO] [outline] 59.4s, in=15309 out=2500
+10:54:54 [INFO] ---- Phase: draft ----
+10:55:59 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:55:59 [INFO] [draft] 65.3s, in=13912 out=2642
+10:55:59 [INFO] ---- Phase: voice_edit ----
+10:57:03 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:57:03 [INFO] [voice_edit] 63.6s, in=14672 out=2546
+10:57:03 [INFO] ---- Phase: seo ----
+10:58:22 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:58:22 [INFO] [seo] 79.2s, in=6739 out=3587
+10:58:22 [INFO] ---- Phase: social ----
+10:58:49 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:58:49 [INFO] [social] 27.6s, in=4153 out=1378
+10:58:49 [INFO] Dale-Chall: 9.32 (target 8.5) ↑ too complex
+10:58:49 [INFO] Saved draft to output/2026-05-11_why-watching-your-credit-score-move-actually-changes-your-be
+10:58:50 [INFO] Draft created: id=197225925 title='Why Watching Your Credit Score Move Actually Changes Your Behavior'
+10:58:50 [INFO] Published: https://joinivyedge.substack.com/p/197225925
+10:58:50 [INFO] ---- Phase: format_analysis ----
+10:58:50 [INFO] Competitor analysis for: 'remote work gender gap'
+10:58:51 [INFO] DuckDuckGo returned 10 candidates for 'remote work gender gap'
+10:58:54 [INFO]   [1/5] The work from home gender gap is wider than ever a — 637 words, H2×0
+10:58:57 [INFO]   [2/5] Indeed: Remote Jobs Fall By 20% As Gender Pay Gap  — 1013 words, H2×2
+10:59:05 [INFO]   [3/5] https://ijcrt.org/papers/IJCRT2511983.pdf — 71328 words, H2×0
+10:59:07 [INFO]   [4/5] Remote Work and Gender Equity: Insights from the G — 775 words, H2×1
+10:59:09 [INFO]   [5/5] Equal Pay for Equal Work in the Remote/Hybrid Era: — 1248 words, H2×6
+10:59:37 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:59:37 [INFO] ---- Phase: research ----
+11:00:35 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:00:35 [INFO] [research] 58.5s, in=11341 out=2500
+11:00:35 [INFO] ---- Phase: outline ----
+11:01:33 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:01:33 [INFO] [outline] 58.5s, in=15318 out=2500
+11:01:33 [INFO] ---- Phase: draft ----
+11:02:36 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:02:36 [INFO] [draft] 62.5s, in=13912 out=2538
+11:02:36 [INFO] ---- Phase: voice_edit ----
+11:03:35 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:03:35 [INFO] [voice_edit] 58.8s, in=14568 out=2413
+11:03:35 [INFO] ---- Phase: seo ----
+11:05:08 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:05:08 [INFO] [seo] 92.9s, in=6612 out=4671
+11:05:08 [INFO] ---- Phase: social ----
+11:05:34 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:05:34 [INFO] [social] 26.7s, in=4064 out=1385
+11:05:34 [INFO] Dale-Chall: 10.09 (target 8.5) ↑ too complex
+11:05:34 [INFO] Saved draft to output/2026-05-11_rto-mandates-have-a-gender-problem-heres-what-the-data-shows
+11:05:35 [INFO] Draft created: id=197227134 title='RTO Mandates Have a Gender Problem — Here's What the Data Shows'
+11:05:35 [INFO] Published: https://joinivyedge.substack.com/p/197227134
+11:05:35 [INFO] ---- Phase: format_analysis ----
+11:05:35 [INFO] Competitor analysis for: '4 day work week women workforce participation'
+11:05:36 [INFO] DuckDuckGo returned 10 candidates for '4 day work week women workforce participation'
+11:05:41 [INFO]   [1/5] 4-Day Workweek in the U.S. | WorkFour — 1360 words, H2×1
+11:05:45 [INFO]   [2/5] What You Need To Know About A Four-Day Work Week — 750 words, H2×4
+11:05:47 [INFO]   [3/5] The 4-Day Work Week: Act Now or Risk Losing Women  — 589 words, H2×0
+11:06:07 [INFO]   [4/5] The Essential Guide to a 4-Day Workweek: From Pilo — 7114 words, H2×0
+11:06:10 [INFO]   [5/5] The four-day week won’t happen overnight, but it c — 1024 words, H2×2
+11:06:39 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:06:39 [INFO] ---- Phase: research ----
+11:07:37 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:07:37 [INFO] [research] 57.5s, in=11332 out=2500
+11:07:37 [INFO] ---- Phase: outline ----
+11:08:39 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:08:39 [INFO] [outline] 62.2s, in=15326 out=2500
+11:08:39 [INFO] ---- Phase: draft ----
+11:09:40 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:09:40 [INFO] [draft] 60.8s, in=13912 out=2490
+11:09:40 [INFO] ---- Phase: voice_edit ----
+11:10:38 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:10:38 [INFO] [voice_edit] 58.6s, in=14520 out=2352
+11:10:38 [INFO] ---- Phase: seo ----
+11:11:52 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:11:52 [INFO] [seo] 73.5s, in=6557 out=3361
+11:11:52 [INFO] ---- Phase: social ----
+11:12:20 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:12:20 [INFO] [social] 28.6s, in=3941 out=1466
+11:12:20 [INFO] Dale-Chall: 10.20 (target 8.5) ↑ too complex
+11:12:20 [INFO] Saved draft to output/2026-05-11_the-four-day-work-week-isnt-a-startup-experiment-its-a-reten
+11:12:21 [INFO] Draft created: id=197227987 title='The Four-Day Work Week Isn't a Startup Experiment — It's a Retention Strategy'
+11:12:21 [INFO] Published: https://joinivyedge.substack.com/p/197227987
+11:12:21 [INFO] ---- Phase: format_analysis ----
+11:12:21 [INFO] Competitor analysis for: 'employer student loan repayment benefit women'
+11:12:23 [INFO] DuckDuckGo returned 9 candidates for 'employer student loan repayment benefit women'
+11:12:31 [INFO]   [1/5] Q&A: Employer student loan repayment rules for 202 — 1097 words, H2×3
+11:12:35 [INFO]   [2/5] Employer Student Loan Repayment Benefit: Types & H — 2107 words, H2×7
+11:12:37 [INFO]   [3/5] Employer Student Loan Repayment Assistance — 1576 words, H2×1
+11:12:43 [INFO]   [4/5] What Is Employer Student Loan Repayment? | Bankrat — 2125 words, H2×10
+11:12:45 [INFO]   [5/5] How to Qualify for Employer Student Loan Repayment — 1194 words, H2×7
+11:13:11 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:13:11 [INFO] ---- Phase: research ----
+11:14:09 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:14:09 [INFO] [research] 57.7s, in=11344 out=2454
+11:14:09 [INFO] ---- Phase: outline ----
+11:15:06 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:15:06 [INFO] [outline] 57.8s, in=15279 out=2500
+11:15:06 [INFO] ---- Phase: draft ----
+11:16:12 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:16:12 [INFO] [draft] 65.6s, in=13911 out=2677
+11:16:12 [INFO] ---- Phase: voice_edit ----
+11:17:17 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:17:17 [INFO] [voice_edit] 64.8s, in=14707 out=2591
+11:17:17 [INFO] ---- Phase: seo ----
+11:18:37 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:18:37 [INFO] [seo] 80.5s, in=6795 out=3661
+11:18:37 [INFO] ---- Phase: social ----
+11:19:05 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:19:05 [INFO] [social] 27.4s, in=4198 out=1347
+11:19:05 [INFO] Dale-Chall: 10.15 (target 8.5) ↑ too complex
+11:19:05 [INFO] Saved draft to output/2026-05-11_student-loan-debt-is-a-womens-issue-your-employer-could-help
+11:19:05 [INFO] Draft created: id=197228722 title='Student Loan Debt Is a Women's Issue. Your Employer Could Help Fix It.'
+11:19:05 [INFO] Published: https://joinivyedge.substack.com/p/197228722
+11:19:05 [INFO] ---- Phase: format_analysis ----
+11:19:05 [INFO] Competitor analysis for: 'how career gaps affect credit score'
+11:19:06 [INFO] DuckDuckGo returned 9 candidates for 'how career gaps affect credit score'
+11:19:08 [INFO]   [1/5] How Employment Status Affects Your Credit - Dollar — 839 words, H2×5
+11:19:11 [INFO]   [2/5] Employment History and Credit Decisions — 787 words, H2×1
+11:19:14 [INFO]   [3/5] Can Job History Affect Credit Scores? | Equifax — 2141 words, H2×21
+11:19:15 [INFO]   [4/5] Does Changing Jobs Affect Your Credit Score? — 1982 words, H2×24
+11:19:17 [INFO]   [5/5] The Credit Impact of Job Loss: What Happens and Ho — 509 words, H2×3
+11:19:44 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:19:44 [INFO] ---- Phase: research ----
+11:20:43 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:20:43 [INFO] [research] 58.8s, in=11317 out=2500
+11:20:43 [INFO] ---- Phase: outline ----
+11:21:45 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:21:45 [INFO] [outline] 62.2s, in=15319 out=2500
+11:21:45 [INFO] ---- Phase: draft ----
+11:22:43 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:22:43 [INFO] [draft] 57.9s, in=13912 out=2463
+11:22:43 [INFO] ---- Phase: voice_edit ----
+11:23:40 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:23:40 [INFO] [voice_edit] 56.6s, in=14493 out=2365
+11:23:40 [INFO] ---- Phase: seo ----
+11:24:51 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:24:51 [INFO] [seo] 71.5s, in=6570 out=3447
+11:24:51 [INFO] ---- Phase: social ----
+11:25:20 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:25:20 [INFO] [social] 28.8s, in=3987 out=1310
+11:25:20 [INFO] Dale-Chall: 9.92 (target 8.5) ↑ too complex
+11:25:20 [INFO] Saved draft to output/2026-05-11_your-career-gap-didnt-tank-your-credit-score-the-metric-did
+11:25:21 [INFO] Draft created: id=197229448 title='Your Career Gap Didn't Tank Your Credit Score — The Metric Did'
+11:25:21 [INFO] Published: https://joinivyedge.substack.com/p/197229448
+11:25:21 [INFO] ---- Phase: format_analysis ----
+11:25:21 [INFO] Competitor analysis for: 'how to get approved for a loan as a freelancer'
+11:25:22 [INFO] DuckDuckGo returned 12 candidates for 'how to get approved for a loan as a freelancer'
+11:25:30 [INFO]   [1/5] Loans for Gig Workers: Get the Cash You Need Betwe — 4539 words, H2×2
+11:25:32 [INFO]   [2/5] Fund Your Career: How to Get a Loan as a Self-Empl — 2806 words, H2×9
+11:25:34 [INFO]   [3/5] Personal Loans for Gig Workers: Get Approved (2026 — 1534 words, H2×8
+11:25:36 [INFO]   [4/5] Getting Funding as a Freelancer: A Guide | TheCred — 1588 words, H2×2
+11:25:54 [INFO]   [5/5] THIS is how to get independent contractor loans &  — 3688 words, H2×15
+11:26:19 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:26:19 [INFO] ---- Phase: research ----
+11:27:17 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:27:17 [INFO] [research] 57.9s, in=11325 out=2500
+11:27:17 [INFO] ---- Phase: outline ----
+11:28:18 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:28:18 [INFO] [outline] 61.0s, in=15320 out=2500
+11:28:18 [INFO] ---- Phase: draft ----
+11:29:22 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:29:22 [INFO] [draft] 63.4s, in=13912 out=2447
+11:29:22 [INFO] ---- Phase: voice_edit ----
+11:30:24 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:30:24 [INFO] [voice_edit] 62.7s, in=14477 out=2338
+11:30:24 [INFO] ---- Phase: seo ----
+11:31:46 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:31:46 [INFO] [seo] 81.6s, in=6548 out=3735
+Found 22 queued post(s). Generating...
+
+  [Your 1099 Income Isn't 'Unstable' — Here] format_analysis
+  [Your 1099 Income Isn't 'Unstable' — Here] research
+  [Your 1099 Income Isn't 'Unstable' — Here] outline
+  [Your 1099 Income Isn't 'Unstable' — Here] draft
+  [Your 1099 Income Isn't 'Unstable' — Here] voice_edit
+  [Your 1099 Income Isn't 'Unstable' — Here] seo
+  [Your 1099 Income Isn't 'Unstable' — Here] social
+  Published to Substack: https://joinivyedge.substack.com/p/197218828
+  Canonical blog URL:    https://www.ivyedge.co/blog/your-1099-income-isnt-unstable-heres-how-to-prove-it
+  [What Your Credit Score Actually Measures] format_analysis
+  [What Your Credit Score Actually Measures] research
+  [What Your Credit Score Actually Measures] outline
+  [What Your Credit Score Actually Measures] draft
+  [What Your Credit Score Actually Measures] voice_edit
+  [What Your Credit Score Actually Measures] seo
+  [What Your Credit Score Actually Measures] social
+  Published to Substack: https://joinivyedge.substack.com/p/197219631
+  Canonical blog URL:    https://www.ivyedge.co/blog/what-your-credit-score-actually-measures-and-what-it-misses
+  [The Career Gap That Made Your Credit Sco] format_analysis
+  [The Career Gap That Made Your Credit Sco] research
+  [The Career Gap That Made Your Credit Sco] outline
+  [The Career Gap That Made Your Credit Sco] draft
+  [The Career Gap That Made Your Credit Sco] voice_edit
+  [The Career Gap That Made Your Credit Sco] seo
+  [The Career Gap That Made Your Credit Sco] social
+  Published to Substack: https://joinivyedge.substack.com/p/197220304
+  Canonical blog URL:    https://www.ivyedge.co/blog/the-career-gap-that-made-your-credit-score-drop-and-why-that
+  [APR vs. Interest Rate: Why One Number Is] format_analysis
+  [APR vs. Interest Rate: Why One Number Is] research
+  [APR vs. Interest Rate: Why One Number Is] outline
+  [APR vs. Interest Rate: Why One Number Is] draft
+  [APR vs. Interest Rate: Why One Number Is] voice_edit
+  [APR vs. Interest Rate: Why One Number Is] seo
+  [APR vs. Interest Rate: Why One Number Is] social
+  Published to Substack: https://joinivyedge.substack.com/p/197220959
+  Canonical blog URL:    https://www.ivyedge.co/blog/apr-vs-interest-rate-why-one-number-is-3-points-higher
+  [Lending Algorithms Are Overcharging Wome] format_analysis
+  [Lending Algorithms Are Overcharging Wome] research
+  [Lending Algorithms Are Overcharging Wome] outline
+  [Lending Algorithms Are Overcharging Wome] draft
+  [Lending Algorithms Are Overcharging Wome] voice_edit
+  [Lending Algorithms Are Overcharging Wome] seo
+  [Lending Algorithms Are Overcharging Wome] social
+  Published to Substack: https://joinivyedge.substack.com/p/197221677
+  Canonical blog URL:    https://www.ivyedge.co/blog/lending-algorithms-are-overcharging-women-new-research-prove
+  [Your Career Gap Didn't Hurt Your Credit ] format_analysis
+  [Your Career Gap Didn't Hurt Your Credit ] research
+  [Your Career Gap Didn't Hurt Your Credit ] outline
+  [Your Career Gap Didn't Hurt Your Credit ] draft
+  [Your Career Gap Didn't Hurt Your Credit ] voice_edit
+  [Your Career Gap Didn't Hurt Your Credit ] seo
+  [Your Career Gap Didn't Hurt Your Credit ] social
+  Published to Substack: https://joinivyedge.substack.com/p/197222916
+  Canonical blog URL:    https://www.ivyedge.co/blog/your-career-gap-didnt-hurt-your-credit-score-the-model-did
+  [What Underwriters Actually See When They] format_analysis
+  [What Underwriters Actually See When They] research
+  [What Underwriters Actually See When They] outline
+  [What Underwriters Actually See When They] draft
+  [What Underwriters Actually See When They] voice_edit
+  [What Underwriters Actually See When They] seo
+  [What Underwriters Actually See When They] social
+  Published to Substack: https://joinivyedge.substack.com/p/197223710
+  Canonical blog URL:    https://www.ivyedge.co/blog/what-underwriters-actually-see-when-they-look-at-1099-income
+  [APR vs. Interest Rate: The 3-Point Gap N] format_analysis
+  [APR vs. Interest Rate: The 3-Point Gap N] research
+  [APR vs. Interest Rate: The 3-Point Gap N] outline
+  [APR vs. Interest Rate: The 3-Point Gap N] draft
+  [APR vs. Interest Rate: The 3-Point Gap N] voice_edit
+  [APR vs. Interest Rate: The 3-Point Gap N] seo
+  [APR vs. Interest Rate: The 3-Point Gap N] social
+  Published to Substack: https://joinivyedge.substack.com/p/197224354
+  Canonical blog URL:    https://www.ivyedge.co/blog/apr-vs-interest-rate-the-3-point-gap-nobody-explains-to-you
+  [The Arbitrary Rule Keeping Profitable Wo] format_analysis
+  [The Arbitrary Rule Keeping Profitable Wo] research
+  [The Arbitrary Rule Keeping Profitable Wo] outline
+  [The Arbitrary Rule Keeping Profitable Wo] draft
+  [The Arbitrary Rule Keeping Profitable Wo] voice_edit
+  [The Arbitrary Rule Keeping Profitable Wo] seo
+  [The Arbitrary Rule Keeping Profitable Wo] social
+  Published to Substack: https://joinivyedge.substack.com/p/197225099
+  Canonical blog URL:    https://www.ivyedge.co/blog/the-arbitrary-rule-keeping-profitable-women-out-of-business-
+  [Why Watching Your Credit Score Move Actu] format_analysis
+  [Why Watching Your Credit Score Move Actu] research
+  [Why Watching Your Credit Score Move Actu] outline
+  [Why Watching Your Credit Score Move Actu] draft
+  [Why Watching Your Credit Score Move Actu] voice_edit
+  [Why Watching Your Credit Score Move Actu] seo
+  [Why Watching Your Credit Score Move Actu] social
+  Published to Substack: https://joinivyedge.substack.com/p/197225925
+  Canonical blog URL:    https://www.ivyedge.co/blog/why-watching-your-credit-score-move-actually-changes-your-be
+  [RTO Mandates Have a Gender Problem — Her] format_analysis
+  [RTO Mandates Have a Gender Problem — Her] research
+  [RTO Mandates Have a Gender Problem — Her] outline
+  [RTO Mandates Have a Gender Problem — Her] draft
+  [RTO Mandates Have a Gender Problem — Her] voice_edit
+  [RTO Mandates Have a Gender Problem — Her] seo
+  [RTO Mandates Have a Gender Problem — Her] social
+  Published to Substack: https://joinivyedge.substack.com/p/197227134
+  Canonical blog URL:    https://www.ivyedge.co/blog/rto-mandates-have-a-gender-problem-heres-what-the-data-shows
+  [The Four-Day Work Week Isn't a Startup E] format_analysis
+  [The Four-Day Work Week Isn't a Startup E] research
+  [The Four-Day Work Week Isn't a Startup E] outline
+  [The Four-Day Work Week Isn't a Startup E] draft
+  [The Four-Day Work Week Isn't a Startup E] voice_edit
+  [The Four-Day Work Week Isn't a Startup E] seo
+  [The Four-Day Work Week Isn't a Startup E] social
+  Published to Substack: https://joinivyedge.substack.com/p/197227987
+  Canonical blog URL:    https://www.ivyedge.co/blog/the-four-day-work-week-isnt-a-startup-experiment-its-a-reten
+  [Student Loan Debt Is a Women's Issue. Yo] format_analysis
+  [Student Loan Debt Is a Women's Issue. Yo] research
+  [Student Loan Debt Is a Women's Issue. Yo] outline
+  [Student Loan Debt Is a Women's Issue. Yo] draft
+  [Student Loan Debt Is a Women's Issue. Yo] voice_edit
+  [Student Loan Debt Is a Women's Issue. Yo] seo
+  [Student Loan Debt Is a Women's Issue. Yo] social
+  Published to Substack: https://joinivyedge.substack.com/p/197228722
+  Canonical blog URL:    https://www.ivyedge.co/blog/student-loan-debt-is-a-womens-issue-your-employer-could-help
+  [Your Career Gap Didn't Tank Your Credit ] format_analysis
+  [Your Career Gap Didn't Tank Your Credit ] research
+  [Your Career Gap Didn't Tank Your Credit ] outline
+  [Your Career Gap Didn't Tank Your Credit ] draft
+  [Your Career Gap Didn't Tank Your Credit ] voice_edit
+  [Your Career Gap Didn't Tank Your Credit ] seo
+  [Your Career Gap Didn't Tank Your Credit ] social
+  Published to Substack: https://joinivyedge.substack.com/p/197229448
+  Canonical blog URL:    https://www.ivyedge.co/blog/your-career-gap-didnt-tank-your-credit-score-the-metric-did
+  [What Banks Actually Mean When They Call ] format_analysis
+  [What Banks Actually Mean When They Call ] research
+  [What Banks Actually Mean When They Call ] outline
+  [What Banks Actually Mean When They Call ] draft
+  [What Banks Actually Mean When They Call ] voice_edit
+  [What Banks Actually Mean When They Call ] seo11:31:46 [INFO] ---- Phase: social ----
+11:32:10 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:32:11 [INFO] [social] 24.5s, in=3925 out=1258
+11:32:11 [INFO] Dale-Chall: 10.04 (target 8.5) ↑ too complex
+11:32:11 [INFO] Saved draft to output/2026-05-11_what-banks-actually-mean-when-they-call-your-income-unstable
+11:32:11 [INFO] Draft created: id=197230462 title='What Banks Actually Mean When They Call Your Income 'Unstable''
+11:32:11 [INFO] Published: https://joinivyedge.substack.com/p/197230462
+11:32:11 [INFO] ---- Phase: format_analysis ----
+11:32:11 [INFO] Competitor analysis for: 'business loan denied 4 years profitable'
+11:32:12 [INFO] DuckDuckGo returned 11 candidates for 'business loan denied 4 years profitable'
+11:32:15 [INFO]   [1/5] Become a Partner - Advance Funds Network — 1395 words, H2×7
+11:32:20 [INFO]   [2/5] Business Loan Denial Reasons: What to Do Next | Bl — 2029 words, H2×5
+11:32:23 [INFO]   [3/5] Denied a Business Loan? Here's How To Still Get Fu — 2566 words, H2×7
+11:32:24 [INFO]   [4/5] Why Was My Small Business Loan Denied: Borrower’s  — 5954 words, H2×31
+11:32:26 [INFO]   [5/5] Why You Got Denied for a Business Loan (And What t — 2011 words, H2×19
+11:32:53 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:32:53 [INFO] ---- Phase: research ----
+11:33:50 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:33:50 [INFO] [research] 56.8s, in=11328 out=2500
+11:33:50 [INFO] ---- Phase: outline ----
+11:34:50 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:34:50 [INFO] [outline] 59.9s, in=15317 out=2500
+11:34:50 [INFO] ---- Phase: draft ----
+11:35:56 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:35:56 [INFO] [draft] 65.5s, in=13911 out=2639
+11:35:56 [INFO] ---- Phase: voice_edit ----
+11:36:57 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:36:57 [INFO] [voice_edit] 61.7s, in=14669 out=2505
+11:36:57 [INFO] ---- Phase: seo ----
+11:38:24 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:38:24 [INFO] [seo] 86.8s, in=6711 out=4115
+11:38:24 [INFO] ---- Phase: social ----
+11:38:57 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:38:57 [INFO] [social] 33.0s, in=4215 out=1458
+11:38:57 [INFO] Dale-Chall: 9.73 (target 8.5) ↑ too complex
+11:38:57 [INFO] Saved draft to output/2026-05-11_the-5-year-rule-thats-keeping-profitable-women-out-of-busine
+11:38:57 [INFO] Draft created: id=197231324 title='The 5-Year Rule That's Keeping Profitable Women Out of Business Loans'
+11:38:58 [INFO] Published: https://joinivyedge.substack.com/p/197231324
+11:38:58 [INFO] ---- Phase: format_analysis ----
+11:38:58 [INFO] Competitor analysis for: 'APR vs interest rate difference'
+11:38:59 [INFO] DuckDuckGo returned 10 candidates for 'APR vs interest rate difference'
+11:39:01 [INFO]   [1/5] Understanding Interest Rate and APR: Key Differenc — 1819 words, H2×8
+11:39:03 [INFO]   [2/5] APR vs. interest rate: What's the difference? | Fi — 959 words, H2×0
+11:39:04 [INFO]   [3/5] APR vs. Interest Rate: What's The Difference? | Ba — 2538 words, H2×14
+11:39:06 [INFO]   [4/5] APR vs. Interest Rate: Whatâs the Difference? — 2252 words, H2×11
+11:39:14 [INFO]   [5/5] APR vs Interest Rate: Key Differences Explained |  — 2415 words, H2×12
+11:39:39 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:39:39 [INFO] ---- Phase: research ----
+11:40:32 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:40:32 [INFO] [research] 52.7s, in=11335 out=2217
+11:40:32 [INFO] ---- Phase: outline ----
+11:41:30 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:41:30 [INFO] [outline] 58.0s, in=15032 out=2500
+11:41:30 [INFO] ---- Phase: draft ----
+11:42:23 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:42:23 [INFO] [draft] 53.4s, in=13912 out=2263
+11:42:23 [INFO] ---- Phase: voice_edit ----
+11:43:15 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:43:15 [INFO] [voice_edit] 51.4s, in=14293 out=2163
+11:43:15 [INFO] ---- Phase: seo ----
+11:44:26 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:44:26 [INFO] [seo] 70.9s, in=6367 out=3275
+11:44:26 [INFO] ---- Phase: social ----
+11:44:56 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:44:56 [INFO] [social] 30.7s, in=3907 out=1374
+11:44:57 [INFO] Dale-Chall: 10.12 (target 8.5) ↑ too complex
+11:44:57 [INFO] Saved draft to output/2026-05-11_apr-vs-interest-rate-the-number-your-bank-hopes-you-dont-com
+11:44:57 [INFO] Draft created: id=197232113 title='APR vs. Interest Rate: The Number Your Bank Hopes You Don't Compare'
+11:44:57 [INFO] Published: https://joinivyedge.substack.com/p/197232113
+11:44:57 [INFO] ---- Phase: format_analysis ----
+11:44:57 [INFO] Competitor analysis for: 'why people stay with bad banks'
+11:44:58 [INFO] DuckDuckGo returned 9 candidates for 'why people stay with bad banks'
+11:45:00 [INFO]   [1/5] Why Customers Leave Banks (And How to Make Them St — 1424 words, H2×11
+11:45:02 [INFO]   [2/5] Why People Stay in Terrible Savings Accounts Even  — 1876 words, H2×7
+11:45:04 [INFO]   [3/5] Why Customers Switch Banks and How to Win Them Bac — 989 words, H2×5
+11:45:05 [INFO]   [4/5] Bored with your bank? You'll want to hear about 's — 855 words, H2×3
+11:45:07 [INFO]   [5/5] The 10 Worst Banks in America According to Their C — 1876 words, H2×7
+11:45:35 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:45:35 [INFO] ---- Phase: research ----
+11:46:34 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:46:34 [INFO] [research] 59.2s, in=11346 out=2500
+11:46:34 [INFO] ---- Phase: outline ----
+11:47:31 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:47:31 [INFO] [outline] 57.1s, in=15319 out=2500
+11:47:31 [INFO] ---- Phase: draft ----
+11:48:28 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:48:28 [INFO] [draft] 56.9s, in=13912 out=2498
+11:48:28 [INFO] ---- Phase: voice_edit ----
+11:49:26 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:49:26 [INFO] [voice_edit] 58.2s, in=14528 out=2389
+11:49:26 [INFO] ---- Phase: seo ----
+11:50:43 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:50:43 [INFO] [seo] 77.0s, in=6585 out=4145
+11:50:43 [INFO] ---- Phase: social ----
+11:51:12 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:51:12 [INFO] [social] 28.8s, in=4029 out=1349
+11:51:12 [INFO] Dale-Chall: 9.99 (target 8.5) ↑ too complex
+11:51:12 [INFO] Saved draft to output/2026-05-11_present-bias-is-why-youre-still-at-the-bank-thats-overchargi
+11:51:13 [INFO] Draft created: id=197232929 title='Present Bias Is Why You're Still at the Bank That's Overcharging You'
+11:51:13 [INFO] Published: https://joinivyedge.substack.com/p/197232929
+11:51:13 [INFO] ---- Phase: format_analysis ----
+11:51:13 [INFO] Competitor analysis for: '4 day work week women workforce participation'
+11:51:14 [INFO] DuckDuckGo returned 10 candidates for '4 day work week women workforce participation'
+11:51:18 [INFO]   [1/5] Breaking the 9-5: How a four-day week and flexible — 896 words, H2×0
+11:51:20 [INFO]   [2/5] 4-Day Workweek in the U.S. | WorkFour — 1360 words, H2×1
+11:51:24 [INFO]   [3/5] Four-Day Workweek Statistics: Key Trends & Data — 2353 words, H2×10
+11:51:46 [INFO]   [4/5] https://iwpr.org/wp-content/uploads/2025/03/Women- — 345943 words, H2×0
+11:51:48 [INFO]   [5/5] Tokyo government gives workers 4-day workweek to b — 632 words, H2×0
+11:52:16 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:52:16 [INFO] ---- Phase: research ----
+11:53:14 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:53:14 [INFO] [research] 58.0s, in=11347 out=2500
+11:53:14 [INFO] ---- Phase: outline ----
+11:54:22 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:54:22 [INFO] [outline] 67.2s, in=15327 out=2500
+11:54:22 [INFO] ---- Phase: draft ----
+11:55:24 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:55:24 [INFO] [draft] 62.8s, in=13912 out=2417
+11:55:24 [INFO] ---- Phase: voice_edit ----
+11:56:23 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:56:23 [INFO] [voice_edit] 58.4s, in=14447 out=2317
+11:56:23 [INFO] ---- Phase: seo ----
+11:57:42 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:57:42 [INFO] [seo] 79.6s, in=6525 out=4324
+11:57:42 [INFO] ---- Phase: social ----
+11:58:11 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:58:11 [INFO] [social] 29.0s, in=3975 out=1362
+11:58:11 [INFO] Dale-Chall: 9.92 (target 8.5) ↑ too complex
+11:58:11 [INFO] Saved draft to output/2026-05-11_what-the-largest-4-day-work-week-trial-actually-found-and-wh
+11:58:12 [INFO] Draft created: id=197233750 title='What the Largest 4-Day Work Week Trial Actually Found — And Why It Matters More for Women'
+11:58:12 [INFO] Published: https://joinivyedge.substack.com/p/197233750
+11:58:12 [INFO] ---- Phase: format_analysis ----
+11:58:12 [INFO] Competitor analysis for: 'RTO mandate women leaving jobs'
+11:58:13 [INFO] DuckDuckGo returned 10 candidates for 'RTO mandate women leaving jobs'
+11:58:15 [INFO]   [1/5] RTO Mandates Force Caregivers Out Of Work—Here’s H — 964 words, H2×4
+11:58:17 [INFO]   [2/5] Women leave workforce as RTO mandates hit mothers  — 1223 words, H2×1
+11:58:22 [INFO]   [3/5] Return-to-office mandates widening the gender divi — 502 words, H2×2
+11:58:26 [INFO]   [4/5] RTO or Not: Weighing the Options - Society of Wome — 3301 words, H2×0
+11:58:29 [INFO]   [5/5] The Dangers of Losing Executives Due to RTO Mandat — 1162 words, H2×3
+11:58:56 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:58:56 [INFO] ---- Phase: research ----
+11:59:54 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+11:59:54 [INFO] [research] 58.0s, in=11334 out=2500
+11:59:54 [INFO] ---- Phase: outline ----
+12:00:54 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+12:00:54 [INFO] [outline] 60.4s, in=15321 out=2500
+12:00:54 [INFO] ---- Phase: draft ----
+12:01:53 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+12:01:53 [INFO] [draft] 58.2s, in=13912 out=2496
+12:01:53 [INFO] ---- Phase: voice_edit ----
+12:02:50 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+12:02:50 [INFO] [voice_edit] 56.9s, in=14526 out=2334
+12:02:50 [INFO] ---- Phase: seo ----
+12:04:12 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+12:04:12 [INFO] [seo] 82.5s, in=6535 out=3975
+12:04:12 [INFO] ---- Phase: social ----
+12:04:38 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+12:04:38 [INFO] [social] 25.9s, in=3879 out=1426
+12:04:38 [INFO] Dale-Chall: 10.50 (target 8.5) ↑ too complex
+12:04:38 [INFO] Saved draft to output/2026-05-11_rto-mandates-are-a-womens-workforce-problem-heres-the-data
+12:04:38 [INFO] Draft created: id=197234474 title='RTO Mandates Are a Women's Workforce Problem — Here's the Data'
+12:04:39 [INFO] Published: https://joinivyedge.substack.com/p/197234474
+12:04:39 [INFO] ---- Phase: format_analysis ----
+12:04:39 [INFO] Competitor analysis for: 'AI credit scoring women bias'
+12:04:40 [INFO] DuckDuckGo returned 10 candidates for 'AI credit scoring women bias'
+12:04:42 [INFO]   [1/5] Overcoming the algorithmic gender bias in AI-drive — 1302 words, H2×2
+12:04:43 [INFO]   [2/5] Structural Gender Bias in Credit Scoring: Proxy Le — 3709 words, H2×6
+12:04:46 [INFO]   [3/5] When Algorithms Judge Your Credit: Understanding A — 7632 words, H2×0
+12:04:51 [INFO]   [4/5] Algorithmic Bias, Financial Inclusion, and Gender  — 851 words, H2×0
+12:04:53 [INFO]   [5/5] Women’s World Banking finds credit-scoring AI used — 543 words, H2×0
+12:05:21 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+12:05:21 [INFO] ---- Phase: research ----
+12:06:21 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+12:06:21 [INFO] [research] 59.8s, in=11338 out=2500
+12:06:21 [INFO] ---- Phase: outline ----
+12:07:24 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+12:07:24 [INFO] [outline] 63.0s, in=15323 out=2500
+12:07:24 [INFO] ---- Phase: draft ----
+12:08:26 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+12:08:26 [INFO] [draft] 61.8s, in=13912 out=2421
+12:08:26 [INFO] ---- Phase: voice_edit ----
+12:09:27 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+12:09:27 [INFO] [voice_edit] 60.9s, in=14451 out=2319
+12:09:27 [INFO] ---- Phase: seo ----
+12:10:46 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+12:10:46 [INFO] [seo] 79.2s, in=6520 out=3512
+12:10:46 [INFO] ---- Phase: social ----
+12:11:17 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+12:11:17 [INFO] [social] 31.2s, in=3908 out=1382
+12:11:17 [INFO] Dale-Chall: 10.54 (target 8.5) ↑ too complex
+12:11:17 [INFO] Saved draft to output/2026-05-11_ai-is-rewriting-who-gets-approved-for-a-loan-is-it-fixing-th
+12:11:18 [INFO] Draft created: id=197235238 title='AI Is Rewriting Who Gets Approved for a Loan — Is It Fixing the Problem or Inheriting It?'
+12:11:18 [INFO] Published: https://joinivyedge.substack.com/p/197235238
+12:11:18 [INFO] ---- Phase: format_analysis ----
+12:11:18 [INFO] Competitor analysis for: 'AI financial advice'
+12:11:19 [INFO] DuckDuckGo returned 11 candidates for 'AI financial advice'
+12:11:27 [INFO]   [1/5] Using AI for financial advice? Here's what to watc — 640 words, H2×2
+12:11:29 [INFO]   [2/5] Should you trust AI to manage your money? The fina — 1108 words, H2×2
+12:11:31 [INFO]   [3/5] AI-Powered Tools Offer Help With Financial Plannin — 2361 words, H2×10
+12:11:34 [INFO]   [4/5] Best AI Personal Finance Tools 2026: AI-Powered Mo — 1405 words, H2×14
+12:11:36 [INFO]   [5/5] Tendi | Your Personal AI Financial Advisor — 1071 words, H2×10
+12:12:03 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+12:12:03 [INFO] ---- Phase: research ----
+12:12:58 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+12:12:58 [INFO] [research] 55.4s, in=11323 out=2303
+12:12:58 [INFO] ---- Phase: outline ----
+12:14:00 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+12:14:00 [INFO] [outline] 61.3s, in=15115 out=2500
+12:14:00 [INFO] ---- Phase: draft ----
+12:15:08 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+12:15:08 [INFO] [draft] 68.2s, in=13912 out=2729
+12:15:08 [INFO] ---- Phase: voice_edit ----
+12:16:17 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+12:16:17 [INFO] [voice_edit] 68.7s, in=14759 out=2628
+12:16:17 [INFO] ---- Phase: seo ----
+12:17:43 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+12:17:43 [INFO] [seo] 86.8s, in=6827 out=3869
+12:17:43 [INFO] ---- Phase: social ----
+12:18:15 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+12:18:15 [INFO] [social] 32.0s, in=4167 out=1421
+12:18:15 [INFO] Dale-Chall: 10.69 (target 8.5) ↑ too complex
+12:18:15 [INFO] Saved draft to output/2026-05-11_can-you-trust-ai-to-explain-your-finances-heres-what-a-new-s
+12:18:16 [INFO] Draft created: id=197236080 title='Can You Trust AI to Explain Your Finances? Here's What a New Study Says to Watch For'
+12:18:16 [INFO] Published: https://joinivyedge.substack.com/p/197236080
+
+  [What Banks Actually Mean When They Call ] social
+  Published to Substack: https://joinivyedge.substack.com/p/197230462
+  Canonical blog URL:    https://www.ivyedge.co/blog/what-banks-actually-mean-when-they-call-your-income-unstable
+  [The 5-Year Rule That's Keeping Profitabl] format_analysis
+  [The 5-Year Rule That's Keeping Profitabl] research
+  [The 5-Year Rule That's Keeping Profitabl] outline
+  [The 5-Year Rule That's Keeping Profitabl] draft
+  [The 5-Year Rule That's Keeping Profitabl] voice_edit
+  [The 5-Year Rule That's Keeping Profitabl] seo
+  [The 5-Year Rule That's Keeping Profitabl] social
+  Published to Substack: https://joinivyedge.substack.com/p/197231324
+  Canonical blog URL:    https://www.ivyedge.co/blog/the-5-year-rule-thats-keeping-profitable-women-out-of-busine
+  [APR vs. Interest Rate: The Number Your B] format_analysis
+  [APR vs. Interest Rate: The Number Your B] research
+  [APR vs. Interest Rate: The Number Your B] outline
+  [APR vs. Interest Rate: The Number Your B] draft
+  [APR vs. Interest Rate: The Number Your B] voice_edit
+  [APR vs. Interest Rate: The Number Your B] seo
+  [APR vs. Interest Rate: The Number Your B] social
+  Published to Substack: https://joinivyedge.substack.com/p/197232113
+  Canonical blog URL:    https://www.ivyedge.co/blog/apr-vs-interest-rate-the-number-your-bank-hopes-you-dont-com
+  [Present Bias Is Why You're Still at the ] format_analysis
+  [Present Bias Is Why You're Still at the ] research
+  [Present Bias Is Why You're Still at the ] outline
+  [Present Bias Is Why You're Still at the ] draft
+  [Present Bias Is Why You're Still at the ] voice_edit
+  [Present Bias Is Why You're Still at the ] seo
+  [Present Bias Is Why You're Still at the ] social
+  Published to Substack: https://joinivyedge.substack.com/p/197232929
+  Canonical blog URL:    https://www.ivyedge.co/blog/present-bias-is-why-youre-still-at-the-bank-thats-overchargi
+  [What the Largest 4-Day Work Week Trial A] format_analysis
+  [What the Largest 4-Day Work Week Trial A] research
+  [What the Largest 4-Day Work Week Trial A] outline
+  [What the Largest 4-Day Work Week Trial A] draft
+  [What the Largest 4-Day Work Week Trial A] voice_edit
+  [What the Largest 4-Day Work Week Trial A] seo
+  [What the Largest 4-Day Work Week Trial A] social
+  Published to Substack: https://joinivyedge.substack.com/p/197233750
+  Canonical blog URL:    https://www.ivyedge.co/blog/what-the-largest-4-day-work-week-trial-actually-found-and-wh
+  [RTO Mandates Are a Women's Workforce Pro] format_analysis
+  [RTO Mandates Are a Women's Workforce Pro] research
+  [RTO Mandates Are a Women's Workforce Pro] outline
+  [RTO Mandates Are a Women's Workforce Pro] draft
+  [RTO Mandates Are a Women's Workforce Pro] voice_edit
+  [RTO Mandates Are a Women's Workforce Pro] seo
+  [RTO Mandates Are a Women's Workforce Pro] social
+  Published to Substack: https://joinivyedge.substack.com/p/197234474
+  Canonical blog URL:    https://www.ivyedge.co/blog/rto-mandates-are-a-womens-workforce-problem-heres-the-data
+  [AI Is Rewriting Who Gets Approved for a ] format_analysis
+  [AI Is Rewriting Who Gets Approved for a ] research
+  [AI Is Rewriting Who Gets Approved for a ] outline
+  [AI Is Rewriting Who Gets Approved for a ] draft
+  [AI Is Rewriting Who Gets Approved for a ] voice_edit
+  [AI Is Rewriting Who Gets Approved for a ] seo
+  [AI Is Rewriting Who Gets Approved for a ] social
+  Published to Substack: https://joinivyedge.substack.com/p/197235238
+  Canonical blog URL:    https://www.ivyedge.co/blog/ai-is-rewriting-who-gets-approved-for-a-loan-is-it-fixing-th
+  [Can You Trust AI to Explain Your Finance] format_analysis
+  [Can You Trust AI to Explain Your Finance] research
+  [Can You Trust AI to Explain Your Finance] outline
+  [Can You Trust AI to Explain Your Finance] draft
+  [Can You Trust AI to Explain Your Finance] voice_edit
+  [Can You Trust AI to Explain Your Finance] seo
+  [Can You Trust AI to Explain Your Finance] social
+  Published to Substack: https://joinivyedge.substack.com/p/197236080
+  Canonical blog URL:    https://www.ivyedge.co/blog/can-you-trust-ai-to-explain-your-finances-heres-what-a-new-s
+
+Batch complete. Calendar updated: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+[12:18:16] Step 3 done.
+[12:18:16] Step 3 done.
+[12:18:16] Step 4: Running social media agent...
+[12:18:16] Step 4: Running social media agent...
+12:18:17 [INFO] Processing: 2026-05-11_ai-is-rewriting-who-gets-approved-for-a-loan-is-it-fixing-th
+12:18:17 [INFO] Image card saved: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/output/2026-05-11_ai-is-rewriting-who-gets-approved-for-a-loan-is-it-fixing-th/07_image_card.png
+12:18:17 [INFO] Image card: 07_image_card.png
+12:18:17 [ERROR] Video generation failed for 2026-05-11_ai-is-rewriting-who-gets-approved-for-a-loan-is-it-fixing-th: 'AudioFileClip' object has no attribute 'audio_fadein'
+12:18:18 [INFO] Uploaded to Cloudinary (image): https://res.cloudinary.com/dzh9tyah0/image/upload/v1778516297/ivyedge/social/ns7le7okcaladvgzsw9g.png
+12:18:59 [ERROR] Instagram card post failed for 2026-05-11_ai-is-rewriting-who-gets-approved-for-a-loan-is-it-fixing-th: HTTPSConnectionPool(host='api.buffer.com', port=443): Read timed out. (read timeout=60)
+12:19:00 [INFO] Uploaded to Cloudinary (image): https://res.cloudinary.com/dzh9tyah0/image/upload/v1778516339/ivyedge/social/cyw2cakmzj3gkfqw5j35.png
+12:19:01 [INFO] Buffer post created: 6a0201757cc5dbf6e312228c (channel 69f8fda35c4c051afa0dba9e)
+12:19:01 [INFO] Threads card scheduled for 2026-05-13T12:00:00Z
+12:19:01 [INFO] No video yet — TikTok skipped
+12:19:02 [INFO] Uploaded to Cloudinary (image): https://res.cloudinary.com/dzh9tyah0/image/upload/v1778516341/ivyedge/social/uxbbh16m6sweonxitrqu.png
+12:19:02 [INFO] Buffer post created: 6a020176082eb00a419f92f8 (channel 6a01ebb6090476fb990a5f9c)
+12:19:02 [INFO] X card scheduled for 2026-05-13T12:00:00Z
+12:19:02 [ERROR] Reddit post failed for 2026-05-11_ai-is-rewriting-who-gets-approved-for-a-loan-is-it-fixing-th: Missing Reddit credentials. Set REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, and REDDIT_PASSWORD in .env
+12:19:02 [INFO] Receipt saved: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/output/2026-05-11_ai-is-rewriting-who-gets-approved-for-a-loan-is-it-fixing-th/social_posted.json
+12:19:02 [INFO] Processing: 2026-05-11_apr-vs-interest-rate-the-number-your-bank-hopes-you-dont-com
+12:19:02 [INFO] Image card saved: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/output/2026-05-11_apr-vs-interest-rate-the-number-your-bank-hopes-you-dont-com/07_image_card.png
+12:19:02 [INFO] Image card: 07_image_card.png
+12:19:02 [ERROR] Video generation failed for 2026-05-11_apr-vs-interest-rate-the-number-your-bank-hopes-you-dont-com: 'AudioFileClip' object has no attribute 'audio_fadein'
+12:19:03 [INFO] Uploaded to Cloudinary (image): https://res.cloudinary.com/dzh9tyah0/image/upload/v1778516342/ivyedge/social/rrxdkcncsaazjvw6wy0v.png
+12:19:04 [INFO] Buffer post created: 6a020177082eb00a419f931d (channel 69f919ec5c4c051afa0e4406)
+12:19:04 [INFO] Instagram card scheduled for 2026-05-13T12:00:00Z
+12:19:04 [INFO] Uploaded to Cloudinary (image): https://res.cloudinary.com/dzh9tyah0/image/upload/v1778516344/ivyedge/social/vw6qzeuf4buhz0zhuglp.png
+12:19:05 [INFO] Buffer post created: 6a0201797cc5dbf6e31222b1 (channel 69f8fda35c4c051afa0dba9e)
+12:19:05 [INFO] Threads card scheduled for 2026-05-13T12:00:00Z
+12:19:05 [INFO] No video yet — TikTok skipped
+12:19:05 [INFO] Uploaded to Cloudinary (image): https://res.cloudinary.com/dzh9tyah0/image/upload/v1778516345/ivyedge/social/sqnio1bu0xmamosn9o7n.png
+12:19:06 [INFO] Buffer post created: 6a02017a7cc5dbf6e31222d6 (channel 6a01ebb6090476fb990a5f9c)
+12:19:06 [INFO] X card scheduled for 2026-05-13T12:00:00Z
+12:19:06 [ERROR] Reddit post failed for 2026-05-11_apr-vs-interest-rate-the-number-your-bank-hopes-you-dont-com: Missing Reddit credentials. Set REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, and REDDIT_PASSWORD in .env
+12:19:06 [INFO] Receipt saved: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/output/2026-05-11_apr-vs-interest-rate-the-number-your-bank-hopes-you-dont-com/social_posted.json
+12:19:06 [INFO] Processing: 2026-05-11_can-you-trust-ai-to-explain-your-finances-heres-what-a-new-s
+12:19:06 [INFO] Image card saved: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/output/2026-05-11_can-you-trust-ai-to-explain-your-finances-heres-what-a-new-s/07_image_card.png
+12:19:06 [INFO] Image card: 07_image_card.png
+12:19:06 [ERROR] Video generation failed for 2026-05-11_can-you-trust-ai-to-explain-your-finances-heres-what-a-new-s: 'AudioFileClip' object has no attribute 'audio_fadein'
+12:19:07 [INFO] Uploaded to Cloudinary (image): https://res.cloudinary.com/dzh9tyah0/image/upload/v1778516346/ivyedge/social/jwcxizjia5wt3hiiikvi.png
+12:19:07 [INFO] Buffer post created: 6a02017b082eb00a419f934c (channel 69f919ec5c4c051afa0e4406)
+12:19:07 [INFO] Instagram card scheduled for 2026-05-13T12:00:00Z
+12:19:08 [INFO] Uploaded to Cloudinary (image): https://res.cloudinary.com/dzh9tyah0/image/upload/v1778516347/ivyedge/social/akwpjlz0zclfzeyhmuwr.png
+12:19:09 [INFO] Buffer post created: 6a02017c082eb00a419f9377 (channel 69f8fda35c4c051afa0dba9e)
+12:19:09 [INFO] Threads card scheduled for 2026-05-13T12:00:00Z
+12:19:09 [INFO] No video yet — TikTok skipped
+12:19:09 [INFO] Uploaded to Cloudinary (image): https://res.cloudinary.com/dzh9tyah0/image/upload/v1778516349/ivyedge/social/nq0fymbdiy3dkjw8327d.png
+12:19:10 [INFO] Buffer post created: 6a02017e7cc5dbf6e312230b (channel 6a01ebb6090476fb990a5f9c)
+12:19:10 [INFO] X card scheduled for 2026-05-13T12:00:00Z
+12:19:10 [ERROR] Reddit post failed for 2026-05-11_can-you-trust-ai-to-explain-your-finances-heres-what-a-new-s: Missing Reddit credentials. Set REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, and REDDIT_PASSWORD in .env
+12:19:10 [INFO] Receipt saved: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/output/2026-05-11_can-you-trust-ai-to-explain-your-finances-heres-what-a-new-s/social_posted.json
+12:19:10 [INFO] Processing: 2026-05-11_present-bias-is-why-youre-still-at-the-bank-thats-overchargi
+12:19:10 [INFO] Image card saved: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/output/2026-05-11_present-bias-is-why-youre-still-at-the-bank-thats-overchargi/07_image_card.png
+12:19:10 [INFO] Image card: 07_image_card.png
+12:19:10 [ERROR] Video generation failed for 2026-05-11_present-bias-is-why-youre-still-at-the-bank-thats-overchargi: 'AudioFileClip' object has no attribute 'audio_fadein'
+12:19:10 [INFO] Uploaded to Cloudinary (image): https://res.cloudinary.com/dzh9tyah0/image/upload/v1778516350/ivyedge/social/hikn0d9g1k7re2espswl.png
+12:19:11 [INFO] Buffer post created: 6a02017f082eb00a419f93b1 (channel 69f919ec5c4c051afa0e4406)
+12:19:11 [INFO] Instagram card scheduled for 2026-05-13T12:00:00Z
+12:19:12 [INFO] Uploaded to Cloudinary (image): https://res.cloudinary.com/dzh9tyah0/image/upload/v1778516351/ivyedge/social/oyyzrwbkcugg4seyvjoy.png
+12:19:12 [INFO] Buffer post created: 6a0201807cc5dbf6e3122360 (channel 69f8fda35c4c051afa0dba9e)
+12:19:12 [INFO] Threads card scheduled for 2026-05-13T12:00:00Z
+12:19:12 [INFO] No video yet — TikTok skipped
+12:19:13 [INFO] Uploaded to Cloudinary (image): https://res.cloudinary.com/dzh9tyah0/image/upload/v1778516352/ivyedge/social/dwceeu8fnos3w3ykuo5u.png
+12:19:14 [INFO] Buffer post created: 6a0201817cc5dbf6e3122385 (channel 6a01ebb6090476fb990a5f9c)
+12:19:14 [INFO] X card scheduled for 2026-05-13T12:00:00Z
+12:19:14 [ERROR] Reddit post failed for 2026-05-11_present-bias-is-why-youre-still-at-the-bank-thats-overchargi: Missing Reddit credentials. Set REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, and REDDIT_PASSWORD in .env
+12:19:14 [INFO] Receipt saved: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/output/2026-05-11_present-bias-is-why-youre-still-at-the-bank-thats-overchargi/social_posted.json
+12:19:14 [INFO] Processing: 2026-05-11_rto-mandates-are-a-womens-workforce-problem-heres-the-data
+12:19:14 [INFO] Image card saved: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/output/2026-05-11_rto-mandates-are-a-womens-workforce-problem-heres-the-data/07_image_card.png
+12:19:14 [INFO] Image card: 07_image_card.png
+12:19:14 [ERROR] Video generation failed for 2026-05-11_rto-mandates-are-a-womens-workforce-problem-heres-the-data: 'AudioFileClip' object has no attribute 'audio_fadein'
+12:19:14 [INFO] Uploaded to Cloudinary (image): https://res.cloudinary.com/dzh9tyah0/image/upload/v1778516354/ivyedge/social/y7fasabxl3zelzqrqu93.png
+12:19:15 [INFO] Buffer post created: 6a020183082eb00a419f93f0 (channel 69f919ec5c4c051afa0e4406)
+12:19:15 [INFO] Instagram card scheduled for 2026-05-13T12:00:00Z
+12:19:16 [INFO] Uploaded to Cloudinary (image): https://res.cloudinary.com/dzh9tyah0/image/upload/v1778516355/ivyedge/social/jmhdajirnbwbp9paddlz.png
+12:19:16 [INFO] Buffer post created: 6a0201847cc5dbf6e31223aa (channel 69f8fda35c4c051afa0dba9e)
+12:19:16 [INFO] Threads card scheduled for 2026-05-13T12:00:00Z
+12:19:16 [INFO] No video yet — TikTok skipped
+12:19:17 [INFO] Uploaded to Cloudinary (image): https://res.cloudinary.com/dzh9tyah0/image/upload/v1778516357/ivyedge/social/sk4xuh5fsgnesw0nfamc.png
+12:19:18 [INFO] Buffer post created: 6a020186082eb00a419f942f (channel 6a01ebb6090476fb990a5f9c)
+12:19:18 [INFO] X card scheduled for 2026-05-13T12:00:00Z
+12:19:18 [ERROR] Reddit post failed for 2026-05-11_rto-mandates-are-a-womens-workforce-problem-heres-the-data: Missing Reddit credentials. Set REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, and REDDIT_PASSWORD in .env
+12:19:18 [INFO] Receipt saved: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/output/2026-05-11_rto-mandates-are-a-womens-workforce-problem-heres-the-data/social_posted.json
+12:19:18 [INFO] Processing: 2026-05-11_what-the-largest-4-day-work-week-trial-actually-found-and-wh
+12:19:18 [INFO] Image card saved: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/output/2026-05-11_what-the-largest-4-day-work-week-trial-actually-found-and-wh/07_image_card.png
+12:19:18 [INFO] Image card: 07_image_card.png
+12:19:18 [ERROR] Video generation failed for 2026-05-11_what-the-largest-4-day-work-week-trial-actually-found-and-wh: 'AudioFileClip' object has no attribute 'audio_fadein'
+12:19:19 [INFO] Uploaded to Cloudinary (image): https://res.cloudinary.com/dzh9tyah0/image/upload/v1778516358/ivyedge/social/ypxj8ekca8qju1b8undc.png
+12:19:20 [INFO] Buffer post created: 6a0201877cc5dbf6e31223cf (channel 69f919ec5c4c051afa0e4406)
+12:19:20 [INFO] Instagram card scheduled for 2026-05-13T12:00:00Z
+12:19:20 [INFO] Uploaded to Cloudinary (image): https://res.cloudinary.com/dzh9tyah0/image/upload/v1778516360/ivyedge/social/rrolhvl7vlmqof4qgjtf.png
+12:19:21 [INFO] Buffer post created: 6a020189082eb00a419f9454 (channel 69f8fda35c4c051afa0dba9e)
+12:19:21 [INFO] Threads card scheduled for 2026-05-13T12:00:00Z
+12:19:21 [INFO] No video yet — TikTok skipped
+12:19:21 [INFO] Uploaded to Cloudinary (image): https://res.cloudinary.com/dzh9tyah0/image/upload/v1778516361/ivyedge/social/ogjkthndwz9dppovbthm.png
+12:19:22 [INFO] Buffer post created: 6a02018a7cc5dbf6e31223fc (channel 6a01ebb6090476fb990a5f9c)
+12:19:22 [INFO] X card scheduled for 2026-05-13T12:00:00Z
+12:19:22 [ERROR] Reddit post failed for 2026-05-11_what-the-largest-4-day-work-week-trial-actually-found-and-wh: Missing Reddit credentials. Set REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, and REDDIT_PASSWORD in .env
+12:19:22 [INFO] Receipt saved: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/output/2026-05-11_what-the-largest-4-day-work-week-trial-actually-found-and-wh/social_posted.json
+
+Done: 6 posts processed, 0 already posted.
+  2026-05-11_ai-is-rewriting-who-gets-approved-for-a-loan-is-it-fixing-th
+    Instagram: —
+    Threads:   —
+    Video:     —
+  2026-05-11_apr-vs-interest-rate-the-number-your-bank-hopes-you-dont-com
+    Instagram: —
+    Threads:   —
+    Video:     —
+  2026-05-11_can-you-trust-ai-to-explain-your-finances-heres-what-a-new-s
+    Instagram: —
+    Threads:   —
+    Video:     —
+  2026-05-11_present-bias-is-why-youre-still-at-the-bank-thats-overchargi
+    Instagram: —
+    Threads:   —
+    Video:     —
+  2026-05-11_rto-mandates-are-a-womens-workforce-problem-heres-the-data
+    Instagram: —
+    Threads:   —
+    Video:     —
+  2026-05-11_what-the-largest-4-day-work-week-trial-actually-found-and-wh
+    Instagram: —
+    Threads:   —
+    Video:     —
+[12:19:22] Step 4 done.
+[12:19:22] Step 4 done.
+[12:19:22] ========================================
+[12:19:22] ========================================
+[12:19:22] Monday pipeline complete. Log: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/logs/2026-05-11_monday.log
+[12:19:22] Monday pipeline complete. Log: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/logs/2026-05-11_monday.log
+[12:19:22] ========================================
+[12:19:22] ========================================

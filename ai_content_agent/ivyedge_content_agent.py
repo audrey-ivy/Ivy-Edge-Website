@@ -1,9 +1,9 @@
 """
-IvyEdge AI Content Agent
+Ivy Edge AI Content Agent
 ========================
 
 A multi-step content generation pipeline that turns an editorial brief into a
-publishable blog draft, while preserving IvyEdge brand voice.
+publishable blog draft, while preserving Ivy Edge brand voice.
 
 Pipeline: Research -> Outline -> Draft -> Voice Edit -> SEO
 
@@ -126,7 +126,7 @@ class GenerationResult:
 
 class IvyEdgeContentAgent:
     """
-    Five-phase content generation agent for the IvyEdge blog.
+    Five-phase content generation agent for the Ivy Edge blog.
 
     The agent loads a context library (brand voice, personas, product knowledge,
     content strategy, plus any research summaries and example articles) and
@@ -238,7 +238,7 @@ class IvyEdgeContentAgent:
     def _voice_block(self) -> str:
         """The same voice reminder shows up in every phase."""
         return (
-            "# IvyEdge brand voice (always)\n"
+            "# Ivy Edge brand voice (always)\n"
             "- Direct: lead with the answer; no hedging, no 'you might be wondering'.\n"
             "- Warm: acknowledge emotional reality; use contractions; say 'you'.\n"
             "- Grounded: tell the truth, even when uncomfortable; never over-promise.\n"
@@ -267,12 +267,12 @@ class IvyEdgeContentAgent:
         if self.context.get("extras"):
             parts.append(f"# === extra context ===\n\n{self.context['extras']}")
 
-        # Always-present section: IvyEdge's internal operating model.
+        # Always-present section: Ivy Edge's internal operating model.
         # This is both proof of mission and the factual foundation for
         # Pillar 6 (Building Differently) content.
         parts.append(
-            "# === How IvyEdge builds (the internal model) ===\n\n"
-            "IvyEdge practices what it preaches — the company is designed to not push women out:\n"
+            "# === How Ivy Edge builds (the internal model) ===\n\n"
+            "Ivy Edge practices what it preaches — the company is designed to not push women out:\n"
             "- 100% Remote: geography never a barrier. RTO mandates caused disproportionate "
             "female exits (Upwork 2024).\n"
             "- 32-Hour / 4-Day Work Week: Mondays off for caregiving or rest. 90% of companies "
@@ -313,12 +313,12 @@ class IvyEdgeContentAgent:
                     + m.group(1).strip() + "\n"
                 )
 
-        prompt = f"""You are a financial-services researcher preparing material for an IvyEdge blog post.
+        prompt = f"""You are a financial-services researcher preparing material for an Ivy Edge blog post.
 
 IMPORTANT — PRE-LAUNCH CONTEXT
-IvyEdge has not launched any products yet. The blog exists to prove audience
-demand for the IvyEdge thesis. Do not reference Ivy Smart Loan, Ivy Credit
-Builder, Ivy Credit Monitor, Ivy Checking, or any other IvyEdge product as
+Ivy Edge has not launched any products yet. The blog exists to prove audience
+demand for the Ivy Edge thesis. Do not reference Ivy Smart Loan, Ivy Credit
+Builder, Ivy Credit Monitor, Ivy Checking, or any other Ivy Edge product as
 if it exists. The goal is to demonstrate expertise on the topic and build
 an audience — not to convert to a product.
 
@@ -338,7 +338,7 @@ RESEARCH TASKS
    Prefer .gov, .edu, CFPB, Federal Reserve, BLS, Experian, myFICO, Urban Institute.
    Use the source links above if they match; otherwise find the specific page.
 3. Name what traditional finance gets wrong about this topic.
-4. Identify the perspective IvyEdge brings — the *point of view* on the topic,
+4. Identify the perspective Ivy Edge brings — the *point of view* on the topic,
    not a product pitch. Frame it as a thesis the reader can evaluate.
 5. Suggest 1-2 anonymized examples or composite scenarios (NOT named member
    stories — we don't have members yet) that would resonate.
@@ -353,7 +353,7 @@ OUTPUT FORMAT (markdown)
 ## Traditional approach (what's broken)
 - ...
 
-## IvyEdge angle
+## Ivy Edge angle
 - ...
 
 ## Story or example ideas
@@ -389,7 +389,7 @@ OUTPUT FORMAT (markdown)
             "we're upgrading it. The common belief to challenge is in the article notes.\n"
         ) if brief.content_format == "contrarian" else ""
 
-        prompt = f"""You are outlining an IvyEdge blog post.
+        prompt = f"""You are outlining an Ivy Edge blog post.
 
 ARTICLE BRIEF
 - Topic: {brief.topic}
@@ -402,9 +402,9 @@ RESEARCH (from previous step)
 {research}
 
 PRE-LAUNCH CONTEXT
-IvyEdge has not launched any products. CTAs are audience-building actions —
+Ivy Edge has not launched any products. CTAs are audience-building actions —
 not product applications. Use one of:
-  - Join the IvyEdge waitlist → link to https://www.ivyedge.co
+  - Join the Ivy Edge waitlist → link to https://www.ivyedge.co
   - Get the next post in your inbox (newsletter signup) → link to https://www.ivyedge.co
   - Tell us your story → link to https://www.instagram.com/ivyedge.co/
   - Share this with someone who needs it (organic distribution)
@@ -413,7 +413,7 @@ not product applications. Use one of:
 CTA LINK RULES (always use these exact URLs — never placeholders like /waitlist):
   - Waitlist / signup → https://www.ivyedge.co
   - "Tell us your story" → https://www.instagram.com/ivyedge.co/
-  - Do NOT link to other /blog/ posts — IvyEdge has no other published posts yet.
+  - Do NOT link to other /blog/ posts — Ivy Edge has no other published posts yet.
 
 OUTLINE REQUIREMENTS
 - Structure: Hook -> Problem -> Insight / point of view -> Practical steps -> CTA
@@ -424,7 +424,7 @@ OUTLINE REQUIREMENTS
 
 UNIQUE ANGLE REQUIREMENT
 Before settling on the angle, consider: what would the top 5 Google results NOT say?
-Competitor content on this topic is predictable. IvyEdge's job is to say the thing
+Competitor content on this topic is predictable. Ivy Edge's job is to say the thing
 that is true but that no one else is saying — the insight that makes the reader feel
 seen and smarter for having read it. Note the chosen angle in the outline.
 
@@ -467,22 +467,22 @@ VOICE REMINDER: lead with the answer. Be direct. Make it immediately useful.
     # -- Phase 3: Draft ---------------------------------------------------
 
     def draft_phase(self, brief: ArticleBrief, outline: str) -> str:
-        prompt = f"""You are writing a blog post for IvyEdge based on this approved outline.
+        prompt = f"""You are writing a blog post for Ivy Edge based on this approved outline.
 
 OUTLINE
 {outline}
 
 PRE-LAUNCH CONTEXT
-IvyEdge has not launched any products. Do NOT reference Ivy Smart Loan, Ivy
+Ivy Edge has not launched any products. Do NOT reference Ivy Smart Loan, Ivy
 Credit Builder, Ivy Credit Monitor, Ivy Checking, or any specific product.
-Refer to IvyEdge as 'we' / 'us' — never as a product the reader can apply for.
+Refer to Ivy Edge as 'we' / 'us' — never as a product the reader can apply for.
 The CTA must be audience-building only. Always use these exact URLs:
   - Waitlist / signup / "be first to know" → https://www.ivyedge.co
   - "Tell us your story" → https://www.instagram.com/ivyedge.co/
-  - Do NOT add links to /blog/ paths — IvyEdge has no other published posts yet.
+  - Do NOT add links to /blog/ paths — Ivy Edge has no other published posts yet.
 
 WRITING GUIDELINES
-- Voice: direct, warm, grounded. IvyEdge is the brilliant friend who happens
+- Voice: direct, warm, grounded. Ivy Edge is the brilliant friend who happens
   to work in finance — not a bank, not a wellness app.
 - Use 'you' and contractions naturally.
 - Lead each section with the answer, then explain.
@@ -511,7 +511,7 @@ WHAT TO AVOID
 - Over-promising results ('transform your credit in 30 days')
 - Passive voice and corporate speak
 - Hedging ('may', 'might', 'could potentially')
-- ANY mention of IvyEdge products as if they exist
+- ANY mention of Ivy Edge products as if they exist
 - Phrases like 'apply today' or 'check your rate' — we have nothing to apply for
 
 TARGET LENGTH: {brief.target_word_count[0]}-{brief.target_word_count[1]} words.
@@ -529,13 +529,13 @@ Start with `# {{Working title}}` on the first line.
     # -- Phase 4: Voice edit ---------------------------------------------
 
     def voice_edit_phase(self, draft: str) -> str:
-        prompt = f"""You are editing this IvyEdge blog draft to strengthen the brand voice.
+        prompt = f"""You are editing this Ivy Edge blog draft to strengthen the brand voice.
 
 DRAFT
 {draft}
 
 EDITING CHECKLIST
-1. Replace jargon and corporate language with IvyEdge vocabulary.
+1. Replace jargon and corporate language with Ivy Edge vocabulary.
 2. Tighten the opening — does it lead with the answer?
 3. Check for warmth — are we acknowledging emotional reality?
 4. Remove hedging language ('may', 'might', 'could potentially').
@@ -550,7 +550,7 @@ EDITING CHECKLIST
     Always use these exact URLs — no placeholders like /waitlist:
       - Waitlist / signup → https://www.ivyedge.co
       - "Tell us your story" → https://www.instagram.com/ivyedge.co/
-    Remove any markdown links to /blog/ paths — IvyEdge has no other
+    Remove any markdown links to /blog/ paths — Ivy Edge has no other
     published posts yet. Either delete those links entirely or convert
     them to plain text (remove the link, keep the anchor text).
 11. READABILITY: Target a Dale-Chall score of 8.5 (college-level, grades 13-15).
@@ -590,10 +590,10 @@ EDITING CHECKLIST
     strengthen the analogy. It should be conversational — something you'd say
     to a friend, not a textbook.
 
-14. STANDARD FOOTER: Do NOT include the block that reads "IvyEdge is being
+14. STANDARD FOOTER: Do NOT include the block that reads "Ivy Edge is being
     built for every woman who has been underestimated by a system that never
     genuinely evaluated her. / If that's you, we want you close when we
-    launch. / Get on the IvyEdge waitlist → / Be first. You've waited long
+    launch. / Get on the Ivy Edge waitlist → / Be first. You've waited long
     enough." That block is added automatically by the publisher. End the post
     after the closing CTA paragraph — do not repeat it or duplicate it.
 
@@ -622,7 +622,7 @@ the next phase needs a finished draft to pass to SEO.
         internal_link_suggestions, external_link_suggestions, alt_text_suggestions.
         Asks Claude to return JSON so we can parse cleanly."""
 
-        prompt = f"""You are optimizing this IvyEdge blog post for SEO.
+        prompt = f"""You are optimizing this Ivy Edge blog post for SEO.
 
 DRAFT
 {edited_draft}
@@ -636,7 +636,7 @@ SEO CHECKLIST
    least one H2. Use it naturally 3-5 times across the body.
 2. Weave secondary keywords in where they fit. Use semantic variations if a
    keyword feels forced.
-3. Do NOT add internal links — IvyEdge has no other published pages or
+3. Do NOT add internal links — Ivy Edge has no other published pages or
    blog posts yet. If the draft contains any [anchor text](/blog/...) or
    [anchor text](/products/...) links, remove the link and keep only the
    plain anchor text.
@@ -652,7 +652,7 @@ SEO CHECKLIST
 6. Suggest alt text for any images the editor should add (descriptive +
    keyword where natural).
 
-DO NOT sacrifice IvyEdge voice for keyword density. If the keyword doesn't
+DO NOT sacrifice Ivy Edge voice for keyword density. If the keyword doesn't
 fit naturally, use a semantic variation.
 
 OUTPUT FORMAT — two clearly separated sections, nothing else:
@@ -696,10 +696,10 @@ SECTION 2 — metadata as a single valid JSON object, between these exact delimi
 
     def social_phase(self, brief: ArticleBrief, final_draft: str) -> str:
         post_url = self._blog_url(brief.topic)
-        prompt = f"""You are writing social media content to distribute an IvyEdge blog post.
+        prompt = f"""You are writing social media content to distribute an Ivy Edge blog post.
 
 PRE-LAUNCH CONTEXT
-IvyEdge has not launched any products. Every CTA must be audience-building:
+Ivy Edge has not launched any products. Every CTA must be audience-building:
 waitlist signup, newsletter, share, survey, or tell-us-your-story.
 Never mention Ivy Smart Loan, Ivy Credit Builder, Ivy Credit Monitor, or Ivy Checking.
 
@@ -770,7 +770,7 @@ Format:
 Write THREE captions. Each will post on a different day (Tue / Thu / Sat) with a different
 hook and angle — they must feel distinct, not like rewrites of each other.
 Rules for every caption:
-- 150–300 words; warm, direct IvyEdge voice; line breaks every 1–2 sentences
+- 150–300 words; warm, direct Ivy Edge voice; line breaks every 1–2 sentences
 - Hook in the first line (no "Hey!" or emojis to open)
 - 3–5 paragraphs; end with a question or CTA to drive comments; include "link in bio"
 - Do NOT include raw URLs in the caption body
@@ -802,7 +802,7 @@ Format:
 <hashtags>
 
 ### Visual direction
-<1–2 sentences describing the image — IvyEdge brand colors only>
+<1–2 sentences describing the image — Ivy Edge brand colors only>
 
 ---
 
@@ -901,7 +901,7 @@ Format:
 
 ## LinkedIn Article
 
-Write a full LinkedIn native article for the IvyEdge business page.
+Write a full LinkedIn native article for the Ivy Edge business page.
 LinkedIn articles live on the page permanently and index on Google — write for both audiences.
 Rules:
 - Headline: specific and benefit-driven, 8–12 words, no clickbait
@@ -911,7 +911,7 @@ Rules:
 - Open with the core problem in 2–3 sentences — no preamble, no "In today's world..."
 - Each section: 2–4 sentences max, no filler
 - Include 1–2 real stats or concrete facts from the article
-- End with a 2-sentence CTA: one sentence naming what IvyEdge is building, one sentence sending readers to the waitlist at https://www.ivyedge.co
+- End with a 2-sentence CTA: one sentence naming what Ivy Edge is building, one sentence sending readers to the waitlist at https://www.ivyedge.co
 - No hashtags in the body — add 3–5 relevant hashtags on a separate line at the very end
 - No em-dashes (—); use a colon or a dash (-)
 
@@ -933,7 +933,7 @@ Format:
         """Generate a weekly Barbie content brief for Audrey's daughters to film."""
         prompt = f"""You are writing a content brief for two teenage girls (ages 12 and 16)
 who film short videos with their cat, Barbie. Barbie wears a tiny ivy-leaf hat as her signature look.
-The videos and photos support IvyEdge, a financial education brand for freelancers and gig workers.
+The videos and photos support Ivy Edge, a financial education brand for freelancers and gig workers.
 
 The girls do NOT need to understand the financial topic deeply — they just need clear,
 fun, doable directions. Write like a cool older sister giving instructions, not a brand manager.
@@ -945,7 +945,7 @@ THE PERMANENT STUDIO SETUP (never changes — the girls know this already)
 - Small succulent near Barbie
 - Stack of 2–3 dark hardcover books
 - Coral or cream candle
-- Small chalkboard or wooden sign ("IvyEdge" or "Grow Through Anything")
+- Small chalkboard or wooden sign ("Ivy Edge" or "Grow Through Anything")
 - Neutral mug
 - Ring light for videos, natural window light for photos
 
@@ -994,7 +994,7 @@ Rules:
 - Each script: 40–60 words (about 20–25 seconds with Barbie on screen)
 - Give Barbie one specific, fun action per video (e.g. "hold Barbie up facing the camera
   like she's presenting", "drape Barbie across the open book like she's reading it")
-- End every script with: "Follow IvyEdge for more — link in bio"
+- End every script with: "Follow Ivy Edge for more — link in bio"
 - Caption starter: first 1–2 lines only — the girls fill in the rest
 - No financial jargon — translate everything into plain, relatable language
 
@@ -1141,16 +1141,16 @@ Add one line below the table:
     # -- Intro post (one-time founding statement) --------------------------
 
     def generate_intro_post(self, on_phase: Optional[callable] = None) -> GenerationResult:
-        """Generate the IvyEdge founding/introduction post.
+        """Generate the Ivy Edge founding/introduction post.
 
         This is a one-time brand story piece — shorter than a standard post,
         no keyword optimization, written as a direct letter to the reader.
         """
         brief = ArticleBrief(
-            topic="Introducing IvyEdge",
+            topic="Introducing Ivy Edge",
             persona="All",
             pillar="Brand Story",
-            primary_keyword="IvyEdge",
+            primary_keyword="Ivy Edge",
             content_format="brand_introduction",
             target_word_count=(700, 900),
             notes="Founding statement. Not keyword-optimized. Warm, personal, direct. Waitlist CTA.",
@@ -1169,7 +1169,7 @@ Add one line below the table:
                 on_phase(name, out)
             return out
 
-        prompt = f"""You are writing the founding/introduction post for IvyEdge — the very first thing
+        prompt = f"""You are writing the founding/introduction post for Ivy Edge — the very first thing
 the world reads from us. This is not a blog post. It is a letter.
 
 WHO WE ARE WRITING TO
@@ -1180,7 +1180,7 @@ has been doing everything right and still can't get a fair shot from traditional
 WHAT THIS POST MUST DO
 1. Open with the problem — not our solution. The reader should feel seen before we say a word about ourselves.
 2. Explain why the financial system fails these women (income type, career path, the metrics it uses).
-3. Introduce IvyEdge — what we're building and why. One sentence on the mission.
+3. Introduce Ivy Edge — what we're building and why. One sentence on the mission.
 4. Tell the reader what's coming: a blog that gives them the real information they've been denied,
    and products (launching soon) that evaluate their whole story.
 5. End with a warm, direct CTA to join the waitlist at https://www.ivyedge.co.

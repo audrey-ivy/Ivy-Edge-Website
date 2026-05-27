@@ -1,5 +1,5 @@
 """
-IvyEdge — Instagram Hashtag Scraper (instaloader)
+Ivy Edge — Instagram Hashtag Scraper (instaloader)
 
 Discovers public Instagram posts via hashtag search using instaloader.
 No Meta developer account or API token required — reads only public data.
@@ -180,11 +180,11 @@ def _fetch_posts(seen: set[str]) -> list[dict]:
 # Claude scoring + comment drafting
 # ---------------------------------------------------------------------------
 
-_SYSTEM_PROMPT = """You are the community engagement voice for IvyEdge, a pre-launch
+_SYSTEM_PROMPT = """You are the community engagement voice for Ivy Edge, a pre-launch
 consumer finance platform for women with non-traditional financial histories
 (freelancers, career returners, entrepreneurs with variable income).
 
-IvyEdge's thesis:
+Ivy Edge's thesis:
 - Career gaps don't make you a credit risk
 - 1099 income is real income
 - High earners with non-W-2 income deserve products that match their reality
@@ -199,7 +199,7 @@ Instagram comment norms:
 - Should feel like a genuine comment from a smart follower
 
 Reshare guidance:
-- Flag posts worth reposting to IvyEdge's audience (real stories, compelling data, strong takes)"""
+- Flag posts worth reposting to Ivy Edge's audience (real stories, compelling data, strong takes)"""
 
 
 def _score_and_draft(posts: list[dict], client: anthropic.Anthropic) -> list[EngagementOpportunity]:
@@ -227,7 +227,7 @@ JSON array only. No prose, no markdown fences.
 
 High scores (≥6): Creator sharing a real experience with freelance income, career gaps,
 credit struggles, variable-income stress, OR workplace flexibility/remote work/caregiving.
-Reshare if it's a compelling voice worth amplifying to IvyEdge's audience.
+Reshare if it's a compelling voice worth amplifying to Ivy Edge's audience.
 
 Low scores (<6): Generic motivational content, brand posts, topics we can't add anything to.
 

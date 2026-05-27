@@ -1,9 +1,9 @@
 """
-Competitive format analysis for IvyEdge.
+Competitive format analysis for Ivy Edge.
 
 For a given keyword, searches DuckDuckGo, fetches the top free (non-paywalled)
 results, measures their structure (H1/H2/H3 counts, word count, lists, images),
-then uses Claude to synthesize format recommendations for the IvyEdge post.
+then uses Claude to synthesize format recommendations for the Ivy Edge post.
 
 This runs as Phase 0 of the pipeline so the outline phase has concrete benchmarks
 to hit rather than guessing at structure.
@@ -20,7 +20,7 @@ import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 
 logger = logging.getLogger("ivyedge.competitor")
 
@@ -148,6 +148,29 @@ def analyze_url(url: str) -> dict | None:
         section_lengths.append(current)
     avg_section_words = int(sum(section_lengths) / len(section_lengths)) if section_lengths else 0
 
+    # Collect external links — skip navigation, ads, same-domain, and anchors
+    from urllib.parse import urlparse
+    base_domain = urlparse(url).netloc
+    NAV_SKIP = re.compile(r"/(tag|category|author|page|login|signup|subscribe|advertise|about|contact)", re.I)
+    TRUSTED_DOMAINS = re.compile(r"\.(gov|edu)$|consumerfinance\.gov|federalreserve\.gov|bls\.gov|"
+                                  r"experian\.com|equifax\.com|transunion\.com|fico\.com|myfico\.com|"
+                                  r"urban\.org|brookings\.edu|pewresearch\.org|nber\.org|"
+                                  r"annualcreditreport\.com|cfpb\.gov", re.I)
+    ext_links: list[str] = []
+    for a in content.find_all("a", href=True):
+        href = a["href"].strip()
+        if not href.startswith("http"):
+            continue
+        parsed = urlparse(href)
+        if parsed.netloc == base_domain:
+            continue
+        if NAV_SKIP.search(parsed.path):
+            continue
+        if href not in ext_links:
+            ext_links.append(href)
+        if len(ext_links) >= 10:
+            break
+
     title_tag = soup.find("title")
     page_title = title_tag.get_text(strip=True) if title_tag else url
 
@@ -164,6 +187,7 @@ def analyze_url(url: str) -> dict | None:
         "numbered_lists": numbered_lists,
         "images": images,
         "avg_section_words": avg_section_words,
+        "external_links": ext_links,
     }
 
 
@@ -176,6 +200,7 @@ def synthesize_format_guidance(keyword: str, analyses: list[dict]) -> str:
     client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
     rows = ""
+    all_ext_links: list[str] = []
     for i, a in enumerate(analyses, 1):
         rows += (
             f"\n### Result {i}: {a['title']}\n"
@@ -185,21 +210,38 @@ def synthesize_format_guidance(keyword: str, analyses: list[dict]) -> str:
             f"- Avg words per section: {a['avg_section_words']}\n"
             f"- Lists: {a['bullet_lists']} bullet, {a['numbered_lists']} numbered\n"
             f"- Images: {a['images']}\n"
+            f"- External links found: {len(a.get('external_links', []))}\n"
         )
         if a["h2_titles"]:
             rows += f"- H2 titles: {' | '.join(a['h2_titles'][:6])}\n"
         if a["h3_titles"]:
             rows += f"- H3 titles: {' | '.join(a['h3_titles'][:4])}\n"
+        for lnk in a.get("external_links", []):
+            if lnk not in all_ext_links:
+                all_ext_links.append(lnk)
 
-    prompt = f"""You are advising the IvyEdge editorial team on post structure.
+    links_block = ""
+    if all_ext_links:
+        links_block = "\n## External links found across competitor articles\n"
+        for lnk in all_ext_links[:20]:
+            links_block += f"- {lnk}\n"
+        links_block += (
+            "\nThese are the sources competitors are already linking to. "
+            "Recommend which of these are credible and worth citing in the Ivy Edge post, "
+            "and flag any government (.gov), academic (.edu), or authoritative research "
+            "sources in particular.\n"
+        )
+
+    prompt = f"""You are advising the Ivy Edge editorial team on post structure.
 
 We analyzed the top {len(analyses)} free (non-paywalled) results for the keyword:
 **"{keyword}"**
 
 Here is what we found:
 {rows}
+{links_block}
 
-Based on these benchmarks, give the IvyEdge writer a concrete format brief. Be specific
+Based on these benchmarks, give the Ivy Edge writer a concrete format brief. Be specific
 and prescriptive — the writer will use this brief directly when outlining the post.
 
 Output the following sections (markdown, no preamble):
@@ -220,8 +262,14 @@ and a suggested word budget. Base this on the H2 patterns you see across competi
 ## Images / visuals
 [what the data suggests about image use for this keyword]
 
+## Recommended source links
+[List 3-6 of the external links above that are credible and relevant — preferring .gov,
+.edu, CFPB, Federal Reserve, BLS, Experian, FICO, Urban Institute, Pew Research.
+The writer must hyperlink every statistic inline; these are the best sources to use.
+Format: - [anchor text](url) — one line explaining what stat or claim it supports]
+
 ## What the competition is missing
-[1-2 angles or structural choices IvyEdge can make to differentiate — go deeper,
+[1-2 angles or structural choices Ivy Edge can make to differentiate — go deeper,
 be more direct, serve our persona better than the generic results do]
 """
 

@@ -1,7 +1,7 @@
 """
-IvyEdge Engagement Agent
+Ivy Edge Engagement Agent
 
-Discovers conversations about IvyEdge's topics across Instagram, Threads,
+Discovers conversations about Ivy Edge's topics across Instagram, Threads,
 Reddit, TikTok, and X (Twitter), then either queues suggested interactions
 for human review or posts them directly (Reddit only, with --auto).
 
@@ -9,7 +9,7 @@ Each run saves a dated folder under engagement_output/YYYY-MM-DD/ containing
 a human-readable report.md and the raw opportunities.json.
 
 Goal: prove market demand by finding and genuinely engaging with people who
-are already talking about the problems IvyEdge will solve.
+are already talking about the problems Ivy Edge will solve.
 
 Usage:
     python engagement_agent.py                         # discover all platforms, save report
@@ -116,7 +116,7 @@ def _save_report(opportunities: list[dict], summary: dict, dry_run: bool = False
 
     # ── Markdown report ─────────────────────────────────────────────────────
     lines = [
-        f"# IvyEdge Engagement Brief — {date_str}",
+        f"# Ivy Edge Engagement Brief — {date_str}",
         "",
         f"**{len(opportunities)} opportunities** across "
         + ", ".join(
@@ -187,7 +187,7 @@ def _save_report(opportunities: list[dict], summary: dict, dry_run: bool = False
             ]
             if is_reshare and not comment:
                 lines += [
-                    f"**→ Reshare this post to IvyEdge's audience.**",
+                    f"**→ Reshare this post to Ivy Edge's audience.**",
                     f"",
                 ]
             if comment:
@@ -364,7 +364,7 @@ def run(
 # ---------------------------------------------------------------------------
 
 def main(argv: Optional[list[str]] = None) -> int:
-    parser = argparse.ArgumentParser(description="IvyEdge engagement agent")
+    parser = argparse.ArgumentParser(description="Ivy Edge engagement agent")
     parser.add_argument(
         "--platform", choices=["instagram", "reddit", "threads", "tiktok", "x"],
         help="Run only this platform (default: all)"

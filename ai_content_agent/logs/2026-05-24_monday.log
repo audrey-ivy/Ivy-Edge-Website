@@ -1,0 +1,160 @@
+[16:22:18] ========================================
+[16:22:18] IvyEdge Monday pipeline starting
+[16:22:18] ========================================
+[16:22:18] Step 1: Extending editorial calendar...
+16:22:23 [INFO] Generating 4 posts (4 weeks × 1/week) starting 2026-05-26
+16:22:23 [INFO] Calling Claude (claude-sonnet-4-6)...
+16:22:48 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+16:22:48 [INFO] Received 4 post ideas from Claude
+16:22:48 [INFO] Wrote 4 new posts (49 total) → /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+
+Done. 4 posts added to /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+Date range: 2026-05-27 → 2026-06-05
+
+Run the batch:
+  python run_pipeline.py batch --calendar /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+[16:22:48] Step 1 done.
+[16:22:48] Step 2: Checking for trending topics...
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:227: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  cutoff = datetime.utcnow() - timedelta(days=RECENCY_DAYS)
+2026-05-24 16:22:49,040 INFO Pillar 1: Financial Education for Non-Tr: 0 articles found
+2026-05-24 16:22:49,434 INFO Pillar 2: Demystifying Finance: 0 articles found
+2026-05-24 16:22:49,680 INFO Pillar 3: Real Stories: 0 articles found
+2026-05-24 16:22:49,926 INFO Pillar 4: Tools & How-Tos: 0 articles found
+2026-05-24 16:22:50,338 INFO Pillar 5: Industry Trends & Advocacy: 0 articles found
+2026-05-24 16:22:51,739 INFO Pillar 6: Building Differently — How Com: 0 articles found
+2026-05-24 16:23:20,255 INFO Google Trends: 0 unique rising queries discovered
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:305: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  cutoff = datetime.utcnow() - timedelta(days=ARXIV_RECENCY_DAYS)
+2026-05-24 16:23:30,140 INFO arXiv: 55 unique recent paper(s) found across 18 queries
+2026-05-24 16:24:05,932 INFO HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:466: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+2026-05-24 16:24:21,894 INFO HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:541: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+2026-05-24 16:24:21,899 INFO Bumped 1 scheduled post(s) to next week to make room for trending content: "Why Knowing Why Isn't Enough: The Fight for Algorithms You Can Actually Challenge"
+2026-05-24 16:24:21,899 INFO Capping trending posts to 2 (dropped 1 lower-priority suggestions)
+2026-05-24 16:24:21,902 INFO Added 2 trending post(s) to /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv (weekly cap: 2)
+Fetching news...
+Searching arXiv for recent research...
+Analyzing 0 articles + 55 papers with Claude...
+
+============================================================
+## Trending Now
+
+### Gender bias is baked in — even in systems designed to be "equal"
+- **Hook:** A new arXiv paper on online dating finds that platforms marketed as equalizers have actually *exacerbated* gender gaps through endogenous structural mechanisms — not just user behavior. The system itself amplifies the disparity.
+- **IvyEdge angle:** This is a perfect mirror for financial systems. Credit scoring, loan underwriting, and income verification tools are also marketed as objective and neutral — but IvyEdge's entire thesis is that structural design choices, not individual women's failings, produce unequal outcomes. Use this paper as a springboard to name that dynamic explicitly: when a system's architecture disadvantages women, calling it a "meritocracy" is the problem, not the solution.
+- **Pillar:** Pillar 5 — Industry Trends & Advocacy / Pillar 2 — Demystifying Finance
+- **Suggested post title:** *"Designed to Be Fair, Built to Discriminate: What Dating Apps Teach Us About Financial Systems"*
+- **Cite:** https://arxiv.org/abs/2605.22587v1
+- **Urgency:** Publish within 5 days — paper is fresh and the "neutral systems" myth is a perennial conversation starter on social
+
+---
+
+### AI is reshaping work — but who absorbs the hidden cost?
+- **Hook:** A new study from a large tech firm finds AI is causing professionals to blur and extend their role boundaries, taking on more "invisible work." A companion paper flags that GenAI tools are amplifying cognitive load and escalating output expectations for software developers.
+- **IvyEdge angle:** Invisible work is not a new concept for women — it's the reason many leave. If AI adoption means "you can do more, so now you must," the productivity gains flow to employers while the burden lands on workers — disproportionately women, who already carry the invisible labor both at work and at home. This is a Building Differently story: employers need accountability frameworks for how AI workload expansion is being distributed, and whether flexibility and caregiving accommodations are being eroded in the name of AI-driven output growth.
+- **Pillar:** Pillar 6 — Building Differently
+- **Suggested post title:** *"AI Is Expanding the Workday. Guess Who Absorbs the Overflow?"*
+- **Cite:** https://arxiv.org/abs/2605.22707v1 (invisible work) + https://arxiv.org/abs/2605.22349v1 (developer well-being)
+- **Urgency:** Publish within 7 days — AI-and-work is peaking in search interest and both papers are this week
+
+---
+
+### Arabic women's financial and social engagement — a decade of data
+- **Hook:** A corpus of 252,000+ Arabic-language Facebook posts across 77 countries over 10 years documents massive audience engagement with women's empowerment and wellbeing content — 267 million interactions.
+- **IvyEdge angle:** IvyEdge is pre-launch and building audience. This paper is an editorial signal, not just a news story: women with non-traditional financial lives are *actively seeking* content that speaks to their reality, including in underrepresented language communities. The post angle for IvyEdge's audience: "You've been looking for this content for years. We built IvyEdge because the gap is real — and the data proves it." Use it as a community-building / brand-positioning piece, especially for a pre-launch waitlist push.
+- **Pillar:** Pillar 3 — Real Stories / Pillar 5 — Industry Trends & Advocacy
+- **Suggested post title:** *"267 Million Reasons Women Have Been Waiting for Financial Content That Actually Speaks to Them"*
+- **Cite:** https://arxiv.org/abs/2605.22204v1
+- **Urgency:** Publish within 10 days — works well as a pre-launch "why we exist" narrative piece
+
+---
+
+## Evergreen Signals
+
+- **"Neutral" systems that aren't neutral.** The dating-platform paper is one instance of a broader, recurring research pattern: systems designed to remove human bias often encode it architecturally instead. This maps directly onto credit scoring, gig-income underwriting, and automated mortgage decisioning — all core IvyEdge territory. Consider a standing content series (e.g., *"The Algorithm Said No"*) that examines a new financial tool or platform each month through this structural lens. Strong fit for Pillar 2 and Pillar 5.
+
+- **AI + invisible labor = a new caregiving penalty vector.** The invisible-work and developer-wellbeing papers together suggest an emerging pattern: AI is being used to justify expanded role scope without expanded compensation or support. For women who already face the motherhood penalty and caregiving-exit pressure, AI-driven workload creep is a new structural trap. This deserves a dedicated editorial thread under Pillar 6 — tracking how employers are (or aren't) building AI deployment policies that account for equity. Could anchor a quarterly "employer accountability" report format.
+
+---
+
+## Skip (and why)
+
+- **All ML/AI technical papers** (SDPM, GLeVE, SegGuidedNet, DeltaBox, GesVLA, etc.): No connection to women's financial lives or employer accountability. Pure computer science.
+- **Physics, chemistry, materials science papers** (plasmonic nanogaps, piezocatalysis, phonon-polariton billiards, QMC potentials): Entirely out of scope.
+- **Options pricing / MEV auction papers** (Wizman et al., Adadurov et al.): Finance-adjacent but quant/crypto-focused — not the consumer finance or equity lane IvyEdge operates in.
+- **Radiology report generation papers**: Medical AI, not relevant.
+- **LLM forecasting / political bias / tokenization papers**: Interesting AI research but no IvyEdge hook — don't stretch.
+- **"Two bodies left behind" (nuclear physics)**: Title sounds evocative but it's particle physics. Hard pass.
+============================================================
+
+Generating calendar suggestions...
+
+Suggested posts (3):
+  2026-05-27 — Designed to Be Fair, Built to Discriminate: What Dating Apps Teach Us About Financial Systems
+  2026-05-28 — AI Is Expanding the Workday. Guess Who Absorbs the Overflow?
+  2026-06-01 — 267 Million Reasons Women Have Been Waiting for Financial Content That Actually Speaks to Them
+[16:24:22] Step 2 done.
+[16:24:22] Step 3: Running content pipeline (draft only)...
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/run_pipeline.py:398: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+16:24:23 [INFO] Loaded context: {'brand_voice': '11663 chars', 'personas': '4680 chars', 'product_knowledge': '6165 chars', 'strategy': '11935 chars', 'inclusive_marketing': '3395 chars', 'extras': '2932 chars'}
+16:24:23 [INFO] ---- Phase: format_analysis ----
+16:24:23 [INFO] Competitor analysis for: 'gender bias in financial systems'
+16:24:24 [INFO] DuckDuckGo returned 10 candidates for 'gender bias in financial systems'
+16:24:26 [INFO]   [1/5] Overcoming the algorithmic gender bias in AI-drive — 1302 words, H2×2
+16:24:28 [INFO]   [2/5] Algorithmic Bias, Financial Inclusion, and Gender  — 851 words, H2×0
+16:24:33 [INFO]   [3/5] The Inclusion Initiative | Gender bias in the fina — 834 words, H2×1
+16:24:38 [INFO]   [4/5] Gender Bias: Women Judged 3X Harsher Than Men for  — 1569 words, H2×5
+16:24:43 [INFO]   [5/5] Diagnosing Gender Norms in the Financial Market Sy — 1651 words, H2×12
+16:25:11 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+16:25:11 [INFO] ---- Phase: research ----
+16:26:10 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+16:26:10 [INFO] [research] 59.5s, in=11336 out=2500
+16:26:10 [INFO] ---- Phase: outline ----
+16:27:11 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+16:27:11 [INFO] [outline] 61.0s, in=15330 out=2500
+16:27:11 [INFO] ---- Phase: draft ----
+16:28:12 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+16:28:12 [INFO] [draft] 60.4s, in=13912 out=2505
+16:28:12 [INFO] ---- Phase: voice_edit ----
+16:29:11 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+16:29:11 [INFO] [voice_edit] 58.9s, in=14535 out=2399
+16:29:11 [INFO] ---- Phase: seo ----
+16:30:30 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+16:30:30 [INFO] [seo] 79.1s, in=6602 out=3670
+16:30:30 [INFO] ---- Phase: social ----
+16:31:18 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+16:31:18 [INFO] [social] 47.8s, in=4394 out=2109
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/run_pipeline.py:207: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  date = datetime.utcnow().strftime("%Y-%m-%d")
+16:31:20 [WARNING] Dead link in 'Designed to Be Fair, Built to Discrimina': https://www.investopedia.com/women-and-student-loan-debt-5195465 (HTTP Error 403: Forbidden) — stripping hyperlink
+16:31:20 [WARNING] Dead link in 'Designed to Be Fair, Built to Discrimina': https://artificialintelligencepolicy.eu/ (<urlopen error [Errno 8] nodename nor servname provided, or ) — stripping hyperlink
+16:31:20 [WARNING] 2 dead link(s) stripped from 'Designed to Be Fair, Built to Discrimina'
+16:31:21 [INFO] Dale-Chall: 10.73 (target 8.5) ↑ too complex
+16:31:21 [INFO] Saved draft to output/2026-05-24_designed-to-be-fair-built-to-discriminate-what-dating-apps-t
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/run_pipeline.py:466: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  row["drafted_at"] = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+16:31:21 [INFO] Draft created: id=199110109 title='Designed to Be Fair, Built to Discriminate: What Dating Apps Teach Us About Financial Systems'
+Generating 1 article (next due: 2026-05-25). 0 more article(s) queued for future weeks.
+
+  [Designed to Be Fair, Built to Discrimina] format_analysis
+  [Designed to Be Fair, Built to Discrimina] research
+  [Designed to Be Fair, Built to Discrimina] outline
+  [Designed to Be Fair, Built to Discrimina] draft
+  [Designed to Be Fair, Built to Discrimina] voice_edit
+  [Designed to Be Fair, Built to Discrimina] seo
+  [Designed to Be Fair, Built to Discrimina] social
+  Substack draft saved (id=199110109) — review at:
+  https://substack.com/dashboard/posts
+  Approve → bash approve.sh
+  Reject  → bash reject.sh
+
+Batch complete. Calendar updated: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+[16:31:21] Step 3 done — article saved as Substack draft. Run approve.sh or reject.sh.
+[16:31:21] ========================================
+[16:31:21] Monday pipeline complete. Log: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/logs/2026-05-24_monday.log
+[16:31:21] ========================================

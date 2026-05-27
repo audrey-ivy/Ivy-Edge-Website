@@ -1,5 +1,5 @@
 """
-Reddit poster for IvyEdge.
+Reddit poster for Ivy Edge.
 
 Posts link submissions to relevant subreddits based on content pillar and persona.
 Uses PRAW (Python Reddit API Wrapper).
@@ -7,7 +7,7 @@ Uses PRAW (Python Reddit API Wrapper).
 Required .env variables:
     REDDIT_CLIENT_ID      — from reddit.com/prefs/apps
     REDDIT_CLIENT_SECRET  — from reddit.com/prefs/apps
-    REDDIT_USERNAME       — JoinIvyEdge
+    REDDIT_USERNAME       — JoinIvy Edge
     REDDIT_PASSWORD       — account password
 """
 
@@ -55,7 +55,7 @@ MAX_SUBREDDITS = 3   # cap per post to avoid spam flags
 def _get_reddit() -> praw.Reddit:
     client_id     = os.getenv("REDDIT_CLIENT_ID", "")
     client_secret = os.getenv("REDDIT_CLIENT_SECRET", "")
-    username      = os.getenv("REDDIT_USERNAME", "JoinIvyEdge")
+    username      = os.getenv("REDDIT_USERNAME", "JoinIvy Edge")
     password      = os.getenv("REDDIT_PASSWORD", "")
 
     if not all([client_id, client_secret, password]):
@@ -69,7 +69,7 @@ def _get_reddit() -> praw.Reddit:
         client_secret=client_secret,
         username=username,
         password=password,
-        user_agent=f"IvyEdge content bot v1.0 (u/{username})",
+        user_agent=f"Ivy Edge content bot v1.0 (u/{username})",
     )
 
 

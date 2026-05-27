@@ -1,5 +1,5 @@
 """
-IvyEdge Video Generator
+Ivy Edge Video Generator
 
 Produces a branded TikTok/Reels MP4 from the TikTok script in 06_social.md.
 

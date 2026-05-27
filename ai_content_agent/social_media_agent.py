@@ -1,5 +1,5 @@
 """
-IvyEdge Social Media Agent
+Ivy Edge Social Media Agent
 
 Scans the output/ directory for posts that have been generated but not yet
 posted to social media. For each one:
@@ -704,7 +704,7 @@ def _folder_for_url(url: str, output_dir: Path) -> Optional[Path]:
 
 
 def main(argv: Optional[list[str]] = None) -> int:
-    parser = argparse.ArgumentParser(description="IvyEdge social media agent")
+    parser = argparse.ArgumentParser(description="Ivy Edge social media agent")
     parser.add_argument("--url", help="Substack article URL to post on social media "
                         "(e.g. https://joinivyedge.substack.com/p/rto-mandates-have-a-gender-problem)")
     parser.add_argument("--folder", help="Process a single output folder (by path)")

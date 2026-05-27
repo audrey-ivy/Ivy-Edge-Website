@@ -1,0 +1,36 @@
+[17:13:30] ========================================
+[17:13:30] IvyEdge Monday pipeline starting
+[17:13:30] ========================================
+[17:13:30] Step 1: Extending editorial calendar...
+17:13:36 [INFO] Generating 4 posts (4 weeks × 1/week) starting 2026-05-19
+17:13:36 [INFO] Calling Claude (claude-sonnet-4-6)...
+17:13:54 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+17:13:54 [INFO] Received 4 post ideas from Claude
+Traceback (most recent call last):
+  File "/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/calendar_agent.py", line 455, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/calendar_agent.py", line 446, in main
+    new_rows = _write_calendar(posts, scheduled_dates, output)
+  File "/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/calendar_agent.py", line 358, in _write_calendar
+    _date.fromisoformat(r["scheduled_date"])
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+ValueError: Invalid isoformat string: '5/25/26'
+[17:19:37] ========================================
+[17:19:37] IvyEdge Monday pipeline starting
+[17:19:37] ========================================
+[17:19:37] Step 1: Extending editorial calendar...
+17:19:38 [INFO] Generating 4 posts (4 weeks × 1/week) starting 2026-05-19
+17:19:38 [INFO] Calling Claude (claude-sonnet-4-6)...
+17:19:58 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+17:19:58 [INFO] Received 4 post ideas from Claude
+Traceback (most recent call last):
+  File "/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/calendar_agent.py", line 455, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/calendar_agent.py", line 446, in main
+    new_rows = _write_calendar(posts, scheduled_dates, output)
+  File "/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/calendar_agent.py", line 358, in _write_calendar
+    _date.fromisoformat(r["scheduled_date"])
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+ValueError: Invalid isoformat string: '5/25/26'

@@ -1,5 +1,5 @@
 """
-IvyEdge Content Agent — CLI runner
+Ivy Edge Content Agent — CLI runner
 
 Modes:
 
@@ -327,7 +327,7 @@ def _maybe_publish(result: GenerationResult, folder: Path, publish: bool) -> Opt
 
 def cmd_intro(args: argparse.Namespace) -> int:
     agent = IvyEdgeContentAgent(model=args.model, context_dir=args.context_dir)
-    print("\nGenerating IvyEdge introduction post...\n")
+    print("\nGenerating Ivy Edge introduction post...\n")
 
     result = agent.generate_intro_post(
         on_phase=lambda name, _: print(f"  [done] {name}"),
@@ -626,7 +626,7 @@ def cmd_reject(args: argparse.Namespace) -> int:
 # ---------------------------------------------------------------------------
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="IvyEdge AI content agent")
+    parser = argparse.ArgumentParser(description="Ivy Edge AI content agent")
     parser.add_argument("--model", default=None, help="Override default model (e.g. claude-sonnet-4-6)")
     parser.add_argument("--context-dir", default="context", help="Context library folder")
     parser.add_argument("--output", default="output", help="Where to write drafts")
@@ -635,7 +635,7 @@ def main(argv: list[str] | None = None) -> int:
 
     sub = parser.add_subparsers(dest="cmd", required=True)
 
-    p_intro = sub.add_parser("intro", help="Generate the one-time IvyEdge introduction post")
+    p_intro = sub.add_parser("intro", help="Generate the one-time Ivy Edge introduction post")
     p_intro.set_defaults(func=cmd_intro)
 
     p_single = sub.add_parser("single", help="Generate one post from flags")

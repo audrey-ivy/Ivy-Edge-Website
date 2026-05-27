@@ -1,12 +1,12 @@
-# IvyEdge — What We're Building (Pre-Launch)
+# Ivy Edge — What We're Building (Pre-Launch)
 
-> ⚠️ **CRITICAL EDITORIAL RULE: We are pre-launch. Do NOT reference any IvyEdge products by name in published blog content.** This file documents the thesis and the products we're going to build, so the agent and the editor understand the perspective behind the writing — but none of these products exist yet. Posts must drive **audience-building actions**, not product applications.
+> ⚠️ **CRITICAL EDITORIAL RULE: We are pre-launch. Do NOT reference any Ivy Edge products by name in published blog content.** This file documents the thesis and the products we're going to build, so the agent and the editor understand the perspective behind the writing — but none of these products exist yet. Posts must drive **audience-building actions**, not product applications.
 
 ---
 
 ## Why this file exists
 
-The agent needs to understand IvyEdge's point of view (what problems we're going to solve, how we think about underwriting, what we believe about women's financial access) to write thought-leadership content with conviction. But none of that translates to "apply for X" CTAs in a post. Right now, the blog's job is to prove there's an audience for the thesis.
+The agent needs to understand Ivy Edge's point of view (what problems we're going to solve, how we think about underwriting, what we believe about women's financial access) to write thought-leadership content with conviction. But none of that translates to "apply for X" CTAs in a post. Right now, the blog's job is to prove there's an audience for the thesis.
 
 ---
 
@@ -55,7 +55,7 @@ The blog's KPI right now is **demand signal**, not application volume. CTAs shou
 
 | CTA type | Sample copy | What it proves |
 | --- | --- | --- |
-| **Waitlist** | *"We're building this. Get on the IvyEdge waitlist — be first when we launch."* | Aggregate intent (highest-value signal) |
+| **Waitlist** | *"We're building this. Get on the Ivy Edge waitlist — be first when we launch."* | Aggregate intent (highest-value signal) |
 | **Newsletter** | *"More like this every Thursday. Get the next post in your inbox."* | Topic engagement, recurring audience |
 | **Survey** | *"2-minute question: which of these has happened to you? [link]"* | Qualitative validation + segmentation |
 | **Story collection** | *"Has this happened to you? Tell us your story — we read every one."* | Compounding content + persona research |
@@ -63,7 +63,7 @@ The blog's KPI right now is **demand signal**, not application volume. CTAs shou
 
 ### Sample CTA patterns for posts
 
-> "We're building IvyEdge for exactly this — finance that sees your full story instead of a three-digit number. **Get on the waitlist** to be the first to know when we launch."
+> "We're building Ivy Edge for exactly this — finance that sees your full story instead of a three-digit number. **Get on the waitlist** to be the first to know when we launch."
 
 > "If your bank just told you 'no,' we want to hear about it. **[Tell us your story →]** We're building something for women who keep getting that answer, and your experience shapes what we make."
 
@@ -91,10 +91,10 @@ Some topics (e.g., "what to look for in a lender that evaluates 1099 income") wi
 2. Tell the reader what to **ask** lenders (criteria, questions to push on, red flags).
 3. Close with a waitlist or newsletter CTA: *"We're building toward exactly these principles. Get on the waitlist."*
 
-This positions IvyEdge as the authority on the topic and creates demand for the eventual product, without claiming a product that doesn't exist.
+This positions Ivy Edge as the authority on the topic and creates demand for the eventual product, without claiming a product that doesn't exist.
 
 ---
 
 ## When this file changes
 
-When IvyEdge launches its first product, replace this file with a "live products" version that brings back product CTAs. The agent prompts will also need a small edit (search for `PRE-LAUNCH CONTEXT` blocks in `ivyedge_content_agent.py`).
+When Ivy Edge launches its first product, replace this file with a "live products" version that brings back product CTAs. The agent prompts will also need a small edit (search for `PRE-LAUNCH CONTEXT` blocks in `ivyedge_content_agent.py`).

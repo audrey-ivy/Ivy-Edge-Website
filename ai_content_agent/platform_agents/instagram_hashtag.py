@@ -1,5 +1,5 @@
 """
-IvyEdge — Instagram Hashtag Monitor
+Ivy Edge — Instagram Hashtag Monitor
 
 Searches relevant hashtags via the Meta Graph API, scores posts for
 relevance using Claude, and writes a review queue for manual engagement.
@@ -29,7 +29,7 @@ from dotenv import load_dotenv
 
 from platform_agents import EngagementOpportunity
 
-load_dotenv()
+load_dotenv(Path(__file__).parent.parent / ".env", override=True)
 
 logger = logging.getLogger("ivyedge.ig_hashtag")
 
@@ -134,15 +134,15 @@ def _fetch_hashtag_posts(hashtag_id: str, seen_ids: set) -> list[dict]:
 # Claude scoring + comment generation
 # ---------------------------------------------------------------------------
 
-_SYSTEM_PROMPT = """You are the community engagement strategist for IvyEdge, a pre-launch
+_SYSTEM_PROMPT = """You are the community engagement strategist for Ivy Edge, a pre-launch
 consumer finance platform built for women with non-traditional financial histories
 (freelancers, career returners, entrepreneurs with variable income).
 
-IvyEdge's mission: prove that women are underserved by the current financial system
+Ivy Edge's mission: prove that women are underserved by the current financial system
 and build an audience before launch. Right now the goal is to find conversations
-where IvyEdge's perspective adds genuine value.
+where Ivy Edge's perspective adds genuine value.
 
-IvyEdge's core thesis:
+Ivy Edge's core thesis:
 - Career gaps don't make you a credit risk
 - 1099 income is real income
 - Five years of business history is an arbitrary threshold
@@ -164,7 +164,7 @@ def _score_and_draft(posts: list[dict], client: anthropic.Anthropic) -> list[Eng
 For each post, output a JSON object in this exact format:
 {{
   "post_id": "<id from the post header>",
-  "score": <0-10 float — how relevant/valuable is engaging here for IvyEdge>,
+  "score": <0-10 float — how relevant/valuable is engaging here for Ivy Edge>,
   "rationale": "<one sentence: why this is or isn't worth engaging>",
   "suggested_comment": "<if score >= 6: a genuine, helpful Instagram comment, 1-3 sentences, no promotional language, no product mentions, sounds like a smart friend who works in finance — leave blank string if score < 6>"
 }}
@@ -172,7 +172,7 @@ For each post, output a JSON object in this exact format:
 Output ONLY a JSON array of these objects. No prose, no markdown fences.
 
 Scoring criteria (higher = more relevant):
-- Person is describing a problem IvyEdge's thesis addresses (1099/gig income, credit gaps, career breaks)
+- Person is describing a problem Ivy Edge's thesis addresses (1099/gig income, credit gaps, career breaks)
 - Post has genuine engagement or reach
 - Our comment would add real value, not just validate
 - The person seems like Maya (freelancer), Priya (career returner), Carmen (entrepreneur), or Dominique (high-earner)

@@ -1,4 +1,4 @@
-# IvyEdge Inclusive Marketing Framework
+# Ivy Edge Inclusive Marketing Framework
 
 Every post, social caption, video script, and visual direction must pass this checklist
 before publishing. Apply it at every phase of content creation — not just as a final review.
@@ -55,9 +55,9 @@ past without looking forward. Focuses only on the undesirable current state.
 
 ---
 
-## How to apply this at IvyEdge
+## How to apply this at Ivy Edge
 
-IvyEdge serves women across a wide range of backgrounds — freelancers, career returners,
+Ivy Edge serves women across a wide range of backgrounds — freelancers, career returners,
 established entrepreneurs, corporate climbers. Our four personas (Priya, Maya, Carmen,
 Dominique) reflect different ethnicities, life stages, income types, and paths. Content
 must feel written for all of them, not just one.

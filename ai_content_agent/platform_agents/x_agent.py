@@ -1,5 +1,5 @@
 """
-IvyEdge — X (Twitter) Engagement Agent (Playwright)
+Ivy Edge — X (Twitter) Engagement Agent (Playwright)
 
 Discovers posts on X via keyword search using a headless Playwright browser
 with your session cookies. Free, no API credentials needed.
@@ -219,7 +219,9 @@ def _extract_tweets_from_response(data, posts, seen, seen_ids, query):
         uid    = str(tw.get("user_id_str", ""))
         user   = user_map.get(uid, {})
         screen = user.get("screen_name", "")
-        url    = f"https://x.com/{screen}/status/{tid}" if screen else f"https://x.com/i/web/status/{tid}"
+        if not screen:
+            continue
+        url    = f"https://x.com/{screen}/status/{tid}"
         posts.append({
             "id":      tid,
             "url":     url,
@@ -265,7 +267,9 @@ def _parse_graphql_tweet(result, posts, seen, seen_ids, query):
                         .get("result", {})
                         .get("legacy", {})
                         .get("screen_name", ""))
-        url    = f"https://x.com/{screen}/status/{tid}" if screen else f"https://x.com/i/web/status/{tid}"
+        if not screen:
+            return
+        url    = f"https://x.com/{screen}/status/{tid}"
         posts.append({
             "id":      tid,
             "url":     url,
@@ -300,7 +304,9 @@ async def _extract_tweets_from_dom(page, query, seen, seen_ids):
                 screen  = parts[0]  if len(parts) >= 3 and parts[0] not in ("", "i") else ""
                 if not tid or not tid.isdigit() or tid in seen or tid in seen_ids:
                     continue
-                url = f"https://x.com/{screen}/status/{tid}" if screen else f"https://x.com/i/web/status/{tid}"
+                if not screen:
+                    continue
+                url = f"https://x.com/{screen}/status/{tid}"
                 posts.append({
                     "id":      tid,
                     "url":     url,
@@ -324,11 +330,11 @@ def _fetch_posts(seen: set[str]) -> list[dict]:
 # Claude scoring + reply drafting
 # ---------------------------------------------------------------------------
 
-_SYSTEM_PROMPT = """You are the community engagement voice for IvyEdge, a pre-launch
+_SYSTEM_PROMPT = """You are the community engagement voice for Ivy Edge, a pre-launch
 consumer finance platform for women with non-traditional financial histories
 (freelancers, career returners, entrepreneurs with variable income).
 
-IvyEdge's thesis:
+Ivy Edge's thesis:
 - Career gaps don't make you a credit risk
 - 1099 income is real income
 - High earners with non-W-2 income deserve products that match their reality

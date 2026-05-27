@@ -1,5 +1,5 @@
 """
-IvyEdge Meta Poster — Threads + Instagram
+Ivy Edge Meta Poster — Threads + Instagram
 
 Posts branded content to Threads and Instagram via the Meta Graph API.
 
@@ -31,7 +31,7 @@ import cloudinary
 import cloudinary.uploader
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 
 logger = logging.getLogger("ivyedge.meta_poster")
 

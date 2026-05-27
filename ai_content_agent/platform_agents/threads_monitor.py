@@ -1,7 +1,7 @@
 """
-IvyEdge — Threads Monitor
+Ivy Edge — Threads Monitor
 
-Fetches replies to IvyEdge's own Threads posts, scores them with Claude,
+Fetches replies to Ivy Edge's own Threads posts, scores them with Claude,
 and drafts responses for human review. Turns Threads into a two-way
 conversation rather than a broadcast channel.
 
@@ -96,10 +96,10 @@ def _fetch_all_replies(seen: set[str]) -> list[dict]:
     return all_replies
 
 
-_SYSTEM_PROMPT = """You are the community voice for IvyEdge, a pre-launch consumer finance
+_SYSTEM_PROMPT = """You are the community voice for Ivy Edge, a pre-launch consumer finance
 platform for women with non-traditional financial histories.
 
-When responding to replies on IvyEdge's Threads posts:
+When responding to replies on Ivy Edge's Threads posts:
 - Prioritize: questions, personal stories, disagreements that need nuance
 - Skip: pure validation ("great post!"), obvious spam, irrelevant comments
 - Replies should be warm, specific, and genuinely helpful
@@ -119,7 +119,7 @@ def _score_and_draft(replies: list[dict], client: anthropic.Anthropic) -> list[E
         for i, r in enumerate(replies)
     )
 
-    prompt = f"""Below are {len(replies)} replies to IvyEdge's Threads posts.
+    prompt = f"""Below are {len(replies)} replies to Ivy Edge's Threads posts.
 
 For each, output:
 {{
@@ -203,7 +203,7 @@ def post_reply(thread_id: str, text: str) -> Optional[str]:
 
 
 def discover(dry_run: bool = False) -> list[EngagementOpportunity]:
-    """Fetch replies to IvyEdge's Threads posts and score them."""
+    """Fetch replies to Ivy Edge's Threads posts and score them."""
     if not _check_credentials():
         return []
 

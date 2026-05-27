@@ -1,4 +1,4 @@
-# IvyEdge — Customer Personas
+# Ivy Edge — Customer Personas
 
 We serve four core customer segments. Every blog post should feel like it was written specifically for at least one of them.
 

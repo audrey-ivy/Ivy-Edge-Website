@@ -1,5 +1,5 @@
 """
-IvyEdge Buffer Poster — Instagram, Threads, TikTok
+Ivy Edge Buffer Poster — Instagram, Threads, TikTok
 
 Posts branded content via the Buffer GraphQL API.
 No Facebook account required — Buffer handles platform auth.

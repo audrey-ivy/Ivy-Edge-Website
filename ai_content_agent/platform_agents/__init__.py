@@ -1,5 +1,5 @@
 """
-Shared types for IvyEdge platform engagement agents.
+Shared types for Ivy Edge platform engagement agents.
 """
 
 from __future__ import annotations

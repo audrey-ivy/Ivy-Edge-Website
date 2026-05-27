@@ -1,5 +1,5 @@
 """
-IvyEdge Canva Generator
+Ivy Edge Canva Generator
 
 Generates branded image cards (and optionally video stills) using the
 Canva Connect API and your brand templates.
@@ -191,7 +191,7 @@ def run_auth_flow() -> None:
             received["state"] = qs.get("state", [""])[0]
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(b"<h2>IvyEdge: Canva authorised! You can close this tab.</h2>")
+            self.wfile.write(b"<h2>Ivy Edge: Canva authorised! You can close this tab.</h2>")
 
     server = HTTPServer(("127.0.0.1", 8765), _Handler)
     server.timeout = 120
@@ -374,7 +374,7 @@ def generate_image_card(
             autofill_data[k] = {"type": "text", "text": str(v)}
 
     logger.info("Canva: starting autofill job for '%s'", title[:50])
-    job_id   = _create_autofill_job(tid, f"IvyEdge — {title[:60]}", autofill_data)
+    job_id   = _create_autofill_job(tid, f"Ivy Edge — {title[:60]}", autofill_data)
     design_id = _wait_for_autofill(job_id)
     logger.info("Canva: autofill done → design %s", design_id)
 
@@ -410,7 +410,7 @@ def generate_video_still(
     }
 
     logger.info("Canva: starting video autofill job for '%s'", title[:50])
-    job_id    = _create_autofill_job(tid, f"IvyEdge Video — {title[:55]}", autofill_data)
+    job_id    = _create_autofill_job(tid, f"Ivy Edge Video — {title[:55]}", autofill_data)
     design_id = _wait_for_autofill(job_id)
     logger.info("Canva: video autofill done → design %s", design_id)
 

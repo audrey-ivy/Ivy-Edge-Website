@@ -1,0 +1,262 @@
+[09:49:51] ========================================
+[09:49:51] IvyEdge Monday pipeline starting
+[09:49:51] ========================================
+[09:49:51] Step 1: Extending editorial calendar...
+09:49:56 [INFO] Generating 4 posts (4 weeks × 1/week) starting 2026-05-19
+09:49:56 [INFO] Calling Claude (claude-sonnet-4-6)...
+09:50:16 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:50:16 [INFO] Received 4 post ideas from Claude
+09:50:16 [INFO] Wrote 4 new posts (37 total) → /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+
+Done. 4 posts added to /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+Date range: 2026-05-20 → 2026-05-29
+
+Run the batch:
+  python run_pipeline.py batch --calendar /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+[09:50:16] Step 1 done.
+[09:50:16] Step 2: Checking for trending topics...
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:227: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  cutoff = datetime.utcnow() - timedelta(days=RECENCY_DAYS)
+2026-05-18 09:50:17,522 INFO Pillar 1: Financial Education for Non-Tr: 0 articles found
+2026-05-18 09:50:17,931 INFO Pillar 2: Demystifying Finance: 0 articles found
+2026-05-18 09:50:18,175 INFO Pillar 3: Real Stories: 0 articles found
+2026-05-18 09:50:18,410 INFO Pillar 4: Tools & How-Tos: 0 articles found
+2026-05-18 09:50:18,799 INFO Pillar 5: Industry Trends & Advocacy: 0 articles found
+2026-05-18 09:50:20,200 INFO Pillar 6: Building Differently — How Com: 0 articles found
+2026-05-18 09:50:48,134 INFO Google Trends: 0 unique rising queries discovered
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:305: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  cutoff = datetime.utcnow() - timedelta(days=ARXIV_RECENCY_DAYS)
+2026-05-18 09:51:08,508 INFO arXiv: 55 unique recent paper(s) found across 18 queries
+2026-05-18 09:51:43,429 INFO HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:466: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+2026-05-18 09:51:54,895 INFO HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:541: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+2026-05-18 09:51:54,899 INFO Capping trending posts to 2 (dropped 1 lower-priority suggestions)
+2026-05-18 09:51:54,902 INFO Added 2 trending post(s) to /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv (weekly cap: 2)
+Fetching news...
+Searching arXiv for recent research...
+Analyzing 0 articles + 55 papers with Claude...
+
+============================================================
+# IvyEdge Editorial Brief — Week of May 15, 2026
+
+---
+
+## Trending Now
+
+### 1. AI Hiring Tools Are Making Biased Decisions — and Individuals Can't Challenge Them
+- **Hook:** A new arXiv paper argues that "explainable AI" is insufficient because it tells people *how* to game a system rather than letting them contest whether the system is *fair* — with loan approvals and hiring decisions called out explicitly as high-stakes examples.
+- **IvyEdge angle:** Women with non-traditional work histories — gaps, freelance income, caregiving periods — are already the cohort most likely to be incorrectly penalized by algorithmic hiring and credit scoring systems. "Explainability" that just says "add more continuous employment" isn't a fix; it's a trap. IvyEdge's position: contestability must be a structural right, not a technical feature. Employers and lenders need to be held accountable for the populations their models systematically exclude — and regulators need to mandate it.
+- **Pillar:** Pillar 5 — Industry Trends & Advocacy / Pillar 6 — Building Differently
+- **Suggested post title:** *"Your Credit Was Denied by an Algorithm. Knowing Why Isn't Enough."*
+- **Cite:** https://arxiv.org/abs/2605.16041v1
+- **Urgency:** Publish within 4 days — this intersects cleanly with ongoing regulatory conversations around algorithmic accountability in financial services (CFPB, EU AI Act implementation) and will be picked up by the broader fintech press shortly.
+
+---
+
+### 2. AI Is Actively Reshaping the Opinions People Express Online — Including About Work and Money
+- **Hook:** New research shows that LLM-powered tools embedded in platforms like LinkedIn and X don't just polish writing — they measurably shift the collective opinions users express, nudging discourse in directions the AI's training favors.
+- **IvyEdge angle:** This is a systemic issue with a direct impact on IvyEdge's audience. Women navigating career gaps, freelance transitions, or return-to-work moments are increasingly using AI writing tools to "professionalize" their narratives — without realizing the tool may be smoothing out the very non-traditional signals that make their story honest and true. More broadly: if AI is homogenizing the conversation about work and finance toward traditional, male-coded norms, that's an advocacy issue, not just a tech curiosity. IvyEdge should name it.
+- **Pillar:** Pillar 5 — Industry Trends & Advocacy
+- **Suggested post title:** *"When You Let AI Rewrite Your LinkedIn, Who's Actually Speaking?"*
+- **Cite:** https://arxiv.org/abs/2605.16245v1
+- **Urgency:** Publish within 5–6 days — this is a conversation starter that works well as a short opinion piece or LinkedIn-native post; high shareability among IvyEdge's target demographic who are active on that platform.
+
+---
+
+### 3. Algorithmic Pricing Systems Are Quietly Colluding — and Consumers Pay the Price
+- **Hook:** A new paper demonstrates that firms using standard "explore then exploit" algorithmic pricing — without any coordination — naturally drift toward supra-competitive (collusive-level) prices. This isn't a bug; it's an emergent property of how these systems are designed.
+- **IvyEdge angle:** Women, especially those with lower or irregular incomes, are disproportionately harmed by opaque pricing in financial products — insurance, credit, lending. If the algorithms that set rates are systematically converging on higher prices without any human deciding to discriminate, "I didn't intend to charge you more" is no longer a defense. This is the structural argument IvyEdge exists to make: the system doesn't need malicious actors to produce bad outcomes for vulnerable populations. Connect to credit pricing, insurance premiums, and lending rates for freelancers and career returners.
+- **Pillar:** Pillar 5 — Industry Trends & Advocacy
+- **Suggested post title:** *"No One Decided to Overcharge You. The Algorithm Just Did It Anyway."*
+- **Cite:** https://arxiv.org/abs/2605.16064v1
+- **Urgency:** Publish within 7 days — slightly more evergreen but timely given consumer finance regulatory attention on algorithmic pricing; pairs well with a simple explainer format.
+
+---
+
+## Evergreen Signals
+
+- **The "bias laundering" pattern in AI tools:** Two papers this week (algorithmic contestability + LLM bias in generation via DebiasRAG) point to a broader, recurring theme: AI systems inherit and amplify existing financial and social biases, then present outputs as neutral or objective. This suggests a standing content series for IvyEdge — something like *"Who Built This System, and Who Did They Build It For?"* — that can be updated quarterly as new research drops. Pillars 2 and 5. This would also serve as evergreen SEO content for searches like "AI credit discrimination" and "biased hiring algorithms."
+
+- **The documentation gap for non-traditional income earners:** While not directly in this week's research feed, the algorithmic pricing and contestability papers both implicitly assume a borrower/applicant with legible, standardized financial history. There's a consistent research signal building that irregular income = algorithmic penalty, yet almost no consumer-facing content exists that addresses *why* documentation practices were designed for salaried workers and *what structural change looks like*. This is squarely Pillar 1 (Financial Education) and Pillar 4 (Tools & How-Tos) territory — and a topic IvyEdge can genuinely own pre-launch with a definitive guide.
+
+---
+
+## Skip (and why)
+
+- **Datacenter/AI infrastructure papers (power delivery, GPU acceleration, ray tracing, quantum algorithms, photovoltaics, etc.):** Technically sophisticated, zero relevance to IvyEdge's audience or mission. Skip entirely.
+- **DebiasRAG paper:** Superficially relevant (bias in LLMs) but the paper is a technical ML solution paper, not a policy or impact paper. The *finding* is useful as supporting evidence in other pieces (see Trending #2), but doesn't stand alone as an IvyEdge story.
+- **Math/physics papers (Epstein zeta functions, naked singularities, Brownian motion,
+============================================================
+
+Generating calendar suggestions...
+
+Suggested posts (3):
+  2026-05-20 — Your Credit Was Denied by an Algorithm. Knowing Why Isn't Enough.
+  2026-05-21 — When You Let AI Rewrite Your LinkedIn, Who's Actually Speaking?
+  2026-05-22 — No One Decided to Overcharge You. The Algorithm Just Did It Anyway.
+[09:51:55] Step 2 done.
+[09:51:55] Step 3: Running content pipeline (draft only)...
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/run_pipeline.py:358: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+No posts due within the next 7 days (cutoff 2026-05-25). Nothing to generate.
+[09:51:56] Step 3 done — article saved as Substack draft. Run approve.sh or reject.sh.
+[09:51:56] ========================================
+[09:51:56] Monday pipeline complete. Log: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/logs/2026-05-18_monday.log
+[09:51:56] ========================================
+[10:08:47] ========================================
+[10:08:47] IvyEdge Monday pipeline starting
+[10:08:47] ========================================
+[10:08:47] Step 1: Extending editorial calendar...
+10:08:48 [INFO] Generating 4 posts (4 weeks × 1/week) starting 2026-05-19
+10:08:48 [INFO] Calling Claude (claude-sonnet-4-6)...
+10:09:11 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:09:11 [INFO] Received 4 post ideas from Claude
+10:09:11 [INFO] Wrote 4 new posts (43 total) → /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+
+Done. 4 posts added to /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+Date range: 2026-05-20 → 2026-05-29
+
+Run the batch:
+  python run_pipeline.py batch --calendar /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+[10:09:11] Step 1 done.
+[10:09:11] Step 2: Checking for trending topics...
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:227: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  cutoff = datetime.utcnow() - timedelta(days=RECENCY_DAYS)
+2026-05-18 10:09:12,091 INFO Pillar 1: Financial Education for Non-Tr: 0 articles found
+2026-05-18 10:09:12,487 INFO Pillar 2: Demystifying Finance: 0 articles found
+2026-05-18 10:09:12,728 INFO Pillar 3: Real Stories: 0 articles found
+2026-05-18 10:09:12,959 INFO Pillar 4: Tools & How-Tos: 0 articles found
+2026-05-18 10:09:13,348 INFO Pillar 5: Industry Trends & Advocacy: 0 articles found
+2026-05-18 10:09:14,779 INFO Pillar 6: Building Differently — How Com: 0 articles found
+2026-05-18 10:09:40,406 INFO Google Trends: 0 unique rising queries discovered
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:305: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  cutoff = datetime.utcnow() - timedelta(days=ARXIV_RECENCY_DAYS)
+2026-05-18 10:09:42,454 INFO arXiv: 55 unique recent paper(s) found across 18 queries
+2026-05-18 10:10:18,292 INFO HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:466: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+2026-05-18 10:10:28,701 INFO HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/trend_monitor.py:541: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+2026-05-18 10:10:28,707 INFO Capping trending posts to 2 (dropped 1 lower-priority suggestions)
+2026-05-18 10:10:28,710 INFO Added 2 trending post(s) to /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv (weekly cap: 2)
+Fetching news...
+Searching arXiv for recent research...
+Analyzing 0 articles + 55 papers with Claude...
+
+============================================================
+## Trending Now
+
+### 1. AI Systems Making Loan and Hiring Decisions — And You Can't Effectively Challenge Them
+- **Hook:** A new paper ("Explainable AI Isn't Enough! Rethinking Algorithmic Contestability") argues that explaining *why* an AI rejected you is useless if the system won't actually let you challenge the outcome. For women with non-traditional income histories, this is already lived reality: black-box underwriting models that can't account for freelance income, career gaps, or non-linear work histories — and no real recourse when they say no.
+- **IvyEdge angle:** Explainability theater isn't justice. When an algorithm denies a credit application or flags a non-traditional income profile, telling a woman *why* the model scored her low doesn't help if the criteria themselves are structurally biased against her financial path. We should be demanding contestable systems — ones that can be audited, appealed, and redesigned — not just legible ones. This is a systemic accountability issue, not an individual literacy problem.
+- **Pillar:** Pillar 5 — Industry Trends & Advocacy
+- **Suggested post title:** *"Why Knowing Why Isn't Enough: The Fight for Algorithms You Can Actually Challenge"*
+- **Cite:** https://arxiv.org/abs/2605.16041
+- **Urgency:** Publish within 5 days — paper is fresh and "AI bias in lending" is a perennially rising search cluster; this gives IvyEdge a credible academic hook to plant a flag on the issue before pre-launch
+
+---
+
+### 2. AI Is Shaping Your Opinions — Including About Money and Work
+- **Hook:** New research ("AI-Mediated Communication Can Steer Collective Opinion") shows that AI tools embedded in everyday platforms — LinkedIn polish, X context labels — can systematically shift group opinion, not just individual responses. Women on career-return journeys or navigating financial decisions are heavy users of exactly these platforms.
+- **IvyEdge angle:** The financial advice and career content women encounter online is increasingly AI-filtered, AI-ranked, and AI-rewritten — and those systems carry embedded biases about what "normal" financial lives look like. When a woman researches freelance income documentation or return-to-work options, the AI-mediated results she sees may be quietly nudging her toward conventional paths. This isn't paranoia — it's a documented collective-opinion effect. IvyEdge exists partly *because* the mainstream information environment fails non-traditional financial profiles.
+- **Pillar:** Pillar 2 — Demystifying Finance (with a Pillar 5 advocacy edge)
+- **Suggested post title:** *"The Algorithm Has Opinions About Your Finances. Here's What That Means for You."*
+- **Cite:** https://arxiv.org/abs/2605.16245
+- **Urgency:** Publish within 7 days — pairs well with IvyEdge's pre-launch positioning as the *antidote* to biased mainstream financial content
+
+---
+
+### 3. Algorithmic Pricing Systems Are Quietly Colluding — And Consumers Are Paying
+- **Hook:** A new paper ("Misspecified Explore-then-Exploit Leads to Supra-Competitive Prices") finds that even without explicit coordination, algorithmic pricing systems used by competing firms drift toward artificially high prices. Financial products — insurance, lending, credit — run on exactly these systems.
+- **IvyEdge angle:** Women with non-traditional financial histories already get worse rates because they're scored as higher risk by models that weren't built for them. Now layer on: the rates themselves may be algorithmically inflated across the board, with no human making a deliberate choice and no regulator watching. This is a compounding structural harm. IvyEdge can name it plainly when others won't.
+- **Pillar:** Pillar 5 — Industry Trends & Advocacy
+- **Suggested post title:** *"The Hidden Tax on Non-Traditional Borrowers: When Algorithms Collude on Your Rates"*
+- **Cite:** https://arxiv.org/abs/2605.16064
+- **Urgency:** Publish within 10 days — more niche, but powerful for credibility-building with a financially sophisticated audience segment
+
+---
+
+## Evergreen Signals
+
+- **AI bias in financial underwriting is a sustained, deepening story.** Three separate papers this week touch adjacent pieces of the same structural problem: biased AI outputs (DebiasRAG), inability to contest algorithmic decisions (XAI contestability), and collusive algorithmic pricing. This isn't a one-week story — it's a recurring beat. IvyEdge should build a standing content series: something like *"The Algorithm Problem"* — a recurring explainer/watchdog format covering how automated systems in lending, credit, and hiring systematically disadvantage non-traditional financial profiles. Could anchor one post per month and become an owned franchise pre- and post-launch.
+
+- **The "non-traditional income documentation" gap is underserved in search.** None of this week's items directly address it, but the algorithmic bias coverage above consistently circles back to one root cause: financial AI trained on W-2 earners. There's a clear evergreen content opportunity in a practical, deeply researched series on income documentation for freelancers, gig workers, and career returners — not just "here's what to gather" but "here's why the system wasn't built for you and what to do about it anyway." Pillars 1 and 4. High search intent, low quality supply in the current content landscape.
+
+---
+
+## Skip (and why)
+
+- **Datacenter power / AI infrastructure papers** (Designing Datacenter Power Delivery Hierarchies; Watts vs. Bytes): Zero relevance to IvyEdge's audience or pillars. Tech infrastructure, not consumer finance or workplace equity.
+- **DebiasRAG** (LLM bias reduction via retrieval): Interesting technically, but this is a model architecture paper — not actionable or translatable for IvyEdge's audience in its current form. The bias *problem* it addresses is already covered better via the contestability paper above.
+- **All remaining arXiv papers** (physics, mathematics, quantum computing, astrophysics, climate modeling, robotics, etc.): No connection to consumer finance, workplace equity, or women's economic participation. Skip entirely.
+- **AI-Mediated Communication / opinion steering** — noted above as Trending,
+============================================================
+
+Generating calendar suggestions...
+
+Suggested posts (3):
+  2026-05-20 — Why Knowing Why Isn't Enough: The Fight for Algorithms You Can Actually Challenge
+  2026-05-20 — The Algorithm Has Opinions About Your Finances. Here's What That Means for You.
+  2026-05-27 — The Hidden Tax on Non-Traditional Borrowers: When Algorithms Collude on Your Rates
+[10:10:28] Step 2 done.
+[10:10:28] Step 3: Running content pipeline (draft only)...
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/run_pipeline.py:359: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  today = datetime.utcnow().date()
+10:10:29 [INFO] Loaded context: {'brand_voice': '11663 chars', 'personas': '4680 chars', 'product_knowledge': '6165 chars', 'strategy': '11935 chars', 'inclusive_marketing': '3395 chars', 'extras': '2932 chars'}
+10:10:29 [INFO] ---- Phase: format_analysis ----
+10:10:29 [INFO] Competitor analysis for: 'what credit score measures'
+10:10:30 [INFO] DuckDuckGo returned 12 candidates for 'what credit score measures'
+10:10:35 [INFO]   [1/5] Get Your Credit Score Online — 842 words, H2×5
+10:10:37 [INFO]   [2/5] How Is Your Credit Score Calculated? — 1856 words, H2×14
+10:10:38 [INFO]   [3/5] Understanding FICO: How Your Credit Score Is Calcu — 1347 words, H2×6
+10:10:41 [INFO]   [4/5] How are FICO Scores Calculated? | myFICO — 651 words, H2×6
+10:10:44 [INFO]   [5/5] What is a credit score and how does it work? | Fid — 1222 words, H2×0
+10:11:10 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:11:10 [INFO] ---- Phase: research ----
+10:12:04 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:12:04 [INFO] [research] 54.0s, in=11215 out=2500
+10:12:04 [INFO] ---- Phase: outline ----
+10:13:02 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:13:02 [INFO] [outline] 58.3s, in=15309 out=2500
+10:13:02 [INFO] ---- Phase: draft ----
+10:13:59 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:13:59 [INFO] [draft] 56.8s, in=13912 out=2422
+10:13:59 [INFO] ---- Phase: voice_edit ----
+10:14:53 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:14:53 [INFO] [voice_edit] 54.4s, in=14452 out=2299
+10:14:53 [INFO] ---- Phase: seo ----
+10:16:01 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:16:01 [INFO] [seo] 68.2s, in=6491 out=3205
+10:16:01 [INFO] ---- Phase: social ----
+10:16:24 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+10:16:24 [INFO] [social] 22.6s, in=3845 out=1096
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/run_pipeline.py:172: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  date = datetime.utcnow().strftime("%Y-%m-%d")
+10:16:25 [INFO] Dale-Chall: 9.72 (target 8.5) ↑ too complex
+10:16:25 [INFO] Saved draft to output/2026-05-18_what-your-credit-score-actually-measures-and-what-it-misses
+/Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/run_pipeline.py:427: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+  row["drafted_at"] = datetime.utcnow().isoformat(timespec="seconds") + "Z"
+10:16:26 [INFO] Draft created: id=198267435 title='What Your Credit Score Actually Measures (And What It Misses)'
+Generating 1 article (next due: 2026-05-25). 0 more article(s) queued for future weeks.
+
+  [What Your Credit Score Actually Measures] format_analysis
+  [What Your Credit Score Actually Measures] research
+  [What Your Credit Score Actually Measures] outline
+  [What Your Credit Score Actually Measures] draft
+  [What Your Credit Score Actually Measures] voice_edit
+  [What Your Credit Score Actually Measures] seo
+  [What Your Credit Score Actually Measures] social
+  Substack draft saved (id=198267435) — review at:
+  https://substack.com/dashboard/posts
+  Approve → bash approve.sh
+  Reject  → bash reject.sh
+
+Batch complete. Calendar updated: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/editorial_calendar.csv
+[10:16:26] Step 3 done — article saved as Substack draft. Run approve.sh or reject.sh.
+[10:16:26] ========================================
+[10:16:26] Monday pipeline complete. Log: /Users/audreyclevenger/Documents/Claude/Projects/IvyEdge/ai_content_agent/logs/2026-05-18_monday.log
+[10:16:26] ========================================

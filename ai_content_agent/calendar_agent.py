@@ -1,9 +1,9 @@
 """
-IvyEdge Editorial Calendar Agent
+Ivy Edge Editorial Calendar Agent
 
 Generates a ready-to-run editorial_calendar.csv from scratch using Claude.
 Topics are grounded in women in the economy, consumer lending, and financial
-services — aligned to IvyEdge's mission, personas, and content pillars.
+services — aligned to Ivy Edge's mission, personas, and content pillars.
 
 Usage:
     # 12-week calendar starting next Monday, 2 posts/week
@@ -52,11 +52,11 @@ CSV_COLUMNS = [
 ]
 
 # ---------------------------------------------------------------------------
-# Pitch deck brief (extracted from IvyEdge_202604_vNoFinancials.pptx)
+# Pitch deck brief (extracted from Ivy Edge_202604_vNoFinancials.pptx)
 # ---------------------------------------------------------------------------
 
 DECK_BRIEF = """
-## IvyEdge — Company Brief (from investor deck, April 2026)
+## Ivy Edge — Company Brief (from investor deck, April 2026)
 
 ### Mission
 AI-powered financial platform purpose-built for women — smarter underwriting,
@@ -78,7 +78,7 @@ transparent terms, and a community that grows with you.
   inability to serve women equitably.
 - $34T projected assets owned by women in the U.S. by 2030.
 
-### What IvyEdge is building (products — pre-launch, do NOT describe as live)
+### What Ivy Edge is building (products — pre-launch, do NOT describe as live)
 - Ivy Smart Loan: $5K–$15K personal loans with ZestAI holistic underwriting.
   Career breaks, part-time income, and flexible work treated as strengths.
   Same-day funding. Rate decreases every 6 months of on-time payments.
@@ -102,13 +102,13 @@ transparent terms, and a community that grows with you.
 - Women's World Banking (global gender-lens financial product research)
 - Optimist Economist (finance education platform for ambitious women)
 
-### Why IvyEdge wins vs. competitors
+### Why Ivy Edge wins vs. competitors
 Traditional banks and generic fintechs (Ellevest→Betterment, SoFi,
 LendingClub, Chime, Tala) all lack women-first loan underwriting, P2P
 community investment, paid mentor models, and founding-by-women credibility.
 
-### How We Build (IvyEdge's internal model)
-IvyEdge practices what it preaches — the company is designed to not push women out:
+### How We Build (Ivy Edge's internal model)
+Ivy Edge practices what it preaches — the company is designed to not push women out:
 - 100% Remote: geography never a barrier. 2 in 3 C-suite leaders say RTO mandates
   caused disproportionate female exits (Upwork 2024).
 - 32-Hour / 4-Day Work Week: Mondays off for caregiving or rest. 90% of companies
@@ -229,7 +229,7 @@ Assign one format per post:
 
 
 def _build_prompt(n_posts: int, context: str) -> str:
-    return f"""You are building an editorial calendar for IvyEdge, a pre-launch
+    return f"""You are building an editorial calendar for Ivy Edge, a pre-launch
 AI-powered financial platform built for women.
 
 {DECK_BRIEF}
@@ -259,7 +259,7 @@ Every post must be rooted in at least one of these four territory areas:
    4-day work weeks, and the data behind each policy's impact on women's
    workforce participation
 
-Posts must never mention IvyEdge products as live. CTAs are pre-launch only:
+Posts must never mention Ivy Edge products as live. CTAs are pre-launch only:
 waitlist, newsletter, share, survey, or tell-us-your-story.
 
 Never repeat a topic. Each post should have a distinct angle, even if two posts
@@ -284,7 +284,7 @@ Each object must have these exact keys:
   "primary_keyword": "main SEO keyword phrase",
   "secondary_keywords": "keyword two|keyword three|keyword four",
   "format": "educational | behavioral | industry | contrarian | customer_story",
-  "notes": "1-2 sentence editorial note: the specific angle, the IvyEdge point of view, one data point or hook to anchor it. For contrarian posts, note the common belief being challenged and IvyEdge's counter-argument."
+  "notes": "1-2 sentence editorial note: the specific angle, the Ivy Edge point of view, one data point or hook to anchor it. For contrarian posts, note the common belief being challenged and Ivy Edge's counter-argument."
 }}
 
 The array must contain exactly {n_posts} objects.
@@ -414,7 +414,7 @@ def _write_calendar(posts: list[dict], dates: list[date], output: Path) -> None:
 # ---------------------------------------------------------------------------
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="IvyEdge editorial calendar generator")
+    parser = argparse.ArgumentParser(description="Ivy Edge editorial calendar generator")
     parser.add_argument("--weeks", type=int, default=12,
                         help="Number of weeks to plan (default: 12)")
     parser.add_argument("--posts-per-week", type=int, default=2,
