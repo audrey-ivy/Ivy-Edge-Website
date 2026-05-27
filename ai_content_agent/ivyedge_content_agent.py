@@ -107,6 +107,7 @@ class GenerationResult:
     edited_draft: str = ""
     final_draft: str = ""
     social: str = ""
+    barbie: str = ""
     meta_description: str = ""
     started_at: str = ""
     finished_at: str = ""
@@ -926,6 +927,95 @@ Format:
 """
         return self._call_claude(prompt, PHASE_TOKEN_BUDGETS["social"], "social")
 
+    # -- Barbie content brief ---------------------------------------------
+
+    def barbie_phase(self, brief: ArticleBrief, final_draft: str) -> str:
+        """Generate a weekly Barbie content brief for Audrey's daughters to film."""
+        prompt = f"""You are writing a content brief for two teenage girls (ages 12 and 16)
+who film short videos with their cat, Barbie. Barbie wears a tiny ivy-leaf hat as her signature look.
+The videos and photos support IvyEdge, a financial education brand for freelancers and gig workers.
+
+The girls do NOT need to understand the financial topic deeply — they just need clear,
+fun, doable directions. Write like a cool older sister giving instructions, not a brand manager.
+
+THIS WEEK'S ARTICLE
+Topic: {brief.topic}
+Core insight (in plain English): use the article to find the one most surprising or
+relatable takeaway a teenager could explain — write it in one sentence here before
+starting the brief.
+
+THE ARTICLE (for reference)
+{final_draft[:3000]}
+
+---
+
+Produce the full Barbie Content Brief below. Follow each format exactly.
+
+---
+
+## This Week's Angle
+One sentence — the core idea from the article translated into something a teenager
+could explain while holding a cat. Keep it fun and simple.
+
+---
+
+## TikTok / Reels — 3 Video Ideas
+
+For each video: a setup note, a word-for-word voiceover script, and a caption starter.
+
+Rules:
+- Voiceover: written for a 16-year-old to read naturally — conversational, not stiff
+- Each script: 40–60 words (about 20–25 seconds with Barbie on screen)
+- Barbie must appear in every video — give a specific, achievable action for the cat
+  (e.g. "sit Barbie on a pile of bills", "hold Barbie up to the camera like she's presenting")
+- End every script with: "Follow IvyEdge for more — link in bio"
+- Caption starter: first 1–2 lines of the caption only — the girls fill in the rest
+- No financial jargon — translate everything into plain, relatable language
+
+Format for each:
+
+### Video [N]: [fun title]
+
+**Setup:** [where to film, what props, how to position Barbie — 2–3 sentences]
+
+**Voiceover script:**
+[script text — exactly as the girl should say it out loud]
+
+**Caption starter:**
+[first 1–2 lines]
+
+**Hashtags:** [8–10 tags relevant to cat content + personal finance + the topic]
+
+---
+
+## Instagram Feed — 2 Photo Ideas
+
+For each: a specific setup the girls can recreate at home, a pose or action for Barbie,
+and a ready-to-post caption.
+
+Rules:
+- Barbie wears the ivy hat in both
+- Setups use things found at home (no special equipment)
+- Caption: 80–150 words, warm and a little funny — sounds like it could come from the girls
+- Include "link in bio" reference and 10–12 hashtags at the bottom
+
+Format for each:
+
+### Photo [N]: [fun title]
+
+**Setup:** [exactly what to do — background, props, lighting, Barbie's position]
+
+**Caption:**
+[full ready-to-post caption + hashtags]
+
+---
+
+## Quick Tips for the Girls
+3–4 bullet points of practical filming advice for this specific week's content
+(lighting, angles, how to get Barbie to cooperate, etc.)
+"""
+        return self._call_claude(prompt, 4000, "barbie")
+
     # -- Full pipeline ----------------------------------------------------
 
     def generate_blog_post(
@@ -995,6 +1085,7 @@ Format:
         result.meta_description = seo_out.get("meta_description", "")
 
         result.social = step("social", lambda: self.social_phase(brief, result.final_draft))
+        result.barbie = step("barbie", lambda: self.barbie_phase(brief, result.final_draft))
 
         result.token_usage = {
             **self._cumulative_usage,

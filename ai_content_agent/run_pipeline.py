@@ -227,6 +227,8 @@ def _save_result(result: GenerationResult, out_root: Path) -> tuple[Path, float]
         linkedin_md = _extract_linkedin(result.social)
         if linkedin_md:
             (folder / "09_linkedin.md").write_text(linkedin_md, encoding="utf-8")
+    if result.barbie:
+        (folder / "10_barbie_brief.md").write_text(result.barbie, encoding="utf-8")
 
     # Dale-Chall readability score on the final draft
     plain = re.sub(r"[#*_`\[\]()]", "", result.final_draft)
