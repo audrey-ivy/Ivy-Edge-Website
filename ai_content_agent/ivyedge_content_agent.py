@@ -932,7 +932,7 @@ Format:
     def barbie_phase(self, brief: ArticleBrief, final_draft: str) -> str:
         """Generate a weekly Barbie content brief for Audrey's daughters to film."""
         prompt = f"""You are writing a content brief for two teenage girls (ages 12 and 16)
-who film short videos with their cat, Barbie. Barbie wears a tiny ivy-leaf hat as her signature look.
+who film short videos with their cat, Barbie. Barbie wears an Ivy Edge branded bandana as her signature look.
 The videos and photos support Ivy Edge, a financial education brand for freelancers and gig workers.
 
 CRITICAL — BARBIE SPEAKS IN FIRST PERSON:
@@ -941,6 +941,8 @@ The girls are just her voice. Use "I", "me", "my mom", "my house", "I live here"
 "our mom" or anything that breaks the illusion. Barbie is a confident, slightly unimpressed
 cat who understands money better than most humans and is not afraid to say so.
 She is funny, direct, and always right.
+
+NEVER mention the mom's name — she is always just "my mom." No names, ever.
 
 The girls do NOT need to understand the financial topic deeply — they just need clear,
 fun, doable directions. Write like a cool older sister giving instructions, not a brand manager.
