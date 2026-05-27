@@ -938,6 +938,20 @@ The videos and photos support IvyEdge, a financial education brand for freelance
 The girls do NOT need to understand the financial topic deeply — they just need clear,
 fun, doable directions. Write like a cool older sister giving instructions, not a brand manager.
 
+THE PERMANENT STUDIO SETUP (never changes — the girls know this already)
+- Forest green backdrop wall in the home office
+- Barbie always sits on her throne: a small wooden crate/rattan basket in the center
+- Large pothos or fiddle leaf plant to the left
+- Small succulent near Barbie
+- Stack of 2–3 dark hardcover books
+- Coral or cream candle
+- Small chalkboard or wooden sign ("IvyEdge" or "Grow Through Anything")
+- Neutral mug
+- Ring light for videos, natural window light for photos
+
+The studio bones NEVER change. Only ONE small prop swaps each week to keep it fresh
+(the "This Week's Swap" — you generate this below).
+
 THIS WEEK'S ARTICLE
 Topic: {brief.topic}
 Core insight (in plain English): use the article to find the one most surprising or
@@ -959,24 +973,36 @@ could explain while holding a cat. Keep it fun and simple.
 
 ---
 
+## This Week's Swap
+ONE small prop change to make this week's content feel fresh — tied to the article topic.
+Examples: swap the mug for one with a relevant phrase, add a seasonal item, change what's
+written on the chalkboard, give Barbie a tiny accessory beyond her ivy hat.
+
+**Swap:** [exactly what to change and what to replace it with]
+**Why it works:** [one sentence — how it connects to this week's topic]
+
+---
+
 ## TikTok / Reels — 3 Video Ideas
 
-For each video: a setup note, a word-for-word voiceover script, and a caption starter.
+For each video: Barbie's specific action + the voiceover script + a caption starter.
+The studio setup is fixed — do NOT describe the background, lighting, or permanent props.
+Only describe what BARBIE does and any non-studio items held in frame.
 
 Rules:
 - Voiceover: written for a 16-year-old to read naturally — conversational, not stiff
 - Each script: 40–60 words (about 20–25 seconds with Barbie on screen)
-- Barbie must appear in every video — give a specific, achievable action for the cat
-  (e.g. "sit Barbie on a pile of bills", "hold Barbie up to the camera like she's presenting")
+- Give Barbie one specific, fun action per video (e.g. "hold Barbie up facing the camera
+  like she's presenting", "drape Barbie across the open book like she's reading it")
 - End every script with: "Follow IvyEdge for more — link in bio"
-- Caption starter: first 1–2 lines of the caption only — the girls fill in the rest
+- Caption starter: first 1–2 lines only — the girls fill in the rest
 - No financial jargon — translate everything into plain, relatable language
 
 Format for each:
 
 ### Video [N]: [fun title]
 
-**Setup:** [where to film, what props, how to position Barbie — 2–3 sentences]
+**Barbie's action:** [one sentence — exactly what to do with the cat]
 
 **Voiceover script:**
 [script text — exactly as the girl should say it out loud]
@@ -990,12 +1016,10 @@ Format for each:
 
 ## Instagram Feed — 2 Photo Ideas
 
-For each: a specific setup the girls can recreate at home, a pose or action for Barbie,
-and a ready-to-post caption.
+Same studio, same rules — describe only Barbie's pose/action and any held props.
 
 Rules:
 - Barbie wears the ivy hat in both
-- Setups use things found at home (no special equipment)
 - Caption: 80–150 words, warm and a little funny — sounds like it could come from the girls
 - Include "link in bio" reference and 10–12 hashtags at the bottom
 
@@ -1003,7 +1027,8 @@ Format for each:
 
 ### Photo [N]: [fun title]
 
-**Setup:** [exactly what to do — background, props, lighting, Barbie's position]
+**Barbie's pose:** [one sentence — exactly how to position the cat]
+**Hold in frame:** [any non-studio item to add, or "nothing extra this week"]
 
 **Caption:**
 [full ready-to-post caption + hashtags]
