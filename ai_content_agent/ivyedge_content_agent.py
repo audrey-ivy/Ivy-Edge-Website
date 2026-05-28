@@ -927,40 +927,171 @@ Format:
 """
         return self._call_claude(prompt, PHASE_TOKEN_BUDGETS["social"], "social")
 
-    # -- Barbie content brief ---------------------------------------------
+    # -- Cat roster (weekly rotation) ------------------------------------
+
+    _CAT_ROSTER = [
+        {
+            "name": "Ivy",
+            "real_name": "Barbie",
+            "look": "tiger tabby",
+            "props": "pink coffee cup · mint bandana",
+            "character": "The Visionary",
+            "personality": (
+                "Confident, warm, and genuinely believes in you. Ivy is the main face of Ivy Edge. "
+                "She speaks with quiet authority, never condescending. She's the cat who already knows "
+                "how compound interest works and is mildly baffled that the financial system makes it "
+                "so hard to get ahead. She's encouraging without being cheesy."
+            ),
+            "voiceover_tone": "warm, hopeful, and direct — like a mentor who happens to be a cat",
+        },
+        {
+            "name": "Edge",
+            "real_name": "Violet",
+            "look": "grey tabby",
+            "props": "purple coffee cup · pink bandana",
+            "character": "The Strategist",
+            "personality": (
+                "Cool, precise, and no-nonsense. Edge doesn't do fluff. She's the cat doing the actual "
+                "math while everyone else is panicking. She explains things simply because she finds "
+                "confusion inefficient, not because she's being particularly kind. Sleek and always "
+                "three moves ahead."
+            ),
+            "voiceover_tone": "crisp, dry, a little deadpan — like a CFO who is also inexplicably cute",
+        },
+        {
+            "name": "Fern",
+            "real_name": "McGee",
+            "look": "Persian",
+            "props": "white coffee cup · green bandana",
+            "character": "The Dreamer",
+            "personality": (
+                "Regal, unbothered, and aspirational. Fern has the energy of someone who achieved "
+                "generational wealth and simply doesn't discuss it at parties. She makes big financial "
+                "concepts feel accessible and even beautiful. Persian cats look like they've never "
+                "worried about a single thing — Fern uses that energy to inspire."
+            ),
+            "voiceover_tone": "dreamy but grounded — like a friend who genuinely makes you believe it's possible",
+        },
+        {
+            "name": "Sage",
+            "real_name": "Pete",
+            "look": "orange tabby with a permanently grumpy expression (she/her)",
+            "props": "green coffee cup · white bandana",
+            "character": "The Realist",
+            "personality": (
+                "Grumpy, wise, and always right. Sage is NOT impressed by your excuses. She's done "
+                "being polite about the financial system failing people. She delivers hard truths with "
+                "the energy of someone who told you so three years ago. Her grumpy face is her entire "
+                "brand — and she knows it. She's secretly the most caring of all of them, but she "
+                "expresses it through brutal honesty."
+            ),
+            "voiceover_tone": "deadpan and blunt — like a grumpy financial advisor who is always, always right",
+        },
+    ]
+
+    # -- Cat content brief ------------------------------------------------
+
+    _CAT_INTRO_FILE = Path(__file__).parent / "context" / "cat_introductions.json"
+
+    def _is_first_appearance(self, cat_name: str) -> bool:
+        """Return True if this cat has never had an intro brief generated."""
+        try:
+            data = json.loads(self._CAT_INTRO_FILE.read_text())
+            return cat_name not in data.get("introduced", [])
+        except Exception:
+            return True  # if file is missing, treat as first appearance
+
+    def _mark_introduced(self, cat_name: str) -> None:
+        """Record that this cat's intro brief has been generated."""
+        try:
+            data = json.loads(self._CAT_INTRO_FILE.read_text())
+            if cat_name not in data.get("introduced", []):
+                data.setdefault("introduced", []).append(cat_name)
+                self._CAT_INTRO_FILE.write_text(json.dumps(data, indent=2))
+        except Exception as e:
+            logger.warning("Could not update cat_introductions.json: %s", e)
 
     def barbie_phase(self, brief: ArticleBrief, final_draft: str) -> str:
-        """Generate a weekly Barbie content brief for Audrey's daughters to film."""
+        """Generate the weekly cat content brief. Cat is chosen by content pillar."""
+        pillar_lower = brief.pillar.lower()
+        if "pillar 6" in pillar_lower or "building differently" in pillar_lower:
+            cat = next(c for c in self._CAT_ROSTER if c["name"] == "Sage")
+        elif "pillar 4" in pillar_lower or "behavioral" in pillar_lower:
+            cat = next(c for c in self._CAT_ROSTER if c["name"] == "Fern")
+        elif "pillar 2" in pillar_lower or "pillar 5" in pillar_lower or "demystified" in pillar_lower or "industry" in pillar_lower:
+            cat = next(c for c in self._CAT_ROSTER if c["name"] == "Edge")
+        else:
+            # Pillar 1, Brand Story, or anything unrecognised → Ivy
+            cat = next(c for c in self._CAT_ROSTER if c["name"] == "Ivy")
+
+        first_appearance = self._is_first_appearance(cat["name"])
+        self._mark_introduced(cat["name"])
+
+        cn = f'{cat["name"]} ({cat["real_name"]})'   # e.g. "Sage (Pete)"
+        intro_block = f"""
+⭐ FIRST APPEARANCE — {cn.upper()} NEEDS AN INTRODUCTION THIS WEEK ⭐
+
+Before any of the regular content, the girls need to film ONE introduction video for {cn}.
+This goes out FIRST (Monday or Tuesday) before the regular week's content.
+
+INTRODUCTION VIDEO BRIEF:
+- {cat["real_name"]} sits on her throne as usual with her signature props ({cat["props"]})
+- The girls introduce her by character name AND explain her personality in 1–2 sentences
+- Keep it fun and short — under 30 seconds
+- End with: "Follow Ivy Edge to see what {cat["name"]} thinks about your finances — link in bio"
+
+Example voiceover opening:
+  "Meet {cat["name"]}. {cat["personality"].split('.')[0]}. She lives here now and she has opinions."
+
+Post the intro video to TikTok + Reels on the day BEFORE the regular content starts.
+Caption: "Introducing {cn} to the Ivy Edge team. {cat["character"]}. She's here. 🐱"
+Hashtags: #newcat #ivyedge #catfinance #{'grumpycat' if cat['name'] == 'Sage' else 'financecat'} #{cat["name"].lower()}
+
+---
+""" if first_appearance else ""
+
         prompt = f"""You are writing a content brief for two teenage girls (ages 12 and 16)
-who film short videos with their cat, Barbie. Barbie wears an Ivy Edge branded bandana as her signature look.
-The videos and photos support Ivy Edge, a financial education brand for freelancers and gig workers.
+who film short videos with their cats for Ivy Edge, a financial education brand.
 
-CRITICAL — BARBIE SPEAKS IN FIRST PERSON:
-All voiceover scripts are written FROM BARBIE'S PERSPECTIVE. Barbie is the character.
+THIS WEEK'S FEATURED CAT
+- Character name: {cn}
+- Look: {cat["look"]}
+- Character role: {cat["character"]}
+- Personality: {cat["personality"]}
+- Voiceover tone: {cat["voiceover_tone"]}
+
+CRITICAL — {cn.upper()} SPEAKS IN FIRST PERSON:
+All voiceover scripts are written FROM {cat["name"].upper()}'S PERSPECTIVE. {cat["name"]} is the character.
 The girls are just her voice. Use "I", "me", "my mom", "my house", "I live here" — never
-"our mom" or anything that breaks the illusion. Barbie is a confident, slightly unimpressed
-cat who understands money better than most humans and is not afraid to say so.
-She is funny, direct, and always right.
+"our mom" or anything that breaks the fourth wall.
 
-NEVER mention any names — the founder is always "my mom." The team is "my mom and her colleague."
+NEVER mention any real names — the founder is always "my mom." The team is "my mom and her colleague."
 Example: "My mom and her colleague are building Ivy Edge for people who work for themselves."
 
 The girls do NOT need to understand the financial topic deeply — they just need clear,
 fun, doable directions. Write like a cool older sister giving instructions, not a brand manager.
+Adjust your language and energy to match {cn}'s personality above.
 
 THE PERMANENT STUDIO SETUP (never changes — the girls know this already)
 - Forest green backdrop wall in the home office
-- Barbie always sits on her throne: a small wooden crate/rattan basket in the center
+- {cn} always sits on her throne: a small wooden crate/rattan basket in the center
 - Large pothos or fiddle leaf plant to the left
-- Small succulent near Barbie
+- Small succulent near {cn}
 - Stack of 2–3 dark hardcover books
 - Coral or cream candle
 - Small chalkboard or wooden sign ("Ivy Edge" or "Grow Through Anything")
-- Neutral mug
 - Ring light for videos, natural window light for photos
 
-The studio bones NEVER change. Only ONE small prop swaps each week to keep it fresh
-(the "This Week's Swap" — you generate this below).
+{cn.upper()}'S SIGNATURE PROPS (always on set, every single week — non-negotiable):
+- {cat["props"]}
+These never change for {cat["name"]}. They are her trademark. Make sure both are visible in every photo and video.
+
+The studio bones NEVER change. Only ONE additional small prop swaps each week to keep it fresh.
+
+NAMING RULE — this is important:
+- Use {cn} throughout all practical directions (the girls see both names at a glance)
+- In voiceover scripts only, {cat["name"]} speaks as the character in first person
+  e.g. "Position {cn} facing the camera" but "Hi, I'm {cat["name"]} and I have thoughts about your credit score."
 
 THIS WEEK'S ARTICLE
 Topic: {brief.topic}
@@ -973,49 +1104,52 @@ THE ARTICLE (for reference)
 
 ---
 
-Produce the full Barbie Content Brief below. Follow each format exactly.
+Produce the full {cn} Content Brief below. Follow each format exactly.
+
+---
+
+{intro_block}## This Week's Cat: {cn} — {cat["character"]}
+One sentence introducing {cat["name"]}'s personality to the girls, so they know the vibe to play up.
 
 ---
 
 ## This Week's Angle
 One sentence — the core idea from the article translated into something a teenager
-could explain while holding a cat. Keep it fun and simple.
+could explain while holding a cat. Keep it fun, specific to {cat["name"]}'s character.
 
 ---
 
 ## This Week's Swap
-ONE small prop change to make this week's content feel fresh — tied to the article topic.
-Examples: swap the mug for one with a relevant phrase, add a seasonal item, change what's
-written on the chalkboard, give Barbie a tiny accessory beyond her ivy hat.
+ONE small prop change tied to the article topic AND {cat["name"]}'s personality.
 
 **Swap:** [exactly what to change and what to replace it with]
-**Why it works:** [one sentence — how it connects to this week's topic]
+**Why it works:** [one sentence — how it connects to this week's topic and {cn}'s vibe]
 
 ---
 
 ## TikTok / Reels — 3 Video Ideas
 
-For each video: Barbie's specific action + the voiceover script + a caption starter.
+For each video: what to do with {cn} + the voiceover script + a caption starter.
 The studio setup is fixed — do NOT describe the background, lighting, or permanent props.
-Only describe what BARBIE does and any non-studio items held in frame.
+Only describe what {cn} does and any non-studio items held in frame.
 
 Rules:
-- Voiceover: written for a 16-year-old to read naturally — conversational, not stiff
-- Each script: 40–60 words (about 20–25 seconds with Barbie on screen)
-- Give Barbie one specific, fun action per video (e.g. "hold Barbie up facing the camera
-  like she's presenting", "drape Barbie across the open book like she's reading it")
+- Voiceover: written for a 16-year-old to read naturally, in {cat["name"]}'s voice and tone
+- Each script: 40–60 words (about 20–25 seconds with {cn} on screen)
+- Give {cn} one specific, fun action per video
 - End every script with: "Follow Ivy Edge for more — link in bio"
 - Caption starter: first 1–2 lines only — the girls fill in the rest
 - No financial jargon — translate everything into plain, relatable language
+- Scripts should FEEL like {cat["name"]} — adjust the tone to match her character
 
 Format for each:
 
 ### Video [N]: [fun title]
 
-**Barbie's action:** [one sentence — exactly what to do with the cat]
+**What to do with {cn}:** [one sentence — exactly what to do with the cat]
 
-**Voiceover script:**
-[script text — exactly as the girl should say it out loud]
+**Voiceover script (spoken as {cat["name"]}):**
+[script text — exactly as the girl should say it out loud, in {cat["name"]}'s voice]
 
 **Caption starter:**
 [first 1–2 lines]
@@ -1026,18 +1160,17 @@ Format for each:
 
 ## Instagram Feed — 2 Photo Ideas
 
-Same studio, same rules — describe only Barbie's pose/action and any held props.
+Same studio, same rules — describe only how to position {cn} and any held props.
 
 Rules:
-- Barbie wears the ivy hat in both
-- Caption: 80–150 words, warm and a little funny — sounds like it could come from the girls
+- Caption: 80–150 words, warm and a little funny — sounds like it could come from the girls, with {cat["name"]}'s personality coming through
 - Include "link in bio" reference and 10–12 hashtags at the bottom
 
 Format for each:
 
 ### Photo [N]: [fun title]
 
-**Barbie's pose:** [one sentence — exactly how to position the cat]
+**How to position {cn}:** [one sentence — exactly how to position the cat]
 **Hold in frame:** [any non-studio item to add, or "nothing extra this week"]
 
 **Caption:**
@@ -1047,14 +1180,11 @@ Format for each:
 
 ## Quick Tips for the Girls
 3–4 bullet points of practical filming advice for this specific week's content
-(lighting, angles, how to get Barbie to cooperate, etc.)
+(lighting, angles, how to get {cn} to cooperate, etc.)
 
 ---
 
 ## This Week's Posting Schedule
-
-Write this as a simple checklist the girls can check off. Use this exact structure
-with the exact days AND times shown below — do not change the times:
 
 | Done | What | Where | Day | Time |
 |------|------|--------|-----|------|

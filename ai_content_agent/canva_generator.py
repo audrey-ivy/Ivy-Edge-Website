@@ -197,9 +197,21 @@ def run_auth_flow() -> None:
     server.timeout = 120
 
     print(f"\nOpening Canva authorization page...")
+    print(f"If your browser doesn't open, visit:\n  {auth_url}\n")
     webbrowser.open(auth_url)
     print("Waiting for authorization (120s timeout)...")
     server.handle_request()
+
+    # Fallback: if the automatic callback wasn't caught, let the user paste the redirect URL
+    if not received.get("code"):
+        print("\nAutomatic callback wasn't received.")
+        print("After authorizing in your browser, copy the full URL from the browser address bar")
+        print("(it starts with http://127.0.0.1:8765/callback?code=...)")
+        pasted = input("Paste the full redirect URL here: ").strip()
+        parsed = urllib.parse.urlparse(pasted)
+        qs = urllib.parse.parse_qs(parsed.query)
+        received["code"]  = qs.get("code",  [""])[0]
+        received["state"] = qs.get("state", [""])[0]
 
     if not received.get("code"):
         raise RuntimeError("No authorization code received.")

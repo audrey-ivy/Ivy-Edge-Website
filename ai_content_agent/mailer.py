@@ -304,22 +304,45 @@ def send_barbie_brief(
     topic: str,
     brief_md: str,
     to: Optional[str] = None,
+    cat_name: Optional[str] = None,
+    cat_emoji: Optional[str] = None,
 ) -> bool:
-    """Email the weekly Barbie filming brief to Audrey (and optionally the girls)."""
+    """Email the weekly cat filming brief to Audrey (and optionally the girls).
+
+    Rotates through Ivy / Edge / Fern / Sage. cat_name auto-detected from brief
+    markdown if not supplied. cat_emoji overrides the default per-cat icon.
+    """
+    # Auto-detect which cat is featured this week
+    if not cat_name:
+        for name in ("Ivy", "Edge", "Fern", "Sage"):
+            if f"This Week's Cat: {name}" in brief_md or f"Featured Cat: {name}" in brief_md:
+                cat_name = name
+                break
+        cat_name = cat_name or "Ivy"
+
+    _CAT_EMOJIS    = {"Ivy": "🐯", "Edge": "🩶", "Fern": "🤍", "Sage": "🍊"}
+    _CAT_SUBTITLES = {
+        "Ivy":  "The Visionary · tiger tabby",
+        "Edge": "The Strategist · grey tabby",
+        "Fern": "The Dreamer · Persian",
+        "Sage": "The Realist · orange tabby",
+    }
+    icon     = cat_emoji or _CAT_EMOJIS.get(cat_name, "🐱")
+    subtitle = _CAT_SUBTITLES.get(cat_name, cat_name)
+
     recipients_raw = to or BARBIE_EMAIL
     if not recipients_raw:
-        logger.warning("BARBIE_EMAIL not set in .env — skipping Barbie brief email")
+        logger.warning("BARBIE_EMAIL not set in .env — skipping cat brief email")
         return False
     if not EMAIL_FROM or not EMAIL_APP_PASSWORD:
         logger.error("EMAIL_FROM or EMAIL_APP_PASSWORD not set in .env")
         return False
-    # Support comma-separated list of recipients
     recipients = [r.strip() for r in recipients_raw.split(",") if r.strip()]
     recipient  = ", ".join(recipients)
 
     from datetime import datetime, timezone
     today   = datetime.now(timezone.utc).strftime("%B %-d, %Y")
-    subject = f"🐱 Barbie Content Brief — {today}"
+    subject = f"{icon} {cat_name} Content Brief — {today}"
 
     # Convert markdown to simple HTML
     def _md_to_html(md: str) -> str:
@@ -338,7 +361,6 @@ def send_barbie_brief(
             elif line.strip() == "---":
                 out.append('<hr style="border:none;border-top:1px solid #eee;margin:20px 0;">')
             elif line.strip():
-                # Bold inline **text**
                 formatted = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', line)
                 out.append(f'<p style="margin:6px 0;color:#333;">{formatted}</p>')
             else:
@@ -356,14 +378,15 @@ def send_barbie_brief(
             overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
 
   <div style="background:linear-gradient(135deg,#1c6350 0%,#62466b 100%);padding:28px 32px;">
-    <div style="font-size:28px;">🐱🌿</div>
-    <h1 style="color:white;margin:8px 0 4px;font-size:22px;">Barbie Content Brief</h1>
-    <div style="color:#9ce3d0;font-size:14px;">{today} &nbsp;·&nbsp; {topic}</div>
+    <div style="font-size:28px;">{icon}🌿</div>
+    <h1 style="color:white;margin:8px 0 4px;font-size:22px;">{cat_name} Content Brief</h1>
+    <div style="color:#9ce3d0;font-size:13px;">{subtitle}</div>
+    <div style="color:#94a3b8;font-size:14px;margin-top:4px;">{today} &nbsp;·&nbsp; {topic}</div>
   </div>
 
   <div style="background:#fff8f0;padding:16px 32px;border-bottom:1px solid #eee;
               font-size:14px;color:#555;">
-    Hey! Here's this week's filming guide for Barbie. 🎬
+    Hey! Here's this week's filming guide for {cat_name}. 🎬
     Film when you can — see the schedule inside for the best posting days.
   </div>
 
@@ -380,11 +403,11 @@ def send_barbie_brief(
 </body>
 </html>"""
 
-    plain = f"Barbie Content Brief — {today}\n\nTopic: {topic}\n\n{brief_md}"
+    plain = f"{cat_name} Content Brief — {today}\n\nTopic: {topic}\n\n{brief_md}"
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
-    msg["From"]    = f"Ivy Edge 🐱 <{EMAIL_FROM}>"
+    msg["From"]    = f"Ivy Edge {icon} <{EMAIL_FROM}>"
     msg["To"]      = recipient
 
     msg.attach(MIMEText(plain, "plain"))
@@ -396,8 +419,8 @@ def send_barbie_brief(
             server.starttls()
             server.login(EMAIL_FROM, EMAIL_APP_PASSWORD)
             server.sendmail(EMAIL_FROM, recipients, msg.as_string())
-        logger.info("Barbie brief sent to %s", recipient)
+        logger.info("Cat brief (%s) sent to %s", cat_name, recipient)
         return True
     except Exception as e:
-        logger.error("Failed to send Barbie brief: %s", e)
+        logger.error("Failed to send cat brief: %s", e)
         return False

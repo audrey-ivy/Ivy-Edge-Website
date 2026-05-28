@@ -446,12 +446,10 @@ def process_folder(
     # Sun:  TikTok/Reel (6–9pm ET)
     if not cards_only and not video_only and not skip_post:
         from buffer_poster import (
-            next_tuesday_x, next_wednesday_x, next_thursday_x,
+            next_tuesday_x,
             next_tuesday_ig, next_thursday_ig, next_saturday_ig,
             next_wednesday_threads,
-            next_tuesday_story, next_wednesday_story,
-            next_thursday_story, next_friday_story,
-            post_to_instagram, post_instagram_story,
+            post_to_instagram,
             post_to_threads, post_to_x,
         )
 
@@ -484,24 +482,7 @@ def process_folder(
         except Exception as e:
             logger.error("IG feed 1 failed: %s", e)
 
-        # Story 1
-        try:
-            if story_paths[0]:
-                _at = next_tuesday_story()
-                result["story_1"] = post_instagram_story(story_paths[0], scheduled_at=_at)
-                logger.info("Story 1 scheduled %s", _at)
-        except Exception as e:
-            logger.error("Story 1 failed: %s", e)
-
         # -- Wednesday ------------------------------------------------
-        # X post 2
-        try:
-            _at = next_wednesday_x()
-            result["x_2"] = post_to_x(x_posts[1], scheduled_at=_at)
-            logger.info("X post 2 scheduled %s", _at)
-        except Exception as e:
-            logger.error("X post 2 failed: %s", e)
-
         # Threads
         try:
             if threads_text:
@@ -510,15 +491,6 @@ def process_folder(
                 logger.info("Threads scheduled %s", _at)
         except Exception as e:
             logger.error("Threads failed: %s", e)
-
-        # Story 2
-        try:
-            if story_paths[1]:
-                _at = next_wednesday_story()
-                result["story_2"] = post_instagram_story(story_paths[1], scheduled_at=_at)
-                logger.info("Story 2 scheduled %s", _at)
-        except Exception as e:
-            logger.error("Story 2 failed: %s", e)
 
         # -- Thursday -------------------------------------------------
         # Instagram feed 2
@@ -529,33 +501,6 @@ def process_folder(
                 logger.info("IG feed 2 scheduled %s", _at)
         except Exception as e:
             logger.error("IG feed 2 failed: %s", e)
-
-        # X post 3
-        try:
-            _at = next_thursday_x()
-            result["x_3"] = post_to_x(x_posts[2], scheduled_at=_at)
-            logger.info("X post 3 scheduled %s", _at)
-        except Exception as e:
-            logger.error("X post 3 failed: %s", e)
-
-        # Story 3
-        try:
-            if story_paths[2]:
-                _at = next_thursday_story()
-                result["story_3"] = post_instagram_story(story_paths[2], scheduled_at=_at)
-                logger.info("Story 3 scheduled %s", _at)
-        except Exception as e:
-            logger.error("Story 3 failed: %s", e)
-
-        # -- Friday ---------------------------------------------------
-        # Story 4
-        try:
-            if story_paths[3]:
-                _at = next_friday_story()
-                result["story_4"] = post_instagram_story(story_paths[3], scheduled_at=_at)
-                logger.info("Story 4 scheduled %s", _at)
-        except Exception as e:
-            logger.error("Story 4 failed: %s", e)
 
         # -- Saturday -------------------------------------------------
         # Instagram feed 3

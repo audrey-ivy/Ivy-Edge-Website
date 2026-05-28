@@ -114,6 +114,20 @@ def next_friday_tiktok() -> str:
     """TikTok video 2 — Friday, random 6–9pm ET (23–00 UTC)."""
     return _next_weekday_random(4, window_start_utc=23, window_end_utc=24)
 
+def next_sunday_tiktok() -> str:
+    """TikTok video 3 (cat) — Sunday, random 6–9pm ET (23–00 UTC)."""
+    return _next_weekday_random(6, window_start_utc=23, window_end_utc=24)
+
+def next_tuesday_cat_ig() -> str:
+    """Cat IG photo 1 — Tuesday, random 3–5pm ET (20–22 UTC).
+    Offset from next_tuesday_ig (11am–1pm) to avoid same-channel collision."""
+    return _next_weekday_random(1, window_start_utc=20, window_end_utc=22)
+
+def next_saturday_cat_ig() -> str:
+    """Cat IG photo 2 — Saturday, random 3–5pm ET (20–22 UTC).
+    Offset from next_saturday_ig (10am–12pm) to avoid same-channel collision."""
+    return _next_weekday_random(5, window_start_utc=20, window_end_utc=22)
+
 # ── Threads ───────────────────────────────────────────────────────────────
 
 def next_wednesday_threads() -> str:
@@ -420,6 +434,105 @@ def post_to_x(
         image_url=image_url, video_url=video_url,
         platform="twitter", scheduled_at=scheduled_at,
     )
+
+
+# ---------------------------------------------------------------------------
+# Cat content placeholder scheduling
+# ---------------------------------------------------------------------------
+
+def _parse_cat_slots(brief_md: str) -> list[dict]:
+    """Parse the cat brief markdown and return a list of slot dicts.
+
+    Each dict has: type ('video'|'photo'), number (1-3/1-2), title, caption.
+    """
+    import re
+    slots: list[dict] = []
+
+    # Videos — ### Video N: Title
+    for m in re.finditer(
+        r"###\s*Video\s*(\d+):\s*(.+?)\n.*?(?:\*\*Caption starter:\*\*\s*\n?)(.*?)(?=\n###|\n---|\n##|\Z)",
+        brief_md, re.DOTALL
+    ):
+        num, title, caption = m.group(1), m.group(2).strip(), m.group(3).strip()
+        slots.append({"type": "video", "number": int(num), "title": title, "caption": caption})
+
+    # Photos — ### Photo N: Title
+    for m in re.finditer(
+        r"###\s*Photo\s*(\d+):\s*(.+?)\n.*?(?:\*\*Caption:\*\*\s*\n?)(.*?)(?=\n###|\n---|\n##|\Z)",
+        brief_md, re.DOTALL
+    ):
+        num, title, caption = m.group(1), m.group(2).strip(), m.group(3).strip()
+        slots.append({"type": "photo", "number": int(num), "title": title, "caption": caption})
+
+    # Sort: photo 1, video 1, video 2, photo 2, video 3 (posting order)
+    order = {"photo_1": 0, "video_1": 1, "video_2": 2, "photo_2": 3, "video_3": 4}
+    slots.sort(key=lambda s: order.get(f"{s['type']}_{s['number']}", 99))
+    return slots
+
+
+def schedule_cat_content_slots(brief_md: str, cat_name: str = "Ivy") -> dict:
+    """Schedule all 5 cat content slots in Buffer as text-only placeholder posts.
+
+    Each post has a clear identifier at the top so the girls know which
+    video or photo to upload before the post goes live.
+
+    Slot schedule:
+      Photo 1  → Tuesday   3–5pm ET   (Instagram — offset from AI card at 11am)
+      Video 1  → Wednesday 6–9pm ET   (TikTok + Instagram Reels)
+      Video 2  → Friday    6–9pm ET   (TikTok + Instagram Reels)
+      Photo 2  → Saturday  3–5pm ET   (Instagram — offset from AI card at 10am)
+      Video 3  → Sunday    6–9pm ET   (TikTok + Instagram Reels)
+
+    Returns a dict of slot keys → Buffer post IDs (or None on failure).
+    """
+    slots = _parse_cat_slots(brief_md)
+
+    schedule_map = {
+        ("photo", 1): next_tuesday_cat_ig,
+        ("video", 1): next_wednesday_tiktok,
+        ("video", 2): next_friday_tiktok,
+        ("photo", 2): next_saturday_cat_ig,
+        ("video", 3): next_sunday_tiktok,
+    }
+
+    results: dict = {}
+
+    for slot in slots:
+        t, n = slot["type"], slot["number"]
+        key = f"{t}_{n}"
+        time_fn = schedule_map.get((t, n))
+        if not time_fn:
+            continue
+
+        icon    = "📹" if t == "video" else "📸"
+        label   = f"{t.upper()} {n}"
+        channel = BUFFER_IG_CHANNEL_ID if t == "photo" else BUFFER_TIKTOK_CHANNEL_ID
+
+        if not channel:
+            logger.warning("No Buffer channel ID for %s — skipping", key)
+            results[key] = None
+            continue
+
+        identifier = (
+            f"{icon} {label}: \"{slot['title']}\"\n"
+            f"↑ Upload your {t} here, then delete this line before saving.\n\n"
+        )
+        full_caption = identifier + slot["caption"]
+
+        try:
+            post_id = _create_post(
+                channel_id=channel,
+                text=full_caption,
+                platform="tiktok" if t == "video" else "instagram",
+                scheduled_at=time_fn(),
+            )
+            results[key] = post_id
+            logger.info("Cat slot %s scheduled → Buffer post %s", key, post_id)
+        except Exception as e:
+            logger.error("Cat slot %s failed: %s", key, e)
+            results[key] = None
+
+    return results
 
 
 # ---------------------------------------------------------------------------

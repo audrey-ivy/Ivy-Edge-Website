@@ -228,12 +228,19 @@ def _save_result(result: GenerationResult, out_root: Path) -> tuple[Path, float]
         if linkedin_md:
             (folder / "09_linkedin.md").write_text(linkedin_md, encoding="utf-8")
     if result.barbie:
-        (folder / "10_barbie_brief.md").write_text(result.barbie, encoding="utf-8")
+        (folder / "10_cat_brief.md").write_text(result.barbie, encoding="utf-8")
         try:
             from mailer import send_barbie_brief
             send_barbie_brief(topic=result.brief.topic, brief_md=result.barbie)
         except Exception as _e:
-            logger.warning("Barbie brief email skipped: %s", _e)
+            logger.warning("Cat brief email skipped: %s", _e)
+        try:
+            from buffer_poster import schedule_cat_content_slots
+            cat_results = schedule_cat_content_slots(result.barbie)
+            scheduled = sum(1 for v in cat_results.values() if v)
+            logger.info("Cat Buffer slots scheduled: %d/5", scheduled)
+        except Exception as _e:
+            logger.warning("Cat Buffer scheduling skipped: %s", _e)
 
     # Dale-Chall readability score on the final draft
     plain = re.sub(r"[#*_`\[\]()]", "", result.final_draft)
