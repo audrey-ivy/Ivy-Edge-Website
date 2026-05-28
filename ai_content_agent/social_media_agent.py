@@ -424,42 +424,35 @@ def process_folder(
         except Exception as e:
             logger.error("Story card generation failed for %s: %s", folder.name, e)
 
-    # ── 3. Videos — 2 separate TikTok/Reels scripts ────────────────────
+    # ── 3. Videos — handled by Barbie (manual filming) ─────────────────
+    # TikTok/Reels are filmed by the girls with Barbie each week.
+    # The pipeline no longer auto-generates videos.
     video_paths: list[Optional[Path]] = [None, None]
-    if not cards_only:
-        try:
-            from video_generator import generate_video, BACKGROUND_VIDEO, ELEVENLABS_API_KEY
-            if not ELEVENLABS_API_KEY:
-                logger.warning("ELEVENLABS_API_KEY not set — skipping videos for %s", folder.name)
-            elif not BACKGROUND_VIDEO.exists():
-                logger.warning("Background video missing — skipping videos for %s", folder.name)
-            else:
-                for i in range(2):
-                    vp = folder / f"08_video_{i+1}.mp4"
-                    generate_video(social_path, vp, title=title, script_index=i+1)
-                    video_paths[i] = vp
-                    result[f"video_{i+1}"] = str(vp)
-                    logger.info("Video %d: %s", i+1, vp.name)
-        except Exception as e:
-            logger.error("Video generation failed for %s: %s", folder.name, e)
 
     # ── 4. Schedule to Buffer across the week ───────────────────────────
     #
-    # Tue:  X post 1 (8–10am ET) | IG feed 1 (11am–1pm ET) | Story 1 (7–9am ET)
-    # Wed:  TikTok 1 (6–9pm ET)  | X post 2 (11am–1pm ET)  | Threads | Story 2
-    # Thu:  IG feed 2 (11am–1pm ET) | X post 3 (8–10am ET) | Story 3
-    # Fri:  TikTok 2 (6–9pm ET)  | Story 4
-    # Sat:  IG feed 3 (10am–12pm ET)
+    # Automated:
+    # Tue:  X post 1 (8–10am ET) | IG card 1 (11am–1pm ET) | Story 1 (7–9am ET)
+    # Wed:  X post 2 (11am–1pm ET) | Threads (12–2pm ET)   | Story 2 (8–10am ET)
+    # Thu:  IG card 2 (11am–1pm ET) | X post 3 (8–10am ET) | Story 3 (7–9am ET)
+    # Fri:  Story 4 (8–10am ET)
+    # Sat:  IG card 3 (10am–12pm ET)
+    #
+    # Barbie (manual — see 10_barbie_brief.md):
+    # Tue:  IG photo (11am–1pm ET)
+    # Wed:  TikTok/Reel (6–9pm ET)
+    # Fri:  TikTok/Reel (6–9pm ET)
+    # Sat:  IG photo (10am–12pm ET)
+    # Sun:  TikTok/Reel (6–9pm ET)
     if not cards_only and not video_only and not skip_post:
         from buffer_poster import (
             next_tuesday_x, next_wednesday_x, next_thursday_x,
             next_tuesday_ig, next_thursday_ig, next_saturday_ig,
-            next_wednesday_tiktok, next_friday_tiktok,
             next_wednesday_threads,
             next_tuesday_story, next_wednesday_story,
             next_thursday_story, next_friday_story,
             post_to_instagram, post_instagram_story,
-            post_to_threads, post_to_tiktok, post_to_x,
+            post_to_threads, post_to_x,
         )
 
         ig_captions  = _parse_instagram_captions(social_text)
@@ -501,16 +494,6 @@ def process_folder(
             logger.error("Story 1 failed: %s", e)
 
         # -- Wednesday ------------------------------------------------
-        # TikTok video 1
-        try:
-            if video_paths[0] and video_paths[0].exists():
-                _at = next_wednesday_tiktok()
-                tiktok_text = _format_tiktok_caption(_threads_raw, blog_url=blog_url)
-                result["tiktok_1"] = post_to_tiktok(tiktok_text, video_paths[0], scheduled_at=_at)
-                logger.info("TikTok 1 scheduled %s", _at)
-        except Exception as e:
-            logger.error("TikTok 1 failed: %s", e)
-
         # X post 2
         try:
             _at = next_wednesday_x()
@@ -565,16 +548,6 @@ def process_folder(
             logger.error("Story 3 failed: %s", e)
 
         # -- Friday ---------------------------------------------------
-        # TikTok video 2
-        try:
-            if video_paths[1] and video_paths[1].exists():
-                _at = next_friday_tiktok()
-                tiktok_text = _format_tiktok_caption(ig_captions[2][:200], blog_url=blog_url)
-                result["tiktok_2"] = post_to_tiktok(tiktok_text, video_paths[1], scheduled_at=_at)
-                logger.info("TikTok 2 scheduled %s", _at)
-        except Exception as e:
-            logger.error("TikTok 2 failed: %s", e)
-
         # Story 4
         try:
             if story_paths[3]:

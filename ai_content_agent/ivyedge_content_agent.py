@@ -1053,18 +1053,19 @@ Format for each:
 
 ## This Week's Posting Schedule
 
-Write this as a simple checklist the girls can check off. Use this exact structure:
+Write this as a simple checklist the girls can check off. Use this exact structure
+with the exact days AND times shown below — do not change the times:
 
-| Done | What | Where | When |
-|------|------|--------|------|
-| ☐ | Photo 1: [title] | Instagram feed | Tuesday |
-| ☐ | Video 1: [title] | TikTok + Reels | Wednesday |
-| ☐ | Video 2: [title] | TikTok + Reels | Friday |
-| ☐ | Photo 2: [title] | Instagram feed | Saturday |
-| ☐ | Video 3: [title] | TikTok + Reels | Sunday |
+| Done | What | Where | Day | Time |
+|------|------|--------|-----|------|
+| ☐ | Photo 1: [title] | Instagram feed | Tuesday | 11am–1pm ET |
+| ☐ | Video 1: [title] | TikTok + Reels | Wednesday | 6–9pm ET |
+| ☐ | Video 2: [title] | TikTok + Reels | Friday | 6–9pm ET |
+| ☐ | Photo 2: [title] | Instagram feed | Saturday | 10am–12pm ET |
+| ☐ | Video 3: [title] | TikTok + Reels | Sunday | 6–9pm ET |
 
 Add one line below the table:
-"Film anytime — just try to post on the days above for the best reach!"
+"Film anytime during the week — just post on the day and time above for the best reach!"
 """
         return self._call_claude(prompt, 4000, "barbie")
 
