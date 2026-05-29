@@ -722,27 +722,17 @@ Produce all assets below. Follow each format exactly.
 
 ## X
 
-Write THREE posts. Each will go out on a different day (Tue / Wed / Thu) — they must be
-distinct angles, not variations of the same idea.
-Rules for every post:
+Write ONE post. Goes out Tuesday.
+Rules:
 - ≤ 280 characters total (count carefully — hard limit)
 - First line: single punchy, opinionated statement or surprising stat — no setup
 - Second line (optional): one concrete consequence or reframe
 - Separate lines with a BLANK LINE — single newlines are ignored by social platforms
 - No hashtags, no em-dashes (—), no URL (link is appended automatically)
-
-Post 1 angle: surprising stat or counterintuitive fact
-Post 2 angle: direct challenge to a belief the audience holds
-Post 3 angle: relatable frustration — name the exact moment she's lived
+- Angle: surprising stat or counterintuitive fact from the article
 
 Format:
 ### Post 1
-<post text — no URL>
-
-### Post 2
-<post text — no URL>
-
-### Post 3
 <post text — no URL>
 
 ---
@@ -762,120 +752,6 @@ Rules:
 Format:
 ### Post
 <post text — no URL>
-
----
-
-## Instagram
-
-Write THREE captions. Each will post on a different day (Tue / Thu / Sat) with a different
-hook and angle — they must feel distinct, not like rewrites of each other.
-Rules for every caption:
-- 150–300 words; warm, direct Ivy Edge voice; line breaks every 1–2 sentences
-- Hook in the first line (no "Hey!" or emojis to open)
-- 3–5 paragraphs; end with a question or CTA to drive comments; include "link in bio"
-- Do NOT include raw URLs in the caption body
-- Hashtags: 10–15 highly relevant tags on a separate line after each caption
-
-Caption 1 angle: lead with the core problem or stat
-Caption 2 angle: lead with a personal story or relatable moment
-Caption 3 angle: lead with a quick win or actionable tip
-
-Also include one shared Visual direction note describing the image style for all three.
-
-Format:
-### Caption 1
-<caption text>
-
-### Hashtags 1
-<hashtags>
-
-### Caption 2
-<caption text>
-
-### Hashtags 2
-<hashtags>
-
-### Caption 3
-<caption text>
-
-### Hashtags 3
-<hashtags>
-
-### Visual direction
-<1–2 sentences describing the image — Ivy Edge brand colors only>
-
----
-
-## TikTok / Reels
-
-Write TWO scripts. Each is a separate 30-second video — different hook, different angle.
-Script 1 leads with a stat or counterintuitive truth.
-Script 2 leads with a relatable frustration or direct challenge.
-
-Rules for every script:
-- Length: 30 seconds — roughly 60–75 words total (phrases flash on screen)
-- Body: 3–4 tight sentences of genuine insight or concrete facts
-- CTA: one closing sentence ending with "ivyedge.co"
-- Plain text ONLY — no [TEXT:] or [VISUAL:] cues, no headers, no bullets
-- No filler words, no "so basically"
-- Confident, direct, warm — like texting a smart friend the most important thing
-
-For each script, first write 5 hook options (one per technique), then write the script.
-
-Hook techniques:
-  1. Surprising stat     2. Direct challenge     3. Relatable frustration
-  4. Counterintuitive truth     5. Bold accusation
-
-Format:
-### Hook options 1
-1. (stat) ...
-2. (challenge) ...
-3. (frustration) ...
-4. (truth) ...
-5. (accusation) ...
-**Recommended:** #N — [one sentence why]
-
-### Script 1
-<plain text — recommended hook, body, CTA>
-
-### Hook options 2
-1. (stat) ...
-2. (challenge) ...
-3. (frustration) ...
-4. (truth) ...
-5. (accusation) ...
-**Recommended:** #N — [one sentence why]
-
-### Script 2
-<plain text — recommended hook, body, CTA>
-
----
-
-## Stories
-
-Write 4 Story slides. Each is a single burst of text displayed full-screen on a 9:16 card.
-Rules:
-- Max 12 words per slide — read in under 3 seconds
-- No hashtags, no URLs, no em-dashes
-- Each slide must stand completely alone
-
-Slide 1 (stat): the most surprising number or fact from the article
-Slide 2 (quote): the most quotable single sentence — put it in "quotes"
-Slide 3 (CTA): one clear action (e.g. "The full breakdown is in the link in bio")
-Slide 4 (question): an open question the audience will want to answer
-
-Format:
-### Slide 1
-<text>
-
-### Slide 2
-<text>
-
-### Slide 3
-<text>
-
-### Slide 4
-<text>
 
 ---
 

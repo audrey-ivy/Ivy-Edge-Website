@@ -437,30 +437,25 @@ def process_folder(
     # Thu:  IG card 2 (11am–1pm ET) | X post 3 (8–10am ET) | Story 3 (7–9am ET)
     # Fri:  Story 4 (8–10am ET)
     # Sat:  IG card 3 (10am–12pm ET)
-    #
-    # Barbie (manual — see 10_barbie_brief.md):
-    # Tue:  IG photo (11am–1pm ET)
-    # Wed:  TikTok/Reel (6–9pm ET)
-    # Fri:  TikTok/Reel (6–9pm ET)
-    # Sat:  IG photo (10am–12pm ET)
-    # Sun:  TikTok/Reel (6–9pm ET)
+    # AI-generated: X (Tue), Threads (Wed)
+    # Cat content (manual upload — see 10_cat_brief.md):
+    # Tue 3–5pm:   IG photo 1
+    # Wed 6–9pm:   TikTok/Reel video 1
+    # Fri 6–9pm:   TikTok/Reel video 2
+    # Sat 3–5pm:   IG photo 2
+    # Sun 6–9pm:   TikTok/Reel video 3
     if not cards_only and not video_only and not skip_post:
         from buffer_poster import (
             next_tuesday_x,
-            next_tuesday_ig, next_thursday_ig, next_saturday_ig,
             next_wednesday_threads,
-            post_to_instagram,
             post_to_threads, post_to_x,
         )
 
-        ig_captions  = _parse_instagram_captions(social_text)
         x_posts      = _parse_x_posts(social_text, blog_url=blog_url)
         _threads_raw = _parse_threads_post(social_text)
         threads_text = f"{_threads_raw}\n\n{blog_url}" if _threads_raw else blog_url
 
-        # Pad lists so index access is always safe
-        while len(ig_captions) < 3:
-            ig_captions.append(ig_captions[0] if ig_captions else "")
+        # Pad list so index access is always safe
         while len(x_posts) < 3:
             x_posts.append(x_posts[0] if x_posts else "")
 
@@ -468,49 +463,20 @@ def process_folder(
         # X post 1
         try:
             _at = next_tuesday_x()
-            result["x_1"] = post_to_x(x_posts[0], image_path=card_paths[0], scheduled_at=_at)
+            result["x_1"] = post_to_x(x_posts[0], scheduled_at=_at)
             logger.info("X post 1 scheduled %s", _at)
         except Exception as e:
             logger.error("X post 1 failed: %s", e)
-
-        # Instagram feed 1
-        try:
-            if ig_captions[0]:
-                _at = next_tuesday_ig()
-                result["ig_1"] = post_to_instagram(ig_captions[0], image_path=card_paths[0], scheduled_at=_at)
-                logger.info("IG feed 1 scheduled %s", _at)
-        except Exception as e:
-            logger.error("IG feed 1 failed: %s", e)
 
         # -- Wednesday ------------------------------------------------
         # Threads
         try:
             if threads_text:
                 _at = next_wednesday_threads()
-                result["threads"] = post_to_threads(threads_text, image_path=card_paths[0], scheduled_at=_at)
+                result["threads"] = post_to_threads(threads_text, scheduled_at=_at)
                 logger.info("Threads scheduled %s", _at)
         except Exception as e:
             logger.error("Threads failed: %s", e)
-
-        # -- Thursday -------------------------------------------------
-        # Instagram feed 2
-        try:
-            if ig_captions[1]:
-                _at = next_thursday_ig()
-                result["ig_2"] = post_to_instagram(ig_captions[1], image_path=card_paths[1], scheduled_at=_at)
-                logger.info("IG feed 2 scheduled %s", _at)
-        except Exception as e:
-            logger.error("IG feed 2 failed: %s", e)
-
-        # -- Saturday -------------------------------------------------
-        # Instagram feed 3
-        try:
-            if ig_captions[2]:
-                _at = next_saturday_ig()
-                result["ig_3"] = post_to_instagram(ig_captions[2], image_path=card_paths[2], scheduled_at=_at)
-                logger.info("IG feed 3 scheduled %s", _at)
-        except Exception as e:
-            logger.error("IG feed 3 failed: %s", e)
 
         # Reddit — posted immediately
         try:
