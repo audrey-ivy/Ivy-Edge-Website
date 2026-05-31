@@ -764,6 +764,7 @@ Rules:
   (e.g. "Why your credit score dropped during your career gap — even with zero missed payments")
 - Body: 2–4 sentences of genuine value. Share the key insight from the article.
   End with one sentence: "Full breakdown: [article URL]" — use the actual blog URL ({post_url})
+  Final line: #GrowThroughAnything
 - No promotional language, no "check out my article" — lead with the insight
 - Sound like a knowledgeable community member sharing something useful
 
@@ -789,7 +790,7 @@ Rules:
 - Each section: 2–4 sentences max, no filler
 - Include 1–2 real stats or concrete facts from the article
 - End with a 2-sentence CTA: one sentence naming what Ivy Edge is building, one sentence sending readers to the waitlist at https://www.ivyedge.co
-- No hashtags in the body — add 3–5 relevant hashtags on a separate line at the very end
+- No hashtags in the body — add #GrowThroughAnything + 3–5 relevant hashtags on a separate line at the very end
 - No em-dashes (—); use a colon or a dash (-)
 
 Format:
