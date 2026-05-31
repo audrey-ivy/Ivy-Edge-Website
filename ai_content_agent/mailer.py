@@ -307,28 +307,10 @@ def send_barbie_brief(
     cat_name: Optional[str] = None,
     cat_emoji: Optional[str] = None,
 ) -> bool:
-    """Email the weekly cat filming brief to Audrey (and optionally the girls).
-
-    Rotates through Ivy / Edge / Fern / Sage. cat_name auto-detected from brief
-    markdown if not supplied. cat_emoji overrides the default per-cat icon.
-    """
-    # Auto-detect which cat is featured this week
-    if not cat_name:
-        for name in ("Ivy", "Edge", "Fern", "Sage"):
-            if f"This Week's Cat: {name}" in brief_md or f"Featured Cat: {name}" in brief_md:
-                cat_name = name
-                break
-        cat_name = cat_name or "Ivy"
-
-    _CAT_EMOJIS    = {"Ivy": "🐯", "Edge": "🩶", "Fern": "🤍", "Sage": "🍊"}
-    _CAT_SUBTITLES = {
-        "Ivy":  "The Visionary · tiger tabby",
-        "Edge": "The Strategist · grey tabby",
-        "Fern": "The Dreamer · Persian",
-        "Sage": "The Realist · orange tabby",
-    }
-    icon     = cat_emoji or _CAT_EMOJIS.get(cat_name, "🐱")
-    subtitle = _CAT_SUBTITLES.get(cat_name, cat_name)
+    """Email the weekly cat filming brief to Audrey (and optionally the girls)."""
+    cat_name = "Babs"
+    icon     = cat_emoji or "🐯"
+    subtitle = "The Visionary · tiger tabby"
 
     recipients_raw = to or BARBIE_EMAIL
     if not recipients_raw:

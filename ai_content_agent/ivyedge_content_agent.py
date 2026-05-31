@@ -805,69 +805,23 @@ Format:
 """
         return self._call_claude(prompt, PHASE_TOKEN_BUDGETS["social"], "social")
 
-    # -- Cat roster (weekly rotation) ------------------------------------
+    # -- Cat roster ------------------------------------------------------
 
     _CAT_ROSTER = [
         {
-            "name": "Ivy",
+            "name": "Babs",
             "real_name": "Barbie",
             "look": "tiger tabby",
             "props": "pink coffee cup · mint bandana",
             "character": "The Visionary",
             "personality": (
-                "Confident, warm, and genuinely believes in you. Ivy is the main face of Ivy Edge. "
+                "Confident, warm, and genuinely believes in you. Babs is the face of Ivy Edge. "
                 "She speaks with quiet authority, never condescending. She's the cat who already knows "
                 "how compound interest works and is mildly baffled that the financial system makes it "
                 "so hard to get ahead. She's encouraging without being cheesy."
             ),
             "voiceover_tone": "warm, hopeful, and direct — like a mentor who happens to be a cat",
-            "tagline": "Because you can grow through anything.",
-        },
-        {
-            "name": "Edge",
-            "real_name": "Violet",
-            "look": "grey tabby",
-            "props": "purple coffee cup · pink bandana",
-            "character": "The Strategist",
-            "personality": (
-                "Cool, precise, and no-nonsense. Edge doesn't do fluff. She's the cat doing the actual "
-                "math while everyone else is panicking. She explains things simply because she finds "
-                "confusion inefficient, not because she's being particularly kind. Sleek and always "
-                "three moves ahead."
-            ),
-            "voiceover_tone": "crisp, dry, a little deadpan — like a CFO who is also inexplicably cute",
-            "tagline": "Know the numbers. Own the outcome.",
-        },
-        {
-            "name": "Fern",
-            "real_name": "McGee",
-            "look": "Persian",
-            "props": "white coffee cup · green bandana",
-            "character": "The Dreamer",
-            "personality": (
-                "Regal, unbothered, and aspirational. Fern has the energy of someone who achieved "
-                "generational wealth and simply doesn't discuss it at parties. She makes big financial "
-                "concepts feel accessible and even beautiful. Persian cats look like they've never "
-                "worried about a single thing — Fern uses that energy to inspire."
-            ),
-            "voiceover_tone": "dreamy but grounded — like a friend who genuinely makes you believe it's possible",
-            "tagline": "There's always another way.",
-        },
-        {
-            "name": "Sage",
-            "real_name": "Pete",
-            "look": "orange tabby with a permanently grumpy expression (she/her)",
-            "props": "green coffee cup · white bandana",
-            "character": "The Realist",
-            "personality": (
-                "Grumpy, wise, and always right. Sage is NOT impressed by your excuses. She's done "
-                "being polite about the financial system failing people. She delivers hard truths with "
-                "the energy of someone who told you so three years ago. Her grumpy face is her entire "
-                "brand — and she knows it. She's secretly the most caring of all of them, but she "
-                "expresses it through brutal honesty."
-            ),
-            "voiceover_tone": "deadpan and blunt — like a grumpy financial advisor who is always, always right",
-            "tagline": "It is what it is. Now let's fix it.",
+            "tagline": "Grow through anything.",
         },
     ]
 
@@ -894,17 +848,8 @@ Format:
             logger.warning("Could not update cat_introductions.json: %s", e)
 
     def barbie_phase(self, brief: ArticleBrief, final_draft: str) -> str:
-        """Generate the weekly cat content brief. Cat is chosen by content pillar."""
-        pillar_lower = brief.pillar.lower()
-        if "pillar 6" in pillar_lower or "building differently" in pillar_lower:
-            cat = next(c for c in self._CAT_ROSTER if c["name"] == "Sage")
-        elif "pillar 4" in pillar_lower or "behavioral" in pillar_lower:
-            cat = next(c for c in self._CAT_ROSTER if c["name"] == "Fern")
-        elif "pillar 2" in pillar_lower or "pillar 5" in pillar_lower or "demystified" in pillar_lower or "industry" in pillar_lower:
-            cat = next(c for c in self._CAT_ROSTER if c["name"] == "Edge")
-        else:
-            # Pillar 1, Brand Story, or anything unrecognised → Ivy
-            cat = next(c for c in self._CAT_ROSTER if c["name"] == "Ivy")
+        """Generate the weekly cat content brief. Always features Babs (Barbie)."""
+        cat = self._CAT_ROSTER[0]
 
         first_appearance = self._is_first_appearance(cat["name"])
         self._mark_introduced(cat["name"])
