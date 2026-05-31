@@ -819,6 +819,7 @@ Format:
                 "so hard to get ahead. She's encouraging without being cheesy."
             ),
             "voiceover_tone": "warm, hopeful, and direct — like a mentor who happens to be a cat",
+            "tagline": "Because you can grow through anything.",
         },
         {
             "name": "Edge",
@@ -833,6 +834,7 @@ Format:
                 "three moves ahead."
             ),
             "voiceover_tone": "crisp, dry, a little deadpan — like a CFO who is also inexplicably cute",
+            "tagline": "Know the numbers. Own the outcome.",
         },
         {
             "name": "Fern",
@@ -847,6 +849,7 @@ Format:
                 "worried about a single thing — Fern uses that energy to inspire."
             ),
             "voiceover_tone": "dreamy but grounded — like a friend who genuinely makes you believe it's possible",
+            "tagline": "There's always another way.",
         },
         {
             "name": "Sage",
@@ -862,6 +865,7 @@ Format:
                 "expresses it through brutal honesty."
             ),
             "voiceover_tone": "deadpan and blunt — like a grumpy financial advisor who is always, always right",
+            "tagline": "It is what it is. Now let's fix it.",
         },
     ]
 
@@ -1013,7 +1017,8 @@ Rules:
 - Voiceover: written for a 16-year-old to read naturally, in {cat["name"]}'s voice and tone
 - Each script: 40–60 words (about 20–25 seconds with {cn} on screen)
 - Give {cn} one specific, fun action per video
-- End every script with: "Follow Ivy Edge for more — link in bio"
+- OPEN every script with {cat["name"]}'s tagline: "{cat["tagline"]}"
+- CLOSE every script with the tagline again, then: "Follow Ivy Edge — link in bio"
 - Caption starter: first 1–2 lines only — the girls fill in the rest
 - No financial jargon — translate everything into plain, relatable language
 - Scripts should FEEL like {cat["name"]} — adjust the tone to match her character
@@ -1064,10 +1069,10 @@ Format for each:
 
 | Done | What | Where | Day | Time |
 |------|------|--------|-----|------|
-| ☐ | Photo 1: [title] | Instagram feed | Tuesday | 11am–1pm ET |
+| ☐ | Photo 1: [title] | Instagram feed | Tuesday | 3–5pm ET |
 | ☐ | Video 1: [title] | TikTok + Reels | Wednesday | 6–9pm ET |
 | ☐ | Video 2: [title] | TikTok + Reels | Friday | 6–9pm ET |
-| ☐ | Photo 2: [title] | Instagram feed | Saturday | 10am–12pm ET |
+| ☐ | Photo 2: [title] | Instagram feed | Saturday | 3–5pm ET |
 | ☐ | Video 3: [title] | TikTok + Reels | Sunday | 6–9pm ET |
 
 Add one line below the table:
