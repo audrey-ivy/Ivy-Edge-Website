@@ -288,7 +288,9 @@ def _create_substack_draft(result: GenerationResult, folder: Path) -> Optional[i
     subtitle = getattr(result, "meta_description", "") or ""
     blog_url = f"https://www.ivyedge.co/blog/{slug}"
 
-    draft_id = publisher.create_draft_only(title=title, body_markdown=result.final_draft,
+    # Use the validated file from disk — not result.final_draft which is pre-validation
+    validated_body = (folder / "05_final_draft.md").read_text(encoding="utf-8")
+    draft_id = publisher.create_draft_only(title=title, body_markdown=validated_body,
                                            subtitle=subtitle, slug=slug)
     if not draft_id:
         logger.error("Substack draft creation returned no ID")
