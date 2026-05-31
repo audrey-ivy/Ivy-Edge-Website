@@ -724,11 +724,12 @@ Produce all assets below. Follow each format exactly.
 
 Write ONE post. Goes out Tuesday.
 Rules:
-- ≤ 280 characters total (count carefully — hard limit)
+- ≤ 280 characters total including the hashtag (count carefully — hard limit)
 - First line: single punchy, opinionated statement or surprising stat — no setup
 - Second line (optional): one concrete consequence or reframe
+- End with: #GrowThroughAnything on its own line
 - Separate lines with a BLANK LINE — single newlines are ignored by social platforms
-- No hashtags, no em-dashes (—), no URL (link is appended automatically)
+- No other hashtags, no em-dashes (—), no URL (link is appended automatically)
 - Angle: surprising stat or counterintuitive fact from the article
 
 Format:
@@ -746,8 +747,8 @@ Rules:
 - Warmer and more personal than X — like sharing something you genuinely believe
 - Lead with a specific, relatable moment or observation (not a generic stat)
 - End with a question OR a soft CTA — do not include a URL
-- No hashtags
-- No em-dashes (—); use a dash (-) or a line break instead
+- Add #GrowThroughAnything on its own line at the very end
+- No other hashtags, no em-dashes (—); use a dash (-) or a line break instead
 
 Format:
 ### Post
@@ -1035,7 +1036,7 @@ Format for each:
 **Caption starter:**
 [first 1–2 lines]
 
-**Hashtags:** [8–10 tags relevant to cat content + personal finance + the topic]
+**Hashtags:** #GrowThroughAnything + 7–9 tags relevant to cat content + personal finance + the topic
 
 ---
 
@@ -1045,7 +1046,7 @@ Same studio, same rules — describe only how to position {cn} and any held prop
 
 Rules:
 - Caption: 80–150 words, warm and a little funny — sounds like it could come from the girls, with {cat["name"]}'s personality coming through
-- Include "link in bio" reference and 10–12 hashtags at the bottom
+- Include "link in bio" reference and 10–12 hashtags at the bottom — always lead with #GrowThroughAnything
 
 Format for each:
 
