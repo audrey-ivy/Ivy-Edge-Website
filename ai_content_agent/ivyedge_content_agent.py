@@ -57,6 +57,7 @@ PHASE_TOKEN_BUDGETS = {
     "voice_edit": 5000,
     "seo": 5000,
     "social": 8000,
+    "cat_edit": 4000,
 }
 
 # Files in /context loaded on startup. Missing files are skipped with a warning
@@ -847,6 +848,53 @@ Format:
         except Exception as e:
             logger.warning("Could not update cat_introductions.json: %s", e)
 
+    def cat_brief_edit_phase(self, brief_md: str) -> str:
+        """Voice and inclusive language check on the cat content brief.
+
+        Lighter than the full blog voice_edit — focused on:
+        - Inclusive, non-stigmatising language in voiceover scripts
+        - No jargon a teenager couldn't say naturally
+        - No hedging, no over-promising
+        - No product references or premature CTAs
+        - Correct brand handle and URLs
+        - No **Hashtags:** label — just the tags
+        """
+        prompt = f"""You are reviewing a weekly cat content brief written for two teenage girls
+who film short videos for Ivy Edge, a financial education brand.
+
+Run a focused edit on the brief below. Do NOT rewrite the creative direction,
+studio instructions, or posting schedule — only fix language issues.
+
+CHECKLIST
+1. INCLUSIVE LANGUAGE: Flag and fix any language that stigmatises financial
+   struggle, implies personal fault, or uses exclusionary framing.
+   BAD: "people who can't manage money"  GOOD: "people the system wasn't built for"
+2. JARGON: Every word in a voiceover script must be natural for a 16-year-old
+   to say out loud. Replace any term that would make her pause or stumble.
+3. NO HEDGING: Remove 'may', 'might', 'could potentially' from scripts.
+   Scripts should be confident and direct.
+4. NO OVER-PROMISING: Remove 'guaranteed', 'transform', 'fix everything', etc.
+5. NO PRODUCT REFERENCES: No mention of specific Ivy Edge products, 'apply',
+   'check your rate', or anything implying the platform is live. CTA is
+   always audience-building only: "Follow Ivy Edge — link in bio."
+6. BRAND HANDLE: Instagram handle must be @ivyedge.co — fix @joinivyedge or
+   any other variant.
+7. HASHTAG LABELS: Remove any "**Hashtags:**" label — hashtags should appear
+   as plain text only, no label before them.
+8. TAGLINE: Every voiceover script must end with exactly:
+   "Grow through anything. Follow Ivy Edge."
+   Fix any variation of this.
+
+BRIEF TO REVIEW
+{brief_md}
+
+OUTPUT
+Return the full revised brief in clean markdown. Fix only what the checklist
+flags — do not rewrite structure, creative direction, or scheduling tables.
+No commentary, no preamble — just the revised brief.
+"""
+        return self._call_claude(prompt, 4000, "cat_edit")
+
     def barbie_phase(self, brief: ArticleBrief, final_draft: str) -> str:
         """Generate the weekly cat content brief. Always features Babs (Barbie)."""
         cat = self._CAT_ROSTER[0]
@@ -1095,7 +1143,8 @@ Add one line below the table:
         result.meta_description = seo_out.get("meta_description", "")
 
         result.social = step("social", lambda: self.social_phase(brief, result.final_draft))
-        result.barbie = step("barbie", lambda: self.barbie_phase(brief, result.final_draft))
+        _raw_barbie = step("barbie", lambda: self.barbie_phase(brief, result.final_draft))
+        result.barbie = step("cat_edit", lambda: self.cat_brief_edit_phase(_raw_barbie))
 
         result.token_usage = {
             **self._cumulative_usage,
