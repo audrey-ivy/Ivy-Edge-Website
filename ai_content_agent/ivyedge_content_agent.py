@@ -982,7 +982,7 @@ Format for each:
 **Caption starter:**
 [first 1–2 lines]
 
-**Hashtags:** #GrowThroughAnything + 7–9 tags relevant to cat content + personal finance + the topic
+#GrowThroughAnything [+ 7–9 tags relevant to cat content + personal finance + the topic — no label, just the tags]
 
 ---
 
@@ -992,7 +992,7 @@ Same studio, same rules — describe only how to position {cn} and any held prop
 
 Rules:
 - Caption: 80–150 words, warm and a little funny — sounds like it could come from the girls, with {cat["name"]}'s personality coming through
-- Include "link in bio" reference and 10–12 hashtags at the bottom — always lead with #GrowThroughAnything
+- Include "link in bio" reference and 10–12 hashtags at the bottom — always lead with #GrowThroughAnything, no label before them
 
 Format for each:
 
