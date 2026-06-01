@@ -964,8 +964,7 @@ Rules:
 - Voiceover: written for a 16-year-old to read naturally, in {cat["name"]}'s voice and tone
 - Each script: 40–60 words (about 20–25 seconds with {cn} on screen)
 - Give {cn} one specific, fun action per video
-- OPEN every script with the Ivy Edge tagline: "Grow through anything."
-- CLOSE every script with the tagline again, then: "Follow Ivy Edge — link in bio"
+- END every script with: "Grow through anything. Follow Ivy Edge."
 - Caption starter: first 1–2 lines only — the girls fill in the rest
 - No financial jargon — translate everything into plain, relatable language
 - Scripts should FEEL like {cat["name"]} — adjust the tone to match her character
