@@ -728,7 +728,7 @@ Rules:
 - ≤ 280 characters total including the hashtag (count carefully — hard limit)
 - First line: single punchy, opinionated statement or surprising stat — no setup
 - Second line (optional): one concrete consequence or reframe
-- End with: #GrowThroughAnything on its own line
+- End with: #GrowThroughAnything #FYP #ForYourPage #Recommend on its own line
 - Separate lines with a BLANK LINE — single newlines are ignored by social platforms
 - No other hashtags, no em-dashes (—), no URL (link is appended automatically)
 - Angle: surprising stat or counterintuitive fact from the article
@@ -748,7 +748,7 @@ Rules:
 - Warmer and more personal than X — like sharing something you genuinely believe
 - Lead with a specific, relatable moment or observation (not a generic stat)
 - End with a question OR a soft CTA — do not include a URL
-- Add #GrowThroughAnything on its own line at the very end
+- Add #GrowThroughAnything #FYP #ForYourPage #Recommend on its own line at the very end
 - No other hashtags, no em-dashes (—); use a dash (-) or a line break instead
 
 Format:
@@ -765,7 +765,7 @@ Rules:
   (e.g. "Why your credit score dropped during your career gap — even with zero missed payments")
 - Body: 2–4 sentences of genuine value. Share the key insight from the article.
   End with one sentence: "Full breakdown: [article URL]" — use the actual blog URL ({post_url})
-  Final line: #GrowThroughAnything
+  Final line: #GrowThroughAnything #FYP #ForYourPage #Recommend
 - No promotional language, no "check out my article" — lead with the insight
 - Sound like a knowledgeable community member sharing something useful
 
@@ -791,7 +791,7 @@ Rules:
 - Each section: 2–4 sentences max, no filler
 - Include 1–2 real stats or concrete facts from the article
 - End with a 2-sentence CTA: one sentence naming what Ivy Edge is building, one sentence sending readers to the waitlist at https://www.ivyedge.co
-- No hashtags in the body — add #GrowThroughAnything + 3–5 relevant hashtags on a separate line at the very end
+- No hashtags in the body — add #GrowThroughAnything #FYP #ForYourPage #Recommend + 3–5 relevant hashtags on a separate line at the very end
 - No em-dashes (—); use a colon or a dash (-)
 
 Format:
@@ -884,6 +884,8 @@ CHECKLIST
 8. TAGLINE: Every voiceover script must end with exactly:
    "Grow through anything. Follow Ivy Edge."
    Fix any variation of this.
+9. HASHTAGS: Every caption and hashtag block must include
+   #GrowThroughAnything #FYP #ForYourPage #Recommend — add them if missing.
 
 BRIEF TO REVIEW
 {brief_md}
@@ -1029,7 +1031,7 @@ Format for each:
 **Caption starter:**
 [first 1–2 lines]
 
-#GrowThroughAnything [+ 7–9 tags relevant to cat content + personal finance + the topic — no label, just the tags]
+#GrowThroughAnything #FYP #ForYourPage #Recommend [+ 6–8 tags relevant to cat content + personal finance + the topic — no label, just the tags]
 
 ---
 
@@ -1039,7 +1041,7 @@ Same studio, same rules — describe only how to position {cn} and any held prop
 
 Rules:
 - Caption: 80–150 words, warm and a little funny — sounds like it could come from the girls, with {cat["name"]}'s personality coming through
-- Include "link in bio" reference and 10–12 hashtags at the bottom — always lead with #GrowThroughAnything, no label before them
+- Include "link in bio" reference and 10–12 hashtags at the bottom — always lead with #GrowThroughAnything #FYP #ForYourPage #Recommend, no label before them
 
 Format for each:
 
