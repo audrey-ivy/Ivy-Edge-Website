@@ -742,7 +742,7 @@ Format:
 
 Write ONE post. Threads rewards a more personal, conversational tone than X.
 Rules:
-- 150–400 characters
+- 150–350 characters MAXIMUM — a blog URL is appended automatically, total must stay under 500
 - 2–3 short paragraphs separated by line breaks — feels like a thought unfolding
 - Warmer and more personal than X — like sharing something you genuinely believe
 - Lead with a specific, relatable moment or observation (not a generic stat)
