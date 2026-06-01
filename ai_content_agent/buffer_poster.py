@@ -470,11 +470,14 @@ def _parse_cat_slots(brief_md: str) -> list[dict]:
     return slots
 
 
-def schedule_cat_content_slots(brief_md: str, cat_name: str = "Ivy") -> dict:
-    """Schedule all 5 cat content slots in Buffer as text-only placeholder posts.
+def schedule_cat_content_slots(brief_md: str, cat_name: str = "Babs") -> dict:
+    """Schedule all 5 cat content slots in Buffer with a placeholder image/video.
 
-    Each post has a clear identifier at the top so the girls know which
-    video or photo to upload before the post goes live.
+    Buffer's API requires media for Instagram and TikTok — we upload the Ivy Edge
+    logo as a placeholder. The girls replace it with their real photo/video in
+    Buffer before each post goes live.
+
+    Each post caption starts with a clear identifier so they know which slot is which.
 
     Slot schedule:
       Photo 1  → Tuesday   3–5pm ET   (Instagram — offset from AI card at 11am)
@@ -494,6 +497,22 @@ def schedule_cat_content_slots(brief_md: str, cat_name: str = "Ivy") -> dict:
         ("photo", 2): next_saturday_cat_ig,
         ("video", 3): next_sunday_tiktok,
     }
+
+    # Upload placeholder images once — reused across slots.
+    # TikTok max pixel count is 2,073,600 so we use a smaller resized version.
+    assets = Path(__file__).parent / "assets" / "logos"
+    placeholder_ig_url:  Optional[str] = None
+    placeholder_tok_url: Optional[str] = None
+    try:
+        placeholder_ig_url = _upload_media(assets / "full_logo.png", resource_type="image")
+        logger.info("IG placeholder uploaded: %s", placeholder_ig_url)
+    except Exception as e:
+        logger.warning("IG placeholder upload failed: %s", e)
+    try:
+        placeholder_tok_url = _upload_media(assets / "placeholder_tiktok.png", resource_type="image")
+        logger.info("TikTok placeholder uploaded: %s", placeholder_tok_url)
+    except Exception as e:
+        logger.warning("TikTok placeholder upload failed: %s", e)
 
     results: dict = {}
 
@@ -515,14 +534,33 @@ def schedule_cat_content_slots(brief_md: str, cat_name: str = "Ivy") -> dict:
 
         identifier = (
             f"{icon} {label}: \"{slot['title']}\"\n"
-            f"↑ Upload your {t} here, then delete this line before saving.\n\n"
+            f"↑ Replace placeholder with your {t} before this goes live.\n\n"
         )
         full_caption = identifier + slot["caption"]
 
         try:
+            # Upload a fresh copy per slot (unique public_id) so Buffer's
+            # duplicate-detection doesn't block slots with the same image.
+            import random, string
+            uid = "".join(random.choices(string.ascii_lowercase, k=6))
+            base_path = assets / ("placeholder_tiktok.png" if t == "video" else "full_logo.png")
+            try:
+                _configure_cloudinary()
+                import cloudinary.uploader as _cu
+                r = _cu.upload(
+                    str(base_path),
+                    public_id=f"ivyedge/placeholders/slot_{t}_{n}_{uid}",
+                    resource_type="image",
+                )
+                placeholder_url = r["secure_url"]
+            except Exception as _e:
+                logger.warning("Per-slot placeholder upload failed, falling back: %s", _e)
+                placeholder_url = placeholder_tok_url if t == "video" else placeholder_ig_url
+
             post_id = _create_post(
                 channel_id=channel,
                 text=full_caption,
+                image_url=placeholder_url,  # required by Buffer API; girls replace before posting
                 platform="tiktok" if t == "video" else "instagram",
                 scheduled_at=time_fn(),
             )
