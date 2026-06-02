@@ -816,6 +816,7 @@ Format:
             "look": "tiger tabby",
             "props": "pink coffee cup · mint bandana",
             "character": "The Visionary",
+            "title": "Chief Opinion Officer (COO)",
             "personality": (
                 "Confident, warm, and genuinely believes in you. Babs is the face of Ivy Edge. "
                 "She speaks with quiet authority, never condescending. She's the cat who already knows "
@@ -933,6 +934,7 @@ who film short videos with their cats for Ivy Edge, a financial education brand.
 
 THIS WEEK'S FEATURED CAT
 - Character name: {cn}
+- Title: {cat["title"]}
 - Look: {cat["look"]}
 - Character role: {cat["character"]}
 - Personality: {cat["personality"]}

@@ -310,7 +310,7 @@ def send_barbie_brief(
     """Email the weekly cat filming brief to Audrey (and optionally the girls)."""
     cat_name = "Babs"
     icon     = cat_emoji or "🐯"
-    subtitle = "The Visionary · tiger tabby"
+    subtitle = "Chief Opinion Officer (COO) · The Visionary · tiger tabby"
 
     recipients_raw = to or BARBIE_EMAIL
     if not recipients_raw:
