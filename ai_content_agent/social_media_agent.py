@@ -374,7 +374,7 @@ def process_folder(
     else:
         import re as _re
         slug = _re.sub(r"[^a-z0-9\s-]", "", title.lower())
-        slug = _re.sub(r"\s+", "-", slug).strip("-")[:60]
+        slug = _re.sub(r"\s+", "-", slug).strip("-")
         blog_url = f"https://ivyedge.co/blog/{slug}"
     social_text = social_path.read_text(encoding="utf-8")
 
