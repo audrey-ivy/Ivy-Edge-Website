@@ -367,9 +367,15 @@ def process_folder(
 
     title    = meta.get("topic", folder.name)
     pillar   = meta.get("pillar", "Pillar 1: Financial Education for Non-Traditional Paths")
-    # Always send social traffic to the blog index — individual article slugs
-    # are not routed on the website; the blog page loads all posts dynamically.
-    blog_url = "https://www.ivyedge.co"
+    # Use the canonical blog article URL — read from blog_url.txt if available
+    blog_url_file = folder / "blog_url.txt"
+    if blog_url_file.exists():
+        blog_url = blog_url_file.read_text(encoding="utf-8").strip()
+    else:
+        import re as _re
+        slug = _re.sub(r"[^a-z0-9\s-]", "", title.lower())
+        slug = _re.sub(r"\s+", "-", slug).strip("-")[:60]
+        blog_url = f"https://ivyedge.co/blog/{slug}"
     social_text = social_path.read_text(encoding="utf-8")
 
     result: dict = {

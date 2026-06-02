@@ -730,7 +730,8 @@ Rules:
 - Second line (optional): one concrete consequence or reframe
 - End with: #GrowThroughAnything #FYP #ForYourPage #Recommend on its own line
 - Separate lines with a BLANK LINE — single newlines are ignored by social platforms
-- No other hashtags, no em-dashes (—), no URL (link is appended automatically)
+- No other hashtags, no em-dashes (—)
+- End with: "Read more here 👉🏼 {post_url}" on its own line, before the hashtags
 - Angle: surprising stat or counterintuitive fact from the article
 
 Format:
@@ -747,7 +748,7 @@ Rules:
 - 2–3 short paragraphs separated by line breaks — feels like a thought unfolding
 - Warmer and more personal than X — like sharing something you genuinely believe
 - Lead with a specific, relatable moment or observation (not a generic stat)
-- End with a question OR a soft CTA — do not include a URL
+- End with a question OR a soft observation, then: "Read more here 👉🏼 {post_url}"
 - Add #GrowThroughAnything #FYP #ForYourPage #Recommend on its own line at the very end
 - No other hashtags, no em-dashes (—); use a dash (-) or a line break instead
 
@@ -764,7 +765,7 @@ Rules:
 - Title: specific, factual, no clickbait — Reddit rewards useful titles
   (e.g. "Why your credit score dropped during your career gap — even with zero missed payments")
 - Body: 2–4 sentences of genuine value. Share the key insight from the article.
-  End with one sentence: "Full breakdown: [article URL]" — use the actual blog URL ({post_url})
+  End with: "Read more here 👉🏼 {post_url}"
   Final line: #GrowThroughAnything #FYP #ForYourPage #Recommend
 - No promotional language, no "check out my article" — lead with the insight
 - Sound like a knowledgeable community member sharing something useful
