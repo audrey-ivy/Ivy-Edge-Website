@@ -823,7 +823,9 @@ Format:
                 "how compound interest works and is mildly baffled that the financial system makes it "
                 "so hard to get ahead. She's encouraging without being cheesy."
             ),
-            "voiceover_tone": "warm, hopeful, and direct — like a mentor who happens to be a cat",
+            "voiceover_tone": "warm, hopeful, and direct — like a mentor who happens to be a cat. "
+                              "DELIVERY NOTE: the intro ('Hi, I'm Babs the business cat') should be said "
+                              "deadpan or confident — not cute or baby-voiced. Straight face, like she means it.",
             "tagline": "Grow through anything.",
         },
     ]
