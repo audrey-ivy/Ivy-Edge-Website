@@ -823,9 +823,7 @@ Format:
                 "how compound interest works and is mildly baffled that the financial system makes it "
                 "so hard to get ahead. She's encouraging without being cheesy."
             ),
-            "voiceover_tone": "warm, hopeful, and direct — like a mentor who happens to be a cat. "
-                              "DELIVERY NOTE: the intro ('Hi, I'm Babs the business cat') should be said "
-                              "deadpan or confident — not cute or baby-voiced. Straight face, like she means it.",
+            "voiceover_tone": "warm, hopeful, and direct — like a mentor who happens to be a cat",
             "tagline": "Grow through anything.",
         },
     ]
@@ -888,10 +886,8 @@ CHECKLIST
 8. TAGLINE: Every voiceover script must end with exactly:
    "Grow through anything. Follow Ivy Edge."
    Fix any variation of this.
-9. INTRO: Every voiceover script must open with Babs introducing herself as
-   "Babs the business cat" — fix any script that skips this or uses a different phrasing.
-10. HASHTAGS: Every caption and hashtag block must include
-    #GrowThroughAnything #BusinessCat #FYP #ForYourPage #Recommend — add them if missing.
+9. HASHTAGS: Every caption and hashtag block must include
+   #GrowThroughAnything #BusinessCat #FYP #ForYourPage #Recommend — add them if missing.
 
 BRIEF TO REVIEW
 {brief_md}
@@ -976,8 +972,6 @@ NAMING RULE — this is important:
 - Use {cn} throughout all practical directions (the girls see both names at a glance)
 - In voiceover scripts only, {cat["name"]} speaks as the character in first person
   e.g. "Position {cn} facing the camera" but "Hi, I'm {cat["name"]} and I have thoughts about your credit score."
-- EVERY voiceover must open with {cat["name"]} introducing herself as "Babs the business cat" —
-  e.g. "Hi, I'm Babs the business cat." or "Hey, it's Babs — the business cat." Keep it natural, vary the phrasing.
 
 THIS WEEK'S ARTICLE
 Topic: {brief.topic}
