@@ -72,7 +72,7 @@ def _next_weekday_random(weekday: int, window_start_utc: int, window_end_utc: in
 # Tue: X post 1 (8–10am ET)  |  IG feed 1 (11am–1pm ET)  |  Story 1 (7–9am ET)
 # Wed: TikTok 1 (7–9am ET)   |  Threads (12–2pm ET)
 # Fri: TikTok 2 (7–9pm ET)
-# Sun: TikTok 3/cat (7–9am ET)
+# Sun: TikTok 3/cat (7–9pm ET)
 # Sat: IG feed 3 (10am–12pm ET)
 # ---------------------------------------------------------------------------
 
@@ -115,8 +115,8 @@ def next_friday_tiktok() -> str:
     return _next_weekday_random(4, window_start_utc=23, window_end_utc=25)
 
 def next_sunday_tiktok() -> str:
-    """TikTok video 3 (cat) — Sunday, random 7–9am ET (11–13 UTC). Morning slot."""
-    return _next_weekday_random(6, window_start_utc=11, window_end_utc=13)
+    """TikTok video 3 (cat) — Sunday, random 7–9pm ET (23–25 UTC). Evening slot."""
+    return _next_weekday_random(6, window_start_utc=23, window_end_utc=25)
 
 def next_tuesday_cat_ig() -> str:
     """Cat IG photo 1 — Tuesday, random 3–5pm ET (20–22 UTC).
