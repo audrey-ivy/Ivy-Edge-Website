@@ -72,7 +72,7 @@ def _next_weekday_random(weekday: int, window_start_utc: int, window_end_utc: in
 # Tue: X post 1 (8–10am ET)  |  IG feed 1 (11am–1pm ET)  |  Story 1 (7–9am ET)
 # Wed: TikTok 1 (7–9am ET)   |  Threads (12–2pm ET)
 # Fri: TikTok 2 (7–9am ET)
-# Sun: TikTok 3/cat (7–9pm ET)
+# Thu: TikTok 3/cat (7–9pm ET)
 # Sat: IG feed 3 (10am–12pm ET)
 # ---------------------------------------------------------------------------
 
@@ -114,9 +114,9 @@ def next_friday_tiktok() -> str:
     """TikTok video 2 — Friday, random 7–9am ET (11–13 UTC). Morning slot — Fri distraction scroll."""
     return _next_weekday_random(4, window_start_utc=11, window_end_utc=13)
 
-def next_sunday_tiktok() -> str:
-    """TikTok video 3 (cat) — Sunday, random 7–9pm ET (23–25 UTC). Evening slot."""
-    return _next_weekday_random(6, window_start_utc=23, window_end_utc=25)
+def next_thursday_cat_tiktok() -> str:
+    """TikTok video 3 (cat) — Thursday, random 7–9pm ET (23–25 UTC). Evening slot — pre-weekend wind-down."""
+    return _next_weekday_random(3, window_start_utc=23, window_end_utc=25)
 
 def next_tuesday_cat_ig() -> str:
     """Cat IG photo 1 — Tuesday, random 3–5pm ET (20–22 UTC).
@@ -484,7 +484,7 @@ def schedule_cat_content_slots(brief_md: str, cat_name: str = "Babs") -> dict:
       Video 1  → Wednesday 6–9pm ET   (TikTok + Instagram Reels)
       Video 2  → Friday    6–9pm ET   (TikTok + Instagram Reels)
       Photo 2  → Saturday  3–5pm ET   (Instagram — offset from AI card at 10am)
-      Video 3  → Sunday    6–9pm ET   (TikTok + Instagram Reels)
+      Video 3  → Thursday  7–9pm ET   (TikTok + Instagram Reels)
 
     Returns a dict of slot keys → Buffer post IDs (or None on failure).
     """
@@ -495,7 +495,7 @@ def schedule_cat_content_slots(brief_md: str, cat_name: str = "Babs") -> dict:
         ("video", 1): next_wednesday_tiktok,
         ("video", 2): next_friday_tiktok,
         ("photo", 2): next_saturday_cat_ig,
-        ("video", 3): next_sunday_tiktok,
+        ("video", 3): next_thursday_cat_tiktok,
     }
 
     # Upload placeholder images once — reused across slots.
