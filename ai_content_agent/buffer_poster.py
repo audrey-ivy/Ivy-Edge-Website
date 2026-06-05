@@ -69,12 +69,11 @@ def _next_weekday_random(weekday: int, window_start_utc: int, window_end_utc: in
 # Platform-specific send times — random within optimal windows (ET audience)
 #
 # Mon: article publishes to Substack
-# Tue: X post 1 (8–10am ET)  |  IG feed 1 (11am–1pm ET)  |  Story 1 (7–9am ET)
-# Wed: TikTok 1 (7–9am ET)   |  Threads (12–2pm ET)
-# Fri: IG photo 2 (3–5pm ET)
-# Sat: TikTok 2 (9–11am ET)
-# Thu: TikTok 3/cat (7–9pm ET)
-# Sat: IG feed 3 (10am–12pm ET)
+# Tue: X post (8–10am ET)  |  Cat TikTok 1 (7–9pm ET)
+# Wed: Cat IG 1 (10am–12pm ET)  |  Threads (12–2pm ET)
+# Thu: Cat TikTok 3 (7–9pm ET)
+# Fri: Cat IG 2 (3–5pm ET)
+# Sat: Cat TikTok 2 (9–11am ET)
 # ---------------------------------------------------------------------------
 
 # ── X (Twitter) ──────────────────────────────────────────────────────────
@@ -107,9 +106,13 @@ def next_saturday_ig() -> str:
 
 # ── TikTok / Reels ────────────────────────────────────────────────────────
 
-def next_wednesday_tiktok() -> str:
-    """TikTok video 1 — Wednesday, random 7–9am ET (11–13 UTC). Morning slot."""
-    return _next_weekday_random(2, window_start_utc=11, window_end_utc=13)
+def next_tuesday_cat_tiktok() -> str:
+    """TikTok video 1 (cat) — Tuesday, random 7–9pm ET (23–25 UTC). Evening — clears the morning X post."""
+    return _next_weekday_random(1, window_start_utc=23, window_end_utc=25)
+
+def next_wednesday_cat_ig() -> str:
+    """Cat IG photo 1 — Wednesday, random 10am–12pm ET (14–16 UTC). Morning — before Threads at noon."""
+    return _next_weekday_random(2, window_start_utc=14, window_end_utc=16)
 
 def next_saturday_tiktok() -> str:
     """TikTok video 2 — Saturday, random 9–11am ET (13–15 UTC). Morning slot — weekend scroll."""
@@ -119,10 +122,6 @@ def next_thursday_cat_tiktok() -> str:
     """TikTok video 3 (cat) — Thursday, random 7–9pm ET (23–25 UTC). Evening slot — pre-weekend wind-down."""
     return _next_weekday_random(3, window_start_utc=23, window_end_utc=25)
 
-def next_tuesday_cat_ig() -> str:
-    """Cat IG photo 1 — Tuesday, random 3–5pm ET (20–22 UTC).
-    Offset from next_tuesday_ig (11am–1pm) to avoid same-channel collision."""
-    return _next_weekday_random(1, window_start_utc=20, window_end_utc=22)
 
 def next_friday_cat_ig() -> str:
     """Cat IG photo 2 — Friday, random 3–5pm ET (19–21 UTC)."""
@@ -480,20 +479,19 @@ def schedule_cat_content_slots(brief_md: str, cat_name: str = "Babs") -> dict:
     Each post caption starts with a clear identifier so they know which slot is which.
 
     Slot schedule:
-      Photo 1  → Tuesday   3–5pm ET   (Instagram — offset from AI card at 11am)
-      Video 1  → Wednesday 6–9pm ET   (TikTok + Instagram Reels)
-      Video 2  → Friday    6–9pm ET   (TikTok + Instagram Reels)
+      Video 1  → Tuesday   7–9pm ET   (TikTok — after morning X post)
+      Photo 1  → Wednesday 10am–12pm ET (Instagram — before Threads at noon)
+      Video 3  → Thursday  7–9pm ET   (TikTok)
       Photo 2  → Friday    3–5pm ET   (Instagram)
-      Video 3  → Thursday  7–9pm ET   (TikTok + Instagram Reels)
-      Video 2  → Saturday  9–11am ET  (TikTok + Instagram Reels)
+      Video 2  → Saturday  9–11am ET  (TikTok)
 
     Returns a dict of slot keys → Buffer post IDs (or None on failure).
     """
     slots = _parse_cat_slots(brief_md)
 
     schedule_map = {
-        ("photo", 1): next_tuesday_cat_ig,
-        ("video", 1): next_wednesday_tiktok,
+        ("photo", 1): next_wednesday_cat_ig,
+        ("video", 1): next_tuesday_cat_tiktok,
         ("video", 2): next_saturday_tiktok,
         ("photo", 2): next_friday_cat_ig,
         ("video", 3): next_thursday_cat_tiktok,
