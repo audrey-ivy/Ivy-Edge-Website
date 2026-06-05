@@ -484,7 +484,7 @@ def _parse_cat_slots(brief_md: str) -> list[dict]:
     return slots
 
 
-def schedule_cat_content_slots(brief_md: str, cat_name: str = "Babs") -> dict:
+def schedule_cat_content_slots(brief_md: str, cat_name: str = "Babs", blog_url: str = "https://ivyedge.co") -> dict:
     """Schedule all 5 cat content slots in Buffer with a placeholder image/video.
 
     Buffer's API requires media for Instagram and TikTok — we upload the Ivy Edge
@@ -577,7 +577,7 @@ def schedule_cat_content_slots(brief_md: str, cat_name: str = "Babs") -> dict:
                 image_url=placeholder_url,  # required by Buffer API; girls replace before posting
                 platform="tiktok" if t == "video" else "instagram",
                 scheduled_at=time_fn(),
-                first_comment="https://ivyedge.co",
+                first_comment=blog_url,
             )
             results[key] = post_id
             logger.info("Cat slot %s scheduled → Buffer post %s", key, post_id)

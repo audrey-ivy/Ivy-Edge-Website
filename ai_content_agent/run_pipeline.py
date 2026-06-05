@@ -236,7 +236,8 @@ def _save_result(result: GenerationResult, out_root: Path) -> tuple[Path, float]
             logger.warning("Cat brief email skipped: %s", _e)
         try:
             from buffer_poster import schedule_cat_content_slots
-            cat_results = schedule_cat_content_slots(result.barbie)
+            _blog_url = f"https://ivyedge.co/blog/{slug}"
+            cat_results = schedule_cat_content_slots(result.barbie, blog_url=_blog_url)
             scheduled = sum(1 for v in cat_results.values() if v)
             logger.info("Cat Buffer slots scheduled: %d/5", scheduled)
         except Exception as _e:
