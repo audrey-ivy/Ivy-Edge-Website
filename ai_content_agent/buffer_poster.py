@@ -262,6 +262,7 @@ def _create_post(
     video_url: Optional[str] = None,
     platform: str = "threads",
     scheduled_at: Optional[str] = None,
+    first_comment: Optional[str] = None,
 ) -> Optional[str]:
     """Create a Buffer post — scheduled if scheduled_at is provided, else immediate. Returns post ID or None."""
     # Buffer API: AssetInput now uses singular `image`/`video` objects, not arrays
@@ -288,6 +289,11 @@ def _create_post(
     else:
         schedule_block = "mode: shareNow\n            schedulingType: automatic"
 
+    first_comment_block = (
+        f'firstComment: {{ text: {_gql_string(first_comment)} }}'
+        if first_comment else ""
+    )
+
     mutation = f"""
         mutation {{
           createPost(input: {{
@@ -296,6 +302,7 @@ def _create_post(
             {schedule_block}
             {assets_block}
             {metadata_block}
+            {first_comment_block}
           }}) {{
             ... on PostActionSuccess {{
               post {{ id }}
@@ -347,6 +354,7 @@ def post_to_instagram(
     image_path: Optional[Path] = None,
     video_path: Optional[Path] = None,
     scheduled_at: Optional[str] = None,
+    first_comment: Optional[str] = None,
 ) -> Optional[str]:
     if not BUFFER_IG_CHANNEL_ID:
         logger.error("BUFFER_IG_CHANNEL_ID not set — run --list-channels")
@@ -357,6 +365,7 @@ def post_to_instagram(
         BUFFER_IG_CHANNEL_ID, caption,
         image_url=image_url, video_url=video_url,
         platform="instagram", scheduled_at=scheduled_at,
+        first_comment=first_comment,
     )
 
 
@@ -385,6 +394,7 @@ def post_to_threads(
     image_path: Optional[Path] = None,
     video_path: Optional[Path] = None,
     scheduled_at: Optional[str] = None,
+    first_comment: Optional[str] = None,
 ) -> Optional[str]:
     if not BUFFER_THREADS_CHANNEL_ID:
         logger.error("BUFFER_THREADS_CHANNEL_ID not set — run --list-channels")
@@ -395,6 +405,7 @@ def post_to_threads(
         BUFFER_THREADS_CHANNEL_ID, text,
         image_url=image_url, video_url=video_url,
         platform="threads", scheduled_at=scheduled_at,
+        first_comment=first_comment,
     )
 
 
@@ -402,6 +413,7 @@ def post_to_tiktok(
     text: str,
     video_path: Path,
     scheduled_at: Optional[str] = None,
+    first_comment: Optional[str] = None,
 ) -> Optional[str]:
     if not BUFFER_TIKTOK_CHANNEL_ID:
         logger.error("BUFFER_TIKTOK_CHANNEL_ID not set — run --list-channels")
@@ -414,6 +426,7 @@ def post_to_tiktok(
         BUFFER_TIKTOK_CHANNEL_ID, text,
         video_url=video_url,
         platform="tiktok", scheduled_at=scheduled_at,
+        first_comment=first_comment,
     )
 
 
@@ -422,6 +435,7 @@ def post_to_x(
     image_path: Optional[Path] = None,
     video_path: Optional[Path] = None,
     scheduled_at: Optional[str] = None,
+    first_comment: Optional[str] = None,
 ) -> Optional[str]:
     if not BUFFER_X_CHANNEL_ID:
         logger.error("BUFFER_X_CHANNEL_ID not set — run --list-channels")
@@ -432,6 +446,7 @@ def post_to_x(
         BUFFER_X_CHANNEL_ID, text,
         image_url=image_url, video_url=video_url,
         platform="twitter", scheduled_at=scheduled_at,
+        first_comment=first_comment,
     )
 
 
@@ -562,6 +577,7 @@ def schedule_cat_content_slots(brief_md: str, cat_name: str = "Babs") -> dict:
                 image_url=placeholder_url,  # required by Buffer API; girls replace before posting
                 platform="tiktok" if t == "video" else "instagram",
                 scheduled_at=time_fn(),
+                first_comment="https://ivyedge.co",
             )
             results[key] = post_id
             logger.info("Cat slot %s scheduled → Buffer post %s", key, post_id)

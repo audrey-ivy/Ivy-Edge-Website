@@ -469,7 +469,7 @@ def process_folder(
         # X post 1
         try:
             _at = next_tuesday_x()
-            result["x_1"] = post_to_x(x_posts[0], scheduled_at=_at)
+            result["x_1"] = post_to_x(x_posts[0], scheduled_at=_at, first_comment=blog_url)
             logger.info("X post 1 scheduled %s", _at)
         except Exception as e:
             logger.error("X post 1 failed: %s", e)
@@ -479,7 +479,7 @@ def process_folder(
         try:
             if threads_text:
                 _at = next_wednesday_threads()
-                result["threads"] = post_to_threads(threads_text, scheduled_at=_at)
+                result["threads"] = post_to_threads(threads_text, scheduled_at=_at, first_comment=blog_url)
                 logger.info("Threads scheduled %s", _at)
         except Exception as e:
             logger.error("Threads failed: %s", e)
