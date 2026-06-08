@@ -160,11 +160,11 @@ def _preflight_links(markdown_text: str, topic: str) -> None:
         )
 
 
-def _slugify(text: str) -> str:
+def _slugify(text: str, truncate: bool = True) -> str:
     text = text.lower()
     text = re.sub(r"[^a-z0-9\s-]", "", text)
     text = re.sub(r"\s+", "-", text).strip("-")
-    return text[:60] or "post"
+    return (text[:60] if truncate else text) or "post"
 
 
 def _extract_linkedin(social_md: str) -> str:
@@ -205,7 +205,8 @@ def _extract_linkedin(social_md: str) -> str:
 def _save_result(result: GenerationResult, out_root: Path) -> tuple[Path, float]:
     """Write all artifacts for a single generation to its own folder."""
     date = datetime.utcnow().strftime("%Y-%m-%d")
-    slug = _slugify(result.brief.topic)
+    slug = _slugify(result.brief.topic)          # truncated — for folder name only
+    full_slug = _slugify(result.brief.topic, truncate=False)  # full — for blog URL
     folder = out_root / f"{date}_{slug}"
     folder.mkdir(parents=True, exist_ok=True)
 
@@ -236,7 +237,7 @@ def _save_result(result: GenerationResult, out_root: Path) -> tuple[Path, float]
             logger.warning("Cat brief email skipped: %s", _e)
         try:
             from buffer_poster import schedule_cat_content_slots
-            _blog_url = f"https://ivyedge.co/blog/{slug}"
+            _blog_url = f"https://ivyedge.co/blog/{full_slug}"
             cat_results = schedule_cat_content_slots(result.barbie, blog_url=_blog_url)
             scheduled = sum(1 for v in cat_results.values() if v)
             logger.info("Cat Buffer slots scheduled: %d/5", scheduled)
@@ -284,10 +285,10 @@ def _create_substack_draft(result: GenerationResult, folder: Path) -> Optional[i
         logger.error("Cannot reach Substack: %s", e)
         return None
 
-    slug    = _slugify(result.brief.topic)
+    slug    = _slugify(result.brief.topic, truncate=False)
     title   = result.brief.topic
     subtitle = getattr(result, "meta_description", "") or ""
-    blog_url = f"https://www.ivyedge.co/blog/{slug}"
+    blog_url = f"https://ivyedge.co/blog/{slug}"
 
     # Use the validated file from disk — not result.final_draft which is pre-validation
     validated_body = (folder / "05_final_draft.md").read_text(encoding="utf-8")
@@ -316,10 +317,10 @@ def _maybe_publish(result: GenerationResult, folder: Path, publish: bool) -> Opt
         logger.error("Cannot publish: %s", e)
         return None
 
-    slug     = _slugify(result.brief.topic)
+    slug     = _slugify(result.brief.topic, truncate=False)
     title    = result.brief.topic
     subtitle = getattr(result, "meta_description", "") or ""
-    blog_url = f"https://www.ivyedge.co/blog/{slug}"
+    blog_url = f"https://ivyedge.co/blog/{slug}"
 
     _preflight_links(result.final_draft, title)
     post_url = publisher.publish(title=title, body_markdown=result.final_draft,
@@ -527,7 +528,7 @@ def cmd_approve(args: argparse.Namespace) -> int:
     draft_id = int(draft_id_file.read_text().strip())
     title    = json.loads(meta_file.read_text())["topic"] if meta_file.exists() else folder.name
     body     = draft_md.read_text(encoding="utf-8")
-    blog_url = f"https://www.ivyedge.co/blog/{_slugify(title)}"
+    blog_url = f"https://ivyedge.co/blog/{_slugify(title, truncate=False)}"
 
     print(f"\nApproving: {title}")
     print(f"Draft ID:  {draft_id}")
