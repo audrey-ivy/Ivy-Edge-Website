@@ -494,11 +494,11 @@ def schedule_cat_content_slots(brief_md: str, cat_name: str = "Babs", blog_url: 
     Each post caption starts with a clear identifier so they know which slot is which.
 
     Slot schedule:
-      Video 1  → Tuesday   7–9pm ET   (TikTok — after morning X post)
-      Photo 1  → Wednesday 10am–12pm ET (Instagram — before Threads at noon)
-      Video 3  → Thursday  7–9pm ET   (TikTok)
+      Video 1  → Tuesday   7–9pm ET   (TikTok + Instagram Reel)
+      Photo 1  → Wednesday 10am–12pm ET (Instagram)
+      Video 3  → Thursday  7–9pm ET   (TikTok + Instagram Reel)
       Photo 2  → Friday    3–5pm ET   (Instagram)
-      Video 2  → Saturday  9–11am ET  (TikTok)
+      Video 2  → Saturday  9–11am ET  (TikTok + Instagram Reel)
 
     Returns a dict of slot keys → Buffer post IDs (or None on failure).
     """
@@ -539,12 +539,13 @@ def schedule_cat_content_slots(brief_md: str, cat_name: str = "Babs", blog_url: 
 
         icon    = "📹" if t == "video" else "📸"
         label   = f"{t.upper()} {n}"
-        channel = BUFFER_IG_CHANNEL_ID if t == "photo" else BUFFER_TIKTOK_CHANNEL_ID
 
-        if not channel:
-            logger.warning("No Buffer channel ID for %s — skipping", key)
-            results[key] = None
-            continue
+        # Videos go to both TikTok AND Instagram Reels; photos go to Instagram only
+        channels = (
+            [("tiktok", BUFFER_TIKTOK_CHANNEL_ID), ("instagram", BUFFER_IG_CHANNEL_ID)]
+            if t == "video"
+            else [("instagram", BUFFER_IG_CHANNEL_ID)]
+        )
 
         identifier = (
             f"{icon} {label}: \"{slot['title']}\"\n"
@@ -552,38 +553,44 @@ def schedule_cat_content_slots(brief_md: str, cat_name: str = "Babs", blog_url: 
         )
         full_caption = identifier + slot["caption"]
 
-        try:
-            # Upload a fresh copy per slot (unique public_id) so Buffer's
-            # duplicate-detection doesn't block slots with the same image.
-            import random, string
-            uid = "".join(random.choices(string.ascii_lowercase, k=6))
-            base_path = assets / ("placeholder_tiktok.png" if t == "video" else "full_logo.png")
+        slot_results = []
+        for platform_name, channel in channels:
+            if not channel:
+                logger.warning("No Buffer channel ID for %s/%s — skipping", key, platform_name)
+                slot_results.append(None)
+                continue
             try:
-                _configure_cloudinary()
-                import cloudinary.uploader as _cu
-                r = _cu.upload(
-                    str(base_path),
-                    public_id=f"ivyedge/placeholders/slot_{t}_{n}_{uid}",
-                    resource_type="image",
-                )
-                placeholder_url = r["secure_url"]
-            except Exception as _e:
-                logger.warning("Per-slot placeholder upload failed, falling back: %s", _e)
-                placeholder_url = placeholder_tok_url if t == "video" else placeholder_ig_url
+                import random, string
+                uid = "".join(random.choices(string.ascii_lowercase, k=6))
+                base_path = assets / ("placeholder_tiktok.png" if t == "video" else "full_logo.png")
+                try:
+                    _configure_cloudinary()
+                    import cloudinary.uploader as _cu
+                    r = _cu.upload(
+                        str(base_path),
+                        public_id=f"ivyedge/placeholders/slot_{t}_{n}_{platform_name}_{uid}",
+                        resource_type="image",
+                    )
+                    placeholder_url = r["secure_url"]
+                except Exception as _e:
+                    logger.warning("Per-slot placeholder upload failed, falling back: %s", _e)
+                    placeholder_url = placeholder_tok_url if t == "video" else placeholder_ig_url
 
-            post_id = _create_post(
-                channel_id=channel,
-                text=full_caption,
-                image_url=placeholder_url,  # required by Buffer API; girls replace before posting
-                platform="tiktok" if t == "video" else "instagram",
-                scheduled_at=time_fn(),
-                first_comment=blog_url,
-            )
-            results[key] = post_id
-            logger.info("Cat slot %s scheduled → Buffer post %s", key, post_id)
-        except Exception as e:
-            logger.error("Cat slot %s failed: %s", key, e)
-            results[key] = None
+                post_id = _create_post(
+                    channel_id=channel,
+                    text=full_caption,
+                    image_url=placeholder_url,
+                    platform=platform_name,
+                    scheduled_at=time_fn(),
+                    first_comment=blog_url,
+                )
+                slot_results.append(post_id)
+                logger.info("Cat slot %s (%s) scheduled → Buffer post %s", key, platform_name, post_id)
+            except Exception as e:
+                logger.error("Cat slot %s (%s) failed: %s", key, platform_name, e)
+                slot_results.append(None)
+
+        results[key] = slot_results[0] if len(slot_results) == 1 else slot_results
 
     return results
 
