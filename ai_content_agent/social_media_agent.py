@@ -176,22 +176,26 @@ def _parse_instagram_captions(social_md: str) -> list[str]:
 
 def _parse_threads_post(social_md: str) -> str:
     """Extract the Threads post from 06_social.md.
-    Looks for dedicated ## Threads section first; falls back to ## X / Threads Option 1."""
-    # New format: dedicated ## Threads section
+    Strips URL-containing lines and hashtags — URL is appended separately, kept under 500 chars."""
+    # New format: dedicated # Threads or ## Threads section (allow blank lines before ### Post)
     match = re.search(
-        r"##\s*Threads\s*\n###\s*Post\s*\n(.*?)(?=\n##|\n---|\Z)",
+        r"#{1,2}\s*Threads\s*\n+###\s*Post\s*\n(.*?)(?=\n#{1,2}\s|\n---|\Z)",
         social_md, re.DOTALL
     )
-    if match:
-        return match.group(1).strip()
-    # Legacy format: ## X / Threads with options — use Option 1
-    match = re.search(
-        r"###\s*Option 1\s*\n(.*?)(?=\n###\s*Option|\n---|\Z)",
-        social_md, re.DOTALL
-    )
-    if match:
-        return match.group(1).strip()
-    return ""
+    if not match:
+        # Legacy format: ## X / Threads with options — use Option 1
+        match = re.search(
+            r"###\s*Option 1\s*\n(.*?)(?=\n###\s*Option|\n---|\Z)",
+            social_md, re.DOTALL
+        )
+    if not match:
+        return ""
+    raw = match.group(1).strip()
+    # Strip hashtag lines and URL-containing lines — URL is appended by caller
+    URL_RE = re.compile(r'https?://\S+|www\.\S+')
+    lines = [l for l in raw.splitlines()
+             if not l.strip().startswith("#") and not URL_RE.search(l.strip())]
+    return "\n".join(lines).strip()
 
 
 def _parse_x_posts(social_md: str, blog_url: str = "") -> list[str]:
@@ -252,10 +256,10 @@ def _parse_x_post(social_md: str, fallback_threads: str = "", max_chars: int = 2
     if not text:
         return link
 
-    # Strip hashtag lines and URLs — the link is appended automatically
+    # Strip hashtag lines and any line containing a URL — the link is appended automatically
     URL_RE = re.compile(r'https?://\S+|www\.\S+')
     lines = [l for l in text.splitlines()
-             if not l.strip().startswith("#") and not URL_RE.fullmatch(l.strip())]
+             if not l.strip().startswith("#") and not URL_RE.search(l.strip())]
     text = "\n".join(lines).strip()
 
     # Ensure blank lines between non-empty lines so Buffer renders line breaks correctly.
