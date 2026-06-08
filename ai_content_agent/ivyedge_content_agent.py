@@ -886,7 +886,7 @@ CHECKLIST
 8. TAGLINE: Every voiceover script must end with exactly:
    "Grow through anything. Follow Ivy Edge."
    Fix any variation of this.
-9. LINK CTA: Every caption must include "Full article in the comments 👇" on its own line
+9. LINK CTA: Every caption must include "Full article — link in bio 🔗" on its own line
    before the hashtags — add it if missing.
 10. HASHTAGS: Every caption and hashtag block must include
     #GrowThroughAnything #BusinessCat #FYP #ForYourPage #Recommend — add them if missing.
@@ -1036,7 +1036,7 @@ Format for each:
 **Caption starter:**
 [first 1–2 lines]
 
-Full article in the comments 👇
+Full article — link in bio 🔗
 
 #GrowThroughAnything #BusinessCat #FYP #ForYourPage #Recommend [+ 6–8 tags relevant to cat content + personal finance + the topic — no label, just the tags]
 
@@ -1048,7 +1048,7 @@ Same studio, same rules — describe only how to position {cn} and any held prop
 
 Rules:
 - Caption: 80–150 words, warm and a little funny — sounds like it could come from the girls, with {cat["name"]}'s personality coming through
-- End the caption with "Full article in the comments 👇" on its own line before the hashtags
+- End the caption with "Full article — link in bio 🔗" on its own line before the hashtags
 - Include 10–12 hashtags at the bottom — always lead with #GrowThroughAnything #BusinessCat #FYP #ForYourPage #Recommend, no label before them
 
 Format for each:

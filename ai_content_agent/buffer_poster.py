@@ -289,12 +289,8 @@ def _create_post(
     else:
         schedule_block = "mode: shareNow\n            schedulingType: automatic"
 
-    # firstComment is only supported by Instagram and TikTok — not X or Threads
-    _supports_first_comment = platform in ("instagram", "instagram_story", "tiktok")
-    first_comment_block = (
-        f'firstComment: {{ text: {_gql_string(first_comment)} }}'
-        if first_comment and _supports_first_comment else ""
-    )
+    # firstComment is a Buffer UI-only feature — not available via the API
+    first_comment_block = ""
 
     mutation = f"""
         mutation {{
