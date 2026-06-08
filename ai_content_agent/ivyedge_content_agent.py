@@ -883,9 +883,9 @@ CHECKLIST
    any other variant.
 7. HASHTAG LABELS: Remove any "**Hashtags:**" label — hashtags should appear
    as plain text only, no label before them.
-8. TAGLINE: Every voiceover script must end with exactly:
-   "Grow through anything. Follow Ivy Edge."
-   Fix any variation of this.
+8. TAGLINE: Every voiceover script must end with exactly: "Grow through anything."
+   Fix any variation. Cut "Follow Ivy Edge." — too long for a short video close.
+8a. LENGTH: Every voiceover script must be 25–35 words MAX. Trim any that are longer.
 9. LINK CTA: Every caption must include "Full article — link in bio 🔗" on its own line
    before the hashtags — add it if missing.
 10. HASHTAGS: Every caption and hashtag block must include
@@ -1017,9 +1017,9 @@ Only describe what {cn} does and any non-studio items held in frame.
 
 Rules:
 - Voiceover: written for a 16-year-old to read naturally, in {cat["name"]}'s voice and tone
-- Each script: 40–60 words (about 20–25 seconds with {cn} on screen)
+- Each script: 25–35 words MAX (about 12–15 seconds spoken) — leave room for the tagline
 - Give {cn} one specific, fun action per video
-- END every script with: "Grow through anything. Follow Ivy Edge."
+- END every script with: "Grow through anything." (3 words — keep it punchy, that's the whole close)
 - Caption starter: first 1–2 lines only — the girls fill in the rest
 - No financial jargon — translate everything into plain, relatable language
 - Scripts should FEEL like {cat["name"]} — adjust the tone to match her character
