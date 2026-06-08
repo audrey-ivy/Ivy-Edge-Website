@@ -68,12 +68,11 @@ def _next_weekday_random(weekday: int, window_start_utc: int, window_end_utc: in
 # ---------------------------------------------------------------------------
 # Platform-specific send times — random within optimal windows (ET audience)
 #
-# Mon: article publishes to Substack
-# Tue: X post (8–10am ET)  |  Cat TikTok 1 (7–9pm ET)
-# Wed: Cat IG 1 (10am–12pm ET)  |  Threads (12–2pm ET)
-# Thu: Cat TikTok 3 (7–9pm ET)
-# Fri: Cat IG 2 (3–5pm ET)
-# Sat: Cat TikTok 2 (9–11am ET)
+# Mon: Cat IG photo 2 (10am–12pm ET)
+# Tue: X post (8–10am ET)  |  Cat TikTok 1 + IG Reel (7–9pm ET)
+# Wed: Cat IG photo 1 (10am–12pm ET)  |  Threads (12–2pm ET)
+# Fri: Cat TikTok 2 + IG Reel (7–9pm ET)
+# Sun: Cat TikTok 3 + IG Reel (7–9pm ET)
 # ---------------------------------------------------------------------------
 
 # ── X (Twitter) ──────────────────────────────────────────────────────────
@@ -106,26 +105,25 @@ def next_saturday_ig() -> str:
 
 # ── TikTok / Reels ────────────────────────────────────────────────────────
 
+def next_monday_cat_ig() -> str:
+    """Cat IG photo 2 — Monday, random 10am–12pm ET (14–16 UTC)."""
+    return _next_weekday_random(0, window_start_utc=14, window_end_utc=16)
+
 def next_tuesday_cat_tiktok() -> str:
-    """TikTok video 1 (cat) — Tuesday, random 7–9pm ET (23–25 UTC). Evening — clears the morning X post."""
+    """TikTok video 1 (cat) — Tuesday, random 7–9pm ET (23–25 UTC). Evening — after morning X post."""
     return _next_weekday_random(1, window_start_utc=23, window_end_utc=25)
 
 def next_wednesday_cat_ig() -> str:
     """Cat IG photo 1 — Wednesday, random 10am–12pm ET (14–16 UTC). Morning — before Threads at noon."""
     return _next_weekday_random(2, window_start_utc=14, window_end_utc=16)
 
-def next_saturday_tiktok() -> str:
-    """TikTok video 2 — Saturday, random 9–11am ET (13–15 UTC). Morning slot — weekend scroll."""
-    return _next_weekday_random(5, window_start_utc=13, window_end_utc=15)
+def next_friday_cat_tiktok() -> str:
+    """TikTok video 2 (cat) — Friday, random 7–9pm ET (23–25 UTC). Strong evening slot."""
+    return _next_weekday_random(4, window_start_utc=23, window_end_utc=25)
 
-def next_thursday_cat_tiktok() -> str:
-    """TikTok video 3 (cat) — Thursday, random 7–9pm ET (23–25 UTC). Evening slot — pre-weekend wind-down."""
-    return _next_weekday_random(3, window_start_utc=23, window_end_utc=25)
-
-
-def next_friday_cat_ig() -> str:
-    """Cat IG photo 2 — Friday, random 3–5pm ET (19–21 UTC)."""
-    return _next_weekday_random(4, window_start_utc=19, window_end_utc=21)
+def next_sunday_cat_tiktok() -> str:
+    """TikTok video 3 (cat) — Sunday, random 7–9pm ET (23–25 UTC). Top TikTok evening slot."""
+    return _next_weekday_random(6, window_start_utc=23, window_end_utc=25)
 
 # ── Threads ───────────────────────────────────────────────────────────────
 
@@ -492,11 +490,11 @@ def schedule_cat_content_slots(brief_md: str, cat_name: str = "Babs", blog_url: 
     Each post caption starts with a clear identifier so they know which slot is which.
 
     Slot schedule:
+      Photo 2  → Monday    10am–12pm ET (Instagram)
       Video 1  → Tuesday   7–9pm ET   (TikTok + Instagram Reel)
       Photo 1  → Wednesday 10am–12pm ET (Instagram)
-      Video 3  → Thursday  7–9pm ET   (TikTok + Instagram Reel)
-      Photo 2  → Friday    3–5pm ET   (Instagram)
-      Video 2  → Saturday  9–11am ET  (TikTok + Instagram Reel)
+      Video 2  → Friday    7–9pm ET   (TikTok + Instagram Reel)
+      Video 3  → Sunday    7–9pm ET   (TikTok + Instagram Reel)
 
     Returns a dict of slot keys → Buffer post IDs (or None on failure).
     """
@@ -505,9 +503,9 @@ def schedule_cat_content_slots(brief_md: str, cat_name: str = "Babs", blog_url: 
     schedule_map = {
         ("photo", 1): next_wednesday_cat_ig,
         ("video", 1): next_tuesday_cat_tiktok,
-        ("video", 2): next_saturday_tiktok,
-        ("photo", 2): next_friday_cat_ig,
-        ("video", 3): next_thursday_cat_tiktok,
+        ("video", 2): next_friday_cat_tiktok,
+        ("photo", 2): next_monday_cat_ig,
+        ("video", 3): next_sunday_cat_tiktok,
     }
 
     # Upload placeholder images once — reused across slots.
