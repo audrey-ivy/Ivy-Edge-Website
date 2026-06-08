@@ -389,27 +389,8 @@ def process_folder(
         "started_at": datetime.now(timezone.utc).isoformat(),
     }
 
-    # ── 1. Image cards (1080×1080) — up to 3 ───────────────────────────
+    # ── 1. Image cards — disabled (AI Instagram posts removed from schedule)
     card_paths: list[Optional[Path]] = [None, None, None]
-    if not video_only:
-        try:
-            from image_card_generator import generate_card
-            pull_quote = _parse_pull_quote(social_text)
-            for i in range(3):
-                card_path = folder / f"07_image_card_{i+1}.png"
-                generate_card(
-                    title=title,
-                    pillar=pillar,
-                    pull_quote=pull_quote,
-                    output_path=card_path,
-                    dark=(i % 2 == 0),   # alternate dark/light
-                    blog_url=blog_url,
-                )
-                card_paths[i] = card_path
-                result[f"image_card_{i+1}"] = str(card_path)
-            logger.info("Image cards generated: 3")
-        except Exception as e:
-            logger.error("Image card generation failed for %s: %s", folder.name, e)
 
     # ── 2. Story cards (1080×1920) — 4 slides ──────────────────────────
     story_paths: list[Optional[Path]] = [None, None, None, None]
