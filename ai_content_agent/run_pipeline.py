@@ -206,7 +206,7 @@ def _save_result(result: GenerationResult, out_root: Path) -> tuple[Path, float]
     """Write all artifacts for a single generation to its own folder."""
     date = datetime.utcnow().strftime("%Y-%m-%d")
     slug = _slugify(result.brief.topic)          # truncated — for folder name only
-    full_slug = _slugify(result.brief.topic, truncate=False)  # full — for blog URL
+    full_slug = _slugify(result.brief.primary_keyword, truncate=False)  # keyword slug — for blog URL
     folder = out_root / f"{date}_{slug}"
     folder.mkdir(parents=True, exist_ok=True)
 
@@ -285,7 +285,7 @@ def _create_substack_draft(result: GenerationResult, folder: Path) -> Optional[i
         logger.error("Cannot reach Substack: %s", e)
         return None
 
-    slug    = _slugify(result.brief.topic, truncate=False)
+    slug    = _slugify(result.brief.primary_keyword, truncate=False)
     title   = result.brief.topic
     subtitle = getattr(result, "meta_description", "") or ""
     blog_url = f"https://ivyedge.co/blog/{slug}"
@@ -317,7 +317,7 @@ def _maybe_publish(result: GenerationResult, folder: Path, publish: bool) -> Opt
         logger.error("Cannot publish: %s", e)
         return None
 
-    slug     = _slugify(result.brief.topic, truncate=False)
+    slug     = _slugify(result.brief.primary_keyword, truncate=False)
     title    = result.brief.topic
     subtitle = getattr(result, "meta_description", "") or ""
     blog_url = f"https://ivyedge.co/blog/{slug}"
@@ -528,7 +528,8 @@ def cmd_approve(args: argparse.Namespace) -> int:
     draft_id = int(draft_id_file.read_text().strip())
     title    = json.loads(meta_file.read_text())["topic"] if meta_file.exists() else folder.name
     body     = draft_md.read_text(encoding="utf-8")
-    blog_url = f"https://ivyedge.co/blog/{_slugify(title, truncate=False)}"
+    primary_keyword = json.loads(meta_file.read_text())["primary_keyword"] if meta_file.exists() else title
+    blog_url = f"https://ivyedge.co/blog/{_slugify(primary_keyword, truncate=False)}"
 
     print(f"\nApproving: {title}")
     print(f"Draft ID:  {draft_id}")
