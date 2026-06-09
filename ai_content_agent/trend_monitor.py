@@ -41,12 +41,15 @@ TRENDS_SEED_TERMS = [
     # Finance & credit
     "credit score",
     "personal loan",
+    "personal loan denied",
+    "loan denied",
     "women finance",
     "freelance income",
     "small business loan",
     "fintech lending",
     "FICO score",
     "mortgage approval",
+    "financial advice for women",
     # Workforce & economy participation
     "women leaving workforce",
     "childcare cost",
@@ -67,6 +70,9 @@ WATCH_TOPICS = {
         "gig worker loan",
         "career gap credit",
         "caregiving career return",
+        "non-traditional income loan approval",
+        "self employed personal loan denied",
+        "how to get approved personal loan non-traditional income",
     ],
     "Pillar 2: Demystifying Finance": [
         "FICO score change",
@@ -74,6 +80,14 @@ WATCH_TOPICS = {
         "APR interest rate news",
         "alternative credit scoring",
         "credit bureau news",
+        # Symptom-based — what people search when the system fails them
+        "personal loan denied",
+        "why was I denied a personal loan",
+        "what to do after loan denial",
+        "personal loan rejection reasons",
+        "loan denied good credit",
+        "bank denied personal loan",
+        "personal loan denied self employed",
     ],
     "Pillar 3: Real Stories": [
         "women financial barriers",
