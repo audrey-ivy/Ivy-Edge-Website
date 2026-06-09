@@ -717,6 +717,12 @@ FULL FINAL DRAFT
 
 ---
 
+SEO NOTE: The primary keyword is "{brief.primary_keyword}" — this is the exact phrase
+people search when they have this problem. Work it naturally into at least one post
+(X or Threads) exactly as written, so the content matches real search intent.
+
+---
+
 Produce all assets below. Follow each format exactly.
 
 ---
