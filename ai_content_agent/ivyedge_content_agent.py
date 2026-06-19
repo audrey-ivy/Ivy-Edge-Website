@@ -336,7 +336,11 @@ RESEARCH TASKS
 1. Identify 3-5 key insights about this topic that the target persona needs to know.
 2. Surface relevant data points and statistics. For EVERY stat include a real URL
    in parentheses — e.g. "X% of borrowers (https://www.consumerfinance.gov/...)".
-   Prefer .gov, .edu, CFPB, Federal Reserve, BLS, Experian, myFICO, Urban Institute.
+   Prefer: Federal Reserve, BLS, FTC (ftc.gov), Experian, myFICO, Urban Institute,
+   Pew Research, academic papers (.edu), peer-reviewed journals.
+   AVOID CFPB blog posts (about-us/blog/*) and CFPB Ask-CFPB pages (ask-cfpb/*) —
+   these are frequently archived and return dead links. CFPB research reports
+   (data-research/research-reports/*) are acceptable if you verify the exact URL.
    Use the source links above if they match; otherwise find the specific page.
 3. Name what traditional finance gets wrong about this topic.
 4. Identify the perspective Ivy Edge brings — the *point of view* on the topic,
@@ -498,9 +502,11 @@ WRITING GUIDELINES
   that causes the frustration. Don't say a policy "disadvantages women" — show the
   exact mechanism and its consequence. Use specific scenes, numbers, and outcomes.
 - SOURCES: Every statistic must be hyperlinked inline to its real source.
-  Format: [description of source](https://actual-url.gov/...). Use government
-  agencies, CFPB, Federal Reserve, BLS, AARP, .edu, or peer-reviewed research.
-  No naked numbers — every data point gets a link.
+  Format: [description of source](https://actual-url.gov/...). Prefer Federal Reserve,
+  BLS, FTC, Experian, myFICO, Pew Research, Urban Institute, .edu, peer-reviewed research.
+  AVOID CFPB blog posts (about-us/blog/*) and CFPB Ask-CFPB pages — they are frequently
+  archived and produce dead links. CFPB research reports (data-research/research-reports/*)
+  are OK if the URL is exact and verified. No naked numbers — every data point gets a link.
 - Subheadings for scanability.
 - This is thought leadership: prove we understand the topic and the reader's
   reality better than anyone else writing about it.

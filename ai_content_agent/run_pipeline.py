@@ -77,6 +77,7 @@ DALE_CHALL_TARGET = 8.5
 _BOT_BLOCKED_DOMAINS = {
     "consumerfinance.gov", "cfpb.gov", "bls.gov", "urban.org",
     "academic.oup.com", "jstor.org", "census.gov", "dol.gov",
+    "investopedia.com", "thebalancemoney.com", "ftc.gov",
 }
 
 def _check_links(markdown_text: str) -> list[tuple[str, str]]:
@@ -233,6 +234,8 @@ def _save_result(result: GenerationResult, out_root: Path) -> tuple[Path, float]
     (folder / "04_edited_draft.md").write_text(result.edited_draft, encoding="utf-8")
     # Validate every hyperlink before saving — strip dead ones
     validated_draft = _validate_and_strip_dead_links(result.final_draft, result.brief.topic)
+    # Append AI disclosure
+    validated_draft = validated_draft.rstrip() + "\n\n---\n*This article was researched and drafted with the assistance of AI and reviewed by the Ivy Edge team.*\n"
     (folder / "05_final_draft.md").write_text(validated_draft, encoding="utf-8")
     if result.social:
         (folder / "06_social.md").write_text(result.social, encoding="utf-8")
