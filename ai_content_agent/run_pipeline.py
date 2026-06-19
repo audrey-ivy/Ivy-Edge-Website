@@ -83,7 +83,10 @@ def _check_links(markdown_text: str) -> list[tuple[str, str]]:
     """Return list of (url, reason) for every dead link found.
     ALL links are checked — including government/academic domains.
     A 403 on a known bot-blocking domain is ignored (link is kept).
-    A 404 is always a dead link, regardless of domain."""
+    A 404 is always a dead link, regardless of domain.
+    For domains known to soft-404 (redirect to homepage on missing pages),
+    the final URL after redirects is compared to the requested URL — a
+    significant mismatch (e.g. landing on the root) is treated as a dead link."""
     import urllib.request, ssl as _ssl
     ctx = _ssl.create_default_context()
     ctx.check_hostname = False
@@ -93,6 +96,8 @@ def _check_links(markdown_text: str) -> list[tuple[str, str]]:
                       "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     }
+    # Domains that redirect to homepage instead of returning 404 for missing pages
+    _SOFT_404_DOMAINS = {"consumerfinance.gov", "cfpb.gov"}
     url_pat = re.compile(r"https?://[^\s\)\]\"\'<>]+")
     seen: set[str] = set()
     dead: list[tuple[str, str]] = []
@@ -103,14 +108,21 @@ def _check_links(markdown_text: str) -> list[tuple[str, str]]:
         seen.add(url)
         domain = url.split("/")[2]
         is_bot_blocked = any(d in domain for d in _BOT_BLOCKED_DOMAINS)
+        is_soft_404 = any(d in domain for d in _SOFT_404_DOMAINS)
         try:
             req = urllib.request.Request(url, headers=headers)
-            # follow_redirects=True is the default; final URL may differ
             with urllib.request.urlopen(req, timeout=8, context=ctx) as r:
                 if r.status == 404:
                     dead.append((url, "HTTP 404 — page not found"))
                 elif r.status >= 400:
                     dead.append((url, f"HTTP {r.status}"))
+                elif is_soft_404:
+                    # Check if we were redirected to the root/homepage — soft-404 pattern
+                    final_url = r.url
+                    requested_path = "/" + "/".join(url.split("/")[3:]).rstrip("/")
+                    final_path = "/" + "/".join(final_url.split("/")[3:]).rstrip("/")
+                    if requested_path not in ("/", "") and final_path in ("/", ""):
+                        dead.append((url, "redirects to homepage — page likely archived"))
         except Exception as e:
             msg = str(e)
             if "404" in msg:
