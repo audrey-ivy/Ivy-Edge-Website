@@ -229,20 +229,8 @@ def _save_result(result: GenerationResult, out_root: Path) -> tuple[Path, float]
         if linkedin_md:
             (folder / "09_linkedin.md").write_text(linkedin_md, encoding="utf-8")
     if result.barbie:
+        # Save brief to disk — email + Buffer scheduling happen at approve time
         (folder / "10_cat_brief.md").write_text(result.barbie, encoding="utf-8")
-        try:
-            from mailer import send_barbie_brief
-            send_barbie_brief(topic=result.brief.topic, brief_md=result.barbie)
-        except Exception as _e:
-            logger.warning("Cat brief email skipped: %s", _e)
-        try:
-            from buffer_poster import schedule_cat_content_slots
-            _blog_url = f"https://ivyedge.co/blog/{full_slug}"
-            cat_results = schedule_cat_content_slots(result.barbie, blog_url=_blog_url)
-            scheduled = sum(1 for v in cat_results.values() if v)
-            logger.info("Cat Buffer slots scheduled: %d/5", scheduled)
-        except Exception as _e:
-            logger.warning("Cat Buffer scheduling skipped: %s", _e)
 
     # Dale-Chall readability score on the final draft
     plain = re.sub(r"[#*_`\[\]()]", "", result.final_draft)
@@ -576,6 +564,25 @@ def cmd_approve(args: argparse.Namespace) -> int:
     )
     if result.returncode != 0:
         print("⚠️  Social media agent failed — run manually: python social_media_agent.py")
+
+    # Send cat brief email + schedule Buffer slots (only after article is approved)
+    cat_brief_file = folder / "10_cat_brief.md"
+    if cat_brief_file.exists():
+        cat_brief_md = cat_brief_file.read_text(encoding="utf-8")
+        topic = json.loads(meta_file.read_text())["topic"] if meta_file.exists() else folder.name
+        try:
+            from mailer import send_barbie_brief
+            send_barbie_brief(topic=topic, brief_md=cat_brief_md)
+            print("Cat brief emailed (Babs).")
+        except Exception as _e:
+            logger.warning("Cat brief email skipped: %s", _e)
+        try:
+            from buffer_poster import schedule_cat_content_slots
+            cat_results = schedule_cat_content_slots(cat_brief_md, blog_url=blog_url)
+            scheduled = sum(1 for v in cat_results.values() if v)
+            print(f"Cat Buffer slots scheduled: {scheduled}/5")
+        except Exception as _e:
+            logger.warning("Cat Buffer scheduling skipped: %s", _e)
 
     print("\nDone. Article is live and social posts are queued in Buffer.")
     return 0
